@@ -452,6 +452,49 @@ class LeaderFastRouteTest(unittest.TestCase):
         self.assertEqual(1, self.provider.calls)
         self.assertEqual("模型兜底回答。", plan.answer)
 
+    def test_capability_fixed_route_cannot_fall_back_to_direct_answer(self):
+        plan = self.agent.plan(
+            "介绍你的能力",
+            chat_service=self.provider,
+            callable_catalog={
+                "tools": [],
+                "toolSelection": {
+                    "intent": "capability_inquiry",
+                    "fixedRoute": "tool_capability_query",
+                },
+            },
+        )
+
+        self.assertEqual(0, self.provider.calls)
+        self.assertEqual("capability_inquiry", plan.intent)
+        self.assertEqual("call_tool", plan.action)
+        self.assertEqual("tool_capability_query", plan.tool_name)
+        self.assertEqual("rules", plan.route_mode)
+
+    def test_model_capability_intent_cannot_return_a_progress_direct_answer(self):
+        provider = StaticPlanChatService({
+            "intent": "capability_query",
+            "target_agent": "leader_agent",
+            "need_retrieval": False,
+            "rag_strategy": "",
+            "action": "direct_answer",
+            "tool_name": "",
+            "route_reason": "模型识别为能力询问。",
+            "answer": "正在为你读取当前已启用的能力清单，稍等。",
+        })
+
+        plan = self.agent.plan(
+            "请自我介绍一下",
+            chat_service=provider,
+            callable_catalog={"tools": []},
+        )
+
+        self.assertEqual(1, provider.calls)
+        self.assertEqual("capability_inquiry", plan.intent)
+        self.assertEqual("call_tool", plan.action)
+        self.assertEqual("tool_capability_query", plan.tool_name)
+        self.assertEqual("rules", plan.route_mode)
+
     def test_direct_image_capability_question_is_always_answered_by_model(self):
         unavailable_plan = self.agent.plan(
             "你支持生图吗？",

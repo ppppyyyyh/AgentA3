@@ -1,7 +1,7 @@
 const RESOURCE_ACTIONS = new Set(['open_resource', 'download', 'preview', 'follow_up'])
 const INTERACTION_ACTIONS = new Set(['view', 'open', 'download', 'preview', 'follow_up', 'dismiss'])
 const EVIDENCE_STATES = new Set([
-  'available', 'legacy_missing', 'malformed', 'integrity_failed', 'generation_failed'
+  'available', 'legacy_missing', 'malformed', 'integrity_failed', 'generation_failed', 'pending'
 ])
 const GROUNDING_STATES = new Set(['grounded', 'context_only', 'model_only'])
 const FILE_EXTENSIONS = {
@@ -564,7 +564,8 @@ export function summarizeEvidenceChain(evidenceChain) {
     legacy_missing: '旧消息未记录来源',
     malformed: '来源数据格式异常',
     integrity_failed: '来源完整性校验失败',
-    generation_failed: '来源链生成失败'
+    generation_failed: '来源链生成失败',
+    pending: '来源链整理中'
   }
   let label = labels[state]
   if (!label) {

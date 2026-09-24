@@ -89,7 +89,7 @@ public class AssistantEnvelopeService {
     private static final Set<String> GROUNDING_STATUSES = Set.of("grounded", "context_only", "model_only");
     private static final Set<String> ACTION_TYPES = Set.of("open_resource", "download", "preview", "follow_up");
     private static final Set<String> EVIDENCE_STATES = Set.of(
-            "available", "legacy_missing", "malformed", "integrity_failed", "generation_failed");
+            "available", "legacy_missing", "malformed", "integrity_failed", "generation_failed", "pending");
     private static final Set<String> INTERNAL_CAPABILITY_KEYS = Set.of(
             "internalcapability", "pythoncapability", "exportcapability", "capability");
     private static final Set<String> SAFE_METADATA_KEYS = Set.of(
@@ -127,6 +127,18 @@ public class AssistantEnvelopeService {
     private static final Set<String> FORBIDDEN_KEYS = Set.of(
             "userid", "sellerid", "phone", "contact", "memberlist", "participants", "transcript", "token",
             "raw", "authorization", "apikey", "capability", "profile");
+    private static final String PUBLIC_CAPABILITY_QUERY = "tool_capability_query";
+    private static final String PUBLIC_CAPABILITY_SOURCE_TYPE = "tool_capability";
+    private static final String PUBLIC_CAPABILITY_ANSWER_TYPE = "capability_list";
+    private static final Set<String> PUBLIC_CAPABILITY_AGENT_IDS = Set.of(PUBLIC_CAPABILITY_QUERY);
+    private static final Set<String> PUBLIC_CAPABILITY_SOURCE_TYPES = Set.of(PUBLIC_CAPABILITY_SOURCE_TYPE);
+    private static final Set<String> PUBLIC_CAPABILITY_ANSWER_TYPES = Set.of(PUBLIC_CAPABILITY_ANSWER_TYPE);
+    private static final List<String> PUBLIC_CAPABILITY_IDENTIFIERS = List.of(
+            PUBLIC_CAPABILITY_QUERY, PUBLIC_CAPABILITY_SOURCE_TYPE);
+    private static final Pattern PUBLIC_CAPABILITY_SOURCE_ID =
+            Pattern.compile("capability:[A-Za-z0-9:_-]{1,160}");
+    private static final Set<String> PUBLIC_CAPABILITY_STEP_DETAIL_KEYS = Set.of(
+            "agentName", "targetAgent", "toolName", "toolDisplayName");
     private static final Set<String> SAFE_DIAGNOSTIC_KEYS = Set.of(
             "profilems", "profilecontextsource", "firsttokenms");
     private static final Map<String, Set<String>> BUSINESS_FIELDS = Map.of(
@@ -174,6 +186,20 @@ public class AssistantEnvelopeService {
                                                 Map<String, Object> rawResult,
                                                 String expectedQuery,
                                                 Set<String> knownCapabilities) {
+        return prepareLiveResponse(response, rawResult, expectedQuery, knownCapabilities, false);
+    }
+
+    /**
+     * 流式过程中的实时快照（{@code generation_start}）还没有最终答案与来源链，
+     * 此时不能按“来源链生成失败”密封，否则前端会在生成过程中先渲染出红色失败标签。
+     *
+     * @param interim {@code true} 表示进行中的快照，缺链时降级为 {@code pending}
+     */
+    public PreparedEnvelope prepareLiveResponse(LlmChatResponse response,
+                                                Map<String, Object> rawResult,
+                                                String expectedQuery,
+                                                Set<String> knownCapabilities,
+                                                boolean interim) {
         CapabilityScan capabilityScan = scanInternalCapabilities(rawResult);
         CapabilityScan mergedCapabilities = mergeInternalCapabilities(
                 knownCapabilities, capabilityScan.values());
@@ -202,7 +228,11 @@ public class AssistantEnvelopeService {
         }
         if (!"available".equals(chain.getEvidenceState())) {
             downgradeUntrustedGrounding(resources);
-            chain = sealFailureChain(chain, resources, response, expectedQuery);
+            if (interim) {
+                chain = stateChain("pending", chain.isTruncated());
+            } else {
+                chain = sealFailureChain(chain, resources, response, expectedQuery);
+            }
         }
         fitEnvelope(resources, chain);
         response.setResources(resources);
@@ -1231,8 +1261,8 @@ public class AssistantEnvelopeService {
                     || !boundedText(source.getSourceVersion(), 128)
                     || !boundedText(source.getAccessScope(), 80)
                     || unsafePublicText(source.getEvidenceId(), capabilities)
-                    || unsafePublicText(source.getSourceType(), capabilities)
-                    || unsafePublicText(source.getSourceId(), capabilities)
+                    || !safeCapabilitySourceType(source.getSourceType(), capabilities)
+                    || !safeCapabilitySourceId(source.getSourceId(), capabilities)
                     || unsafePublicText(source.getTitle(), capabilities)
                     || unsafePublicText(source.getExcerpt(), capabilities)
                     || unsafePublicText(source.getSourceVersion(), capabilities)
@@ -1261,9 +1291,9 @@ public class AssistantEnvelopeService {
                 && boundedText(chain.getGeneration().getAgent(), 64)
                 && boundedText(chain.getGeneration().getModel(), 128)
                 && boundedText(chain.getGeneration().getAnswerType(), 64)
-                && !unsafePublicText(chain.getGeneration().getAgent(), capabilities)
+                && safeCapabilityAgentId(chain.getGeneration().getAgent(), capabilities)
                 && !unsafePublicText(chain.getGeneration().getModel(), capabilities)
-                && !unsafePublicText(chain.getGeneration().getAnswerType(), capabilities);
+                && safeCapabilityAnswerType(chain.getGeneration().getAnswerType(), capabilities);
     }
 
     private boolean validEvidenceNodeTypes(JsonNode node) {
@@ -1293,8 +1323,8 @@ public class AssistantEnvelopeService {
                     || !textFields(source, Set.of(
                     "evidenceId", "sourceType", "sourceId", "title", "excerpt", "retrievedAt",
                     "contentDigest", "accessScope"))
-                    || source.has("sourceVersion") && !source.path("sourceVersion").isTextual()
-                    || source.has("metadata") && !safeObjectNode(source.path("metadata"))) {
+                    || source.hasNonNull("sourceVersion") && !source.path("sourceVersion").isTextual()
+                    || source.hasNonNull("metadata") && !safeObjectNode(source.path("metadata"))) {
                 return false;
             }
         }
@@ -1364,7 +1394,8 @@ public class AssistantEnvelopeService {
                     return false;
                 }
                 if (item instanceof String text
-                        && (text.length() > 300 || unsafePublicText(text, capabilities))) {
+                        && (text.length() > 300
+                        || unsafeCapabilityStepDetail(entry.getKey(), text, capabilities))) {
                     return false;
                 }
             }
@@ -2193,6 +2224,52 @@ public class AssistantEnvelopeService {
     private boolean forbiddenText(String value) {
         String normalized = value == null ? "" : value.replaceAll("[^A-Za-z0-9]", "").toLowerCase(Locale.ROOT);
         return FORBIDDEN_KEYS.stream().anyMatch(normalized::contains);
+    }
+
+    private boolean safeCapabilityAgentId(String value, Set<String> capabilities) {
+        return !unsafePublicText(value, capabilities)
+                || allowedPublicCapabilityIdentifier(value, capabilities, PUBLIC_CAPABILITY_AGENT_IDS);
+    }
+
+    private boolean safeCapabilityAnswerType(String value, Set<String> capabilities) {
+        return !unsafePublicText(value, capabilities)
+                || allowedPublicCapabilityIdentifier(value, capabilities, PUBLIC_CAPABILITY_ANSWER_TYPES);
+    }
+
+    private boolean safeCapabilitySourceType(String value, Set<String> capabilities) {
+        return !unsafePublicText(value, capabilities)
+                || allowedPublicCapabilityIdentifier(value, capabilities, PUBLIC_CAPABILITY_SOURCE_TYPES);
+    }
+
+    private boolean safeCapabilitySourceId(String value, Set<String> capabilities) {
+        return !unsafePublicText(value, capabilities)
+                || (!containsCapability(value, capabilities)
+                && !isInternalReference(value)
+                && PUBLIC_CAPABILITY_SOURCE_ID.matcher(defaultText(value, "").trim()).matches());
+    }
+
+    private boolean allowedPublicCapabilityIdentifier(String value,
+                                                      Set<String> capabilities,
+                                                      Set<String> allowedValues) {
+        return !containsCapability(value, capabilities)
+                && !isInternalReference(value)
+                && allowedValues.contains(defaultText(value, "").trim());
+    }
+
+    private boolean unsafeCapabilityStepDetail(String key, String value, Set<String> capabilities) {
+        if (!unsafePublicText(value, capabilities)) {
+            return false;
+        }
+        if (!PUBLIC_CAPABILITY_STEP_DETAIL_KEYS.contains(key)
+                || containsCapability(value, capabilities)
+                || isInternalReference(value)) {
+            return true;
+        }
+        String withoutPublicIdentifiers = value;
+        for (String identifier : PUBLIC_CAPABILITY_IDENTIFIERS) {
+            withoutPublicIdentifiers = withoutPublicIdentifiers.replace(identifier, "");
+        }
+        return forbiddenText(withoutPublicIdentifiers);
     }
 
     private boolean unsafePublicText(String value, Set<String> capabilities) {

@@ -490,6 +490,41 @@ class AppAiLeaderControllerTest {
         verify(exportRepository, times(1)).save(any());
     }
 
+    /**
+     * 图片生成过程中，generation_start 只是一个还没有答案与来源链的实时快照。
+     * 它不能被密封成 generation_failed，否则前端会先渲染出“来源链生成失败”的红色标签。
+     */
+    @Test
+    void streamGenerationStartKeepsEvidenceChainPendingUntilDone() throws Exception {
+        AtomicReference<Map<String, Object>> generationStart = new AtomicReference<>();
+        AtomicReference<Map<String, Object>> done = new AtomicReference<>();
+        when(pythonAiProxyService.streamRag(any(), any(), any())).thenAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            PythonAiProxyService.SseEventHandler consumer = invocation.getArgument(2);
+            Map<String, Object> start = new LinkedHashMap<>(Map.of(
+                    "answer", "正在生成图片，请稍候…",
+                    "answerType", "text",
+                    "attachments", List.of()));
+            Map<String, Object> last = validGeneratedResponse();
+            generationStart.set(start);
+            done.set(last);
+            consumer.handle("generation_start", start);
+            consumer.handle("done", last);
+            return new SseEmitter();
+        });
+
+        controller.queryStream(request(), "Bearer test-token", authenticatedRequest());
+
+        assertThat(objectMapper.valueToTree(generationStart.get())
+                .path("evidenceChain").path("evidenceState").asText()).isEqualTo("pending");
+        assertThat(objectMapper.valueToTree(done.get())
+                .path("evidenceChain").path("evidenceState").asText()).isEqualTo("available");
+        AiLeaderMessage assistant = savedMessages.stream()
+                .filter(item -> AiLeaderMessage.ROLE_ASSISTANT.equals(item.getRole()))
+                .findFirst().orElseThrow();
+        assertThat(assistant.getEvidenceChainJson()).contains("\"evidenceState\":\"available\"");
+    }
+
     @Test
     void historyRestoresTheSameEnvelopeAndMarksMalformedEvidence() throws Exception {
         when(pythonAiProxyService.queryRag(any(), any())).thenReturn(validGeneratedResponse());
@@ -892,6 +927,62 @@ class AppAiLeaderControllerTest {
                 .isEqualTo("integrity_failed");
     }
 
+    @Test
+    void capabilityCatalogEvidenceAllowsOnlyPublicCapabilityIdentifiers() throws Exception {
+        Map<String, Object> raw = groundedResponse(1, 20);
+        Map<String, Object> chain = evidenceChain(raw);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> source = new LinkedHashMap<>(
+                (Map<String, Object>) ((List<?>) chain.get("sources")).getFirst());
+        source.put("sourceType", "tool_capability");
+        source.put("sourceId", "capability:java_schedule_api");
+        chain.put("sources", List.of(source));
+        chain.put("generation", Map.of(
+                "agent", "tool_capability_query",
+                "model", "configured-model",
+                "answerType", "capability_list",
+                "profileContextUsed", false));
+        chain.put("steps", List.of(
+                Map.of("stage", "leader_route", "detail", Map.of(
+                        "targetAgent", "tool_capability_query",
+                        "toolDisplayName", "工具能力查询（tool_capability_query）")),
+                Map.of("stage", "tool_call", "detail", Map.of(
+                        "toolName", "tool_capability_query"))));
+        refreshChainIntegrity(chain);
+        when(pythonAiProxyService.queryRag(any(), any())).thenReturn(raw);
+
+        JsonNode response = objectMapper.valueToTree(controller.query(request(), authenticatedRequest()).getData());
+
+        assertThat(response.path("evidenceChain").path("evidenceState").asText()).isEqualTo("available");
+        assertThat(response.path("evidenceChain").path("generation").path("agent").asText())
+                .isEqualTo("tool_capability_query");
+    }
+
+    @Test
+    void historyRestoresExplicitNullOptionalEvidenceFields() throws Exception {
+        Map<String, Object> raw = groundedResponse(1, 20);
+        Map<String, Object> chain = evidenceChain(raw);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> source = new LinkedHashMap<>(
+                (Map<String, Object>) ((List<?>) chain.get("sources")).getFirst());
+        source.put("sourceVersion", null);
+        source.put("metadata", null);
+        chain.put("sources", List.of(source));
+        refreshChainIntegrity(chain);
+        when(pythonAiProxyService.queryRag(any(), any())).thenReturn(raw);
+
+        JsonNode live = objectMapper.valueToTree(controller.query(request(), authenticatedRequest()).getData());
+        AiLeaderMessage assistant = savedMessages.getLast();
+        when(messageRepository.findByLeaderSessionIdOrderByCreateTimeAscIdAsc(9L)).thenReturn(List.of(assistant));
+        JsonNode history = objectMapper.valueToTree(
+                controller.sessionDetail("session-1", authenticatedRequest()).getData());
+
+        assertThat(live.path("evidenceChain").path("evidenceState").asText()).isEqualTo("available");
+        assertThat(history.path("messages").path(0).path("evidenceChain").path("evidenceState").asText())
+                .isEqualTo("available");
+        assertThat(assistant.getEvidenceChainJson())
+                .contains("\"sourceVersion\":null", "\"metadata\":null");
+    }
     @Test
     void nonAvailableEvidenceStateSurvivesPersistenceAndHistoryRestore() throws Exception {
         Map<String, Object> raw = validGeneratedResponse();

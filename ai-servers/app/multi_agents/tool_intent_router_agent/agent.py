@@ -28,6 +28,9 @@ _CAPABILITY_QUERY_MARKERS = (
     "工具能力",
     "支持什么",
     "有什么能力",
+    "介绍你的能力",
+    "介绍一下你的能力",
+    "能力介绍",
     "能不能做",
 )
 _WORD_RE = re.compile(r"[a-z0-9_+#.-]+", re.IGNORECASE)

@@ -2283,7 +2283,7 @@ export default {
     shouldShowEvidence(message) {
       if (!message || message.role !== 'assistant' || message.type === 'thinking' || !message.evidenceChain) return false
       const summary = this.getEvidenceSummary(message)
-      if (summary.state === 'legacy_missing') return false
+      if (summary.state === 'legacy_missing' || summary.state === 'pending') return false
       const intent = String(this.normalizeCallDetail(message).intent || '').toLowerCase()
       if (summary.status === 'model_only' && ['smalltalk', 'greeting'].includes(intent)) return false
       return true

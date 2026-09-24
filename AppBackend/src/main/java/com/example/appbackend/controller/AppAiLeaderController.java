@@ -169,7 +169,7 @@ public class AppAiLeaderController {
                 if ("generation_start".equals(eventName)) {
                     LlmChatResponse response = toChatResponse(session, eventPayload);
                     AssistantEnvelopeService.PreparedEnvelope envelope = assistantEnvelopeService.prepareLiveResponse(
-                            response, mapValue(eventPayload), request.getInput(), Set.copyOf(internalCapabilities));
+                            response, mapValue(eventPayload), request.getInput(), Set.copyOf(internalCapabilities), true);
                     AiLeaderMessage existing = visibleGenerationMessage.get();
                     AiLeaderMessage saved = existing == null
                             ? saveAssistantMessage(userId, session, response, envelope)

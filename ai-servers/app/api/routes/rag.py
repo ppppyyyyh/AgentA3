@@ -3348,15 +3348,22 @@ def _run_tool_capability_query(request: RagQueryRequest, leader_plan) -> RagQuer
         answerType="capability_list",
         documents=[_tool_result_to_document(item, index) for index, item in enumerate(documents, start=1)],
         trace=[
-            RagTraceResponse(stage="leader_route", detail=_leader_plan_detail(leader_plan)),
+            # 这些步骤会进入公开来源链，字段名与取值必须命中 Java 侧的
+            # PUBLIC_CAPABILITY_STEP_DETAIL_KEYS / PUBLIC_CAPABILITY_IDENTIFIERS 白名单，
+            # 因此不能携带 intent=capability_inquiry 之类的内部标识。
+            RagTraceResponse(stage="leader_route", detail={
+                "agentName": "leader_agent",
+                "targetAgent": TOOL_CAPABILITY_QUERY_NAME,
+                "toolName": TOOL_CAPABILITY_QUERY_NAME,
+                "toolDisplayName": _tool_display_name(TOOL_CAPABILITY_QUERY_NAME),
+            }),
             RagTraceResponse(stage="tool_call", detail={
                 "toolName": TOOL_CAPABILITY_QUERY_NAME,
-                "enabledToolCount": len(enabled_tools),
-                "retrievalSkipped": True,
+                "toolDisplayName": _tool_display_name(TOOL_CAPABILITY_QUERY_NAME),
+                "resultCount": len(enabled_tools),
             }),
             RagTraceResponse(stage="tool_result_summary", detail={
-                "toolResultSummaryMode": "model",
-                "answerLength": len(answer),
+                "summarizedByModel": True,
             }),
         ],
         metadata=metadata,

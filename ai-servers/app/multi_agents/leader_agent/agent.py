@@ -491,7 +491,10 @@ class LeaderAgent:
         tool_selection = callable_catalog.get("toolSelection") if isinstance(callable_catalog, dict) else {}
         if (
             isinstance(tool_selection, dict)
-            and tool_selection.get("intent") == "capability_inquiry"
+            and (
+                tool_selection.get("intent") == "capability_inquiry"
+                or tool_selection.get("fixedRoute") == "tool_capability_query"
+            )
         ):
             return self._finalize_campus_tool_plan(LeaderPlan(
                 intent="capability_inquiry",
@@ -524,17 +527,27 @@ class LeaderAgent:
             )
             return self._finalize_campus_tool_plan(fast_plan, route_text)
 
-        return self._finalize_campus_tool_plan(
-            self._plan_with_llm(
-                input_text,
-                rag_strategy,
-                chat_service,
-                profile_context=profile_context,
-                callable_catalog=callable_catalog,
-                conversation_context=conversation_context,
-            ),
-            route_text,
+        llm_plan = self._plan_with_llm(
+            input_text,
+            rag_strategy,
+            chat_service,
+            profile_context=profile_context,
+            callable_catalog=callable_catalog,
+            conversation_context=conversation_context,
         )
+        if str(llm_plan.intent or "").strip().lower() in {"capability_query", "capability_inquiry"}:
+            llm_plan = LeaderPlan(
+                intent="capability_inquiry",
+                target_agent="leader_agent",
+                need_retrieval=False,
+                rag_strategy="",
+                action="call_tool",
+                tool_name="tool_capability_query",
+                route_reason="模型识别为能力查询，强制调用能力查询工具读取当前已启用工具。",
+                answer="正在查询当前已启用的工具能力。",
+                route_mode="rules",
+            )
+        return self._finalize_campus_tool_plan(llm_plan, route_text)
 
     def _plan_learning_workflow(
         self,

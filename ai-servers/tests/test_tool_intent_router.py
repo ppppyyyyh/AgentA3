@@ -57,6 +57,13 @@ class ToolIntentRouterTest(unittest.TestCase):
 
         self.assertEqual("capability_inquiry", result["intent"])
 
+    def test_capability_query_understands_capability_introduction_wording(self):
+        for wording in ("介绍你的能力", "介绍一下你的能力", "做个能力介绍"):
+            with self.subTest(wording=wording):
+                result = tool_intent_router_agent.extract(wording)
+
+                self.assertEqual("capability_inquiry", result["intent"])
+
 
 if __name__ == "__main__":
     unittest.main()

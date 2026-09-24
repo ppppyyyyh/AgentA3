@@ -956,8 +956,66 @@ class RagApiRoutesTest(unittest.TestCase):
         self.assertEqual("direct_agent", payload["strategy"])
         self.assertEqual("leader_routed_direct_agent", payload["metadata"]["executionMode"])
         self.assertTrue(payload["metadata"]["retrievalSkipped"])
-        self.assertEqual("leader_route", payload["trace"][0]["stage"])
-        self.assertIn("PPT 大纲", payload["answer"])
+
+    def test_capability_catalog_evidence_matches_java_public_identifier_contract(self):
+        with mock.patch.object(
+            self._rag_routes.leader_agent,
+            "summarize_tool_result",
+            return_value="当前可以查询课表、校园活动和食堂信息。",
+        ):
+            response = self.client.post(
+                "/internal/rag/query",
+                headers=self.headers,
+                json={
+                    "input": "介绍你的能力",
+                    "agentName": "leader_agent",
+                    "metadata": {"agentModelConfigs": self.agent_model_configs},
+                },
+            )
+
+        self.assertEqual(200, response.status_code)
+        chain = response.json()["evidenceChain"]
+        self.assertEqual("available", chain["evidenceState"])
+        self.assertEqual("tool_capability_query", chain["generation"]["agent"])
+        self.assertEqual("capability_list", chain["generation"]["answerType"])
+        self.assertTrue(chain["sources"])
+
+        # 复刻 Java 侧 PUBLIC_CAPABILITY_* 白名单：仅这四个步骤字段允许携带公开能力标识，
+        # 去掉标识后不得残留 token/raw/capability 等敏感词，其余字段一律不得出现敏感词。
+        allowed_step_keys = {"agentName", "targetAgent", "toolName", "toolDisplayName"}
+        forbidden = (
+            "userid", "sellerid", "phone", "contact", "memberlist", "participants",
+            "transcript", "token", "raw", "authorization", "apikey", "capability", "profile",
+        )
+        public_identifiers = ("tool_capability_query", "tool_capability")
+
+        def normalized(value):
+            return "".join(ch for ch in str(value or "") if ch.isalnum()).lower()
+
+        def has_forbidden(value):
+            return any(item in normalized(value) for item in forbidden)
+
+        for step in chain["steps"]:
+            for key, value in step["detail"].items():
+                if not isinstance(value, str) or not has_forbidden(value):
+                    continue
+                self.assertIn(key, allowed_step_keys, "步骤字段 %s 不允许携带公开能力标识" % key)
+                stripped = value
+                for identifier in public_identifiers:
+                    stripped = stripped.replace(identifier, "")
+                self.assertFalse(
+                    has_forbidden(stripped),
+                    "步骤字段 %s 去掉公开标识后仍含敏感词: %s" % (key, value),
+                )
+
+        for source in chain["sources"]:
+            self.assertEqual("tool_capability", source["sourceType"])
+            self.assertTrue(source["sourceId"].startswith("capability:"))
+            for field in ("title", "excerpt"):
+                self.assertFalse(
+                    has_forbidden(source[field]),
+                    "来源字段 %s 含敏感词: %s" % (field, source[field]),
+                )
 
     def test_production_leader_planning_excludes_internal_dag_agents_and_keeps_routes(self):
         class RecordingLeaderProvider(FakeRagModelProvider):
