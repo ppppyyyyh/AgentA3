@@ -230,6 +230,78 @@ test('floating assistant source has no second attachment parser', () => {
   assert.doesNotMatch(source, /\bextractAttachmentsFromText\s*\(/)
 })
 
+test('floating assistant can drag across the full viewport and dock flush to either edge', async () => {
+  const component = await loadComponent()
+  const vm = instantiate(component)
+  vm.screenWidth = 375
+  vm.screenHeight = 667
+  vm.fabSize = 70
+  vm.fabLeft = 100
+  vm.fabTop = 200
+
+  vm.startDrag(100, 200)
+  vm.updateDrag(1000, 1000)
+  assert.equal(vm.fabLeft, 305)
+  assert.equal(vm.fabTop, 597)
+  vm.endDrag()
+  assert.equal(vm.fabLeft, 305)
+
+  vm.startDrag(305, 597)
+  vm.updateDrag(-1000, -1000)
+  assert.equal(vm.fabLeft, 0)
+  assert.equal(vm.fabTop, 0)
+  vm.endDrag()
+  assert.equal(vm.fabLeft, 0)
+})
+
+test('floating assistant panel uses viewport bounds independently of mascot position', async () => {
+  const component = await loadComponent()
+  const vm = instantiate(component)
+  vm.fabLeft = 0
+  vm.fabTop = 0
+
+  const first = component.computed.panelStyle.call(vm)
+  vm.fabLeft = 305
+  vm.fabTop = 597
+  const second = component.computed.panelStyle.call(vm)
+
+  assert.deepEqual(second, first)
+  assert.deepEqual(first, { zIndex: 1201 })
+  assert.match(source, /top:\s*16px;[\s\S]{0,100}right:\s*12px;[\s\S]{0,100}bottom:\s*16px;[\s\S]{0,100}left:\s*12px;/)
+  assert.match(source, /max-width:\s*calc\(100vw - 24px\)/)
+  assert.match(source, /max-height:\s*calc\(100vh - 32px\)/)
+  assert.match(source, /\.ai-message-bubble\s*\{[\s\S]{0,180}box-sizing:\s*border-box/)
+})
+
+test('floating assistant keeps long prompts inside a fixed scrollable composer', () => {
+  assert.match(source, /maxlength="2000"/)
+  assert.match(source, /:auto-height="false"/)
+  assert.match(source, /\.ai-assistant-panel__textarea\s*\{[\s\S]{0,180}height:\s*176rpx/)
+  assert.match(source, /\.ai-assistant-panel__textarea\s*\{[\s\S]{0,260}overflow-y:\s*auto/)
+})
+
+test('floating assistant previews images above the panel with an owned lightbox', async () => {
+  const component = await loadComponent()
+  const vm = instantiate(component)
+  vm.resourceLocalPaths = { 'resource:image-1': '/tmp/generated.png' }
+  vm.captureViewContext = () => ({})
+  vm.reportResourceInteraction = () => {}
+
+  vm.previewResourceImage({ key: 'resource:image-1' }, { id: 1 })
+  assert.equal(vm.imagePreviewPath, '/tmp/generated.png')
+
+  vm.closeImagePreview()
+  assert.equal(vm.imagePreviewPath, '')
+  assert.match(source, /class="ai-image-preview"/)
+  assert.match(source, /\.ai-image-preview\s*\{[\s\S]{0,120}z-index:\s*1300/)
+  assert.doesNotMatch(source, /previewResourceImage\([\s\S]{0,260}uni\.previewImage/)
+})
+
+test('collapsed mascot remains fully visible on both dock sides', () => {
+  assert.match(source, /\.ai-assistant-fab--collapsed\.ai-assistant-fab--right\s*\{\s*transform:\s*translateX\(0\)/)
+  assert.match(source, /\.ai-assistant-fab--collapsed\.ai-assistant-fab--left\s*\{\s*transform:\s*translateX\(0\)/)
+})
+
 test('floating assistant does not turn a terminal error envelope into an assistant reply', async () => {
   const evidenceChain = {
     schemaVersion: 'assistant-evidence-v1',

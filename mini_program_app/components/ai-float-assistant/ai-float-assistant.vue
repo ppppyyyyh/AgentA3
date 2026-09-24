@@ -139,7 +139,7 @@
 								</view>
 							</view>
 
-							<view class="ai-evidence-panel" :class="`ai-evidence-panel--${getEvidenceSummary(message).state}`">
+							<view v-if="getEvidenceSummary(message).state !== 'pending'" class="ai-evidence-panel" :class="`ai-evidence-panel--${getEvidenceSummary(message).state}`">
 								<view class="ai-evidence-panel__header" @click="toggleEvidence(message)">
 									<view class="ai-evidence-panel__heading">
 										<text class="ai-evidence-panel__title">来源与依据</text>
@@ -186,8 +186,8 @@
 					v-model="inputValue"
 					class="ai-assistant-panel__textarea"
 					placeholder="直接问 Leader 智能助手"
-					maxlength="300"
-					auto-height
+					maxlength="2000"
+					:auto-height="false"
 					confirm-type="send"
 					:confirm-hold="true"
 					:disabled="sending"
@@ -204,6 +204,21 @@
 						发送
 					</view>
 				</view>
+			</view>
+		</view>
+
+		<view
+			v-if="imagePreviewPath"
+			class="ai-image-preview"
+			@tap.stop="closeImagePreview"
+		>
+			<view class="ai-image-preview__stage" @tap.stop>
+				<image
+					class="ai-image-preview__image"
+					:src="imagePreviewPath"
+					mode="aspectFit"
+				/>
+				<view class="ai-image-preview__close" @tap.stop="closeImagePreview">×</view>
 			</view>
 		</view>
 
@@ -323,6 +338,7 @@ export default {
 			resourceLoading: {},
 			resourcePreloadFailures: {},
 			reportedInteractions: {},
+			imagePreviewPath: '',
 			audioContext: null,
 			activeAudioKey: '',
 			viewEpoch: 0,
@@ -350,23 +366,7 @@ export default {
 			}
 		},
 		panelStyle() {
-			const panelWidth = Math.min(this.screenWidth - 24, 360)
-			const panelHeight = Math.min(this.screenHeight - 120, 540)
-			const preferredLeft = this.fabLeft + this.fabSize - panelWidth
-			const minLeft = 12
-			const maxLeft = Math.max(12, this.screenWidth - panelWidth - 12)
-			const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft)
-
-			let top = this.fabTop - panelHeight - 16
-			if (top < 16) {
-				top = Math.min(this.fabTop + this.fabSize + 12, this.screenHeight - panelHeight - 16)
-			}
-
 			return {
-				width: `${panelWidth}px`,
-				height: `${panelHeight}px`,
-				left: `${left}px`,
-				top: `${Math.max(16, top)}px`,
 				zIndex: 1201
 			}
 		}
@@ -425,7 +425,6 @@ export default {
 			return `app-ai-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 		},
 		togglePanel() {
-			this.resetFabPosition()
 			const willOpen = !this.panelVisible
 			this.panelVisible = willOpen
 			this.fabCollapsed = false
@@ -441,7 +440,7 @@ export default {
 			})
 		},
 		closePanel() {
-			this.resetFabPosition()
+			this.closeImagePreview()
 			this.panelVisible = false
 			this.disposeAudio()
 			this.scheduleFabCollapse()
@@ -770,8 +769,11 @@ export default {
 			const viewContext = this.captureViewContext()
 			const current = this.getResourceDisplayPath(resource)
 			if (!current) return
-			uni.previewImage({ urls: [current], current })
+			this.imagePreviewPath = current
 			this.reportResourceInteraction(resource, message, 'preview', viewContext)
+		},
+		closeImagePreview() {
+			this.imagePreviewPath = ''
 		},
 		isResourceAudioPlaying(resource) {
 			return Boolean(resource?.key) && resource.key === this.activeAudioKey
@@ -875,7 +877,7 @@ export default {
 		openDownloadedResource(resource, filePath, actionType = 'preview', viewContext = null) {
 			if (viewContext && !this.isViewContextCurrent(viewContext)) return
 			if (resource.renderer === 'image') {
-				uni.previewImage({ urls: [filePath], current: filePath })
+				this.imagePreviewPath = filePath
 				return
 			}
 			if (resource.renderer === 'video') {
@@ -994,8 +996,8 @@ export default {
 			if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
 				this.dragMoved = true
 			}
-			this.fabLeft = this.clamp(this.originLeft + deltaX, 12, this.screenWidth - this.fabSize - 12)
-			this.fabTop = this.clamp(this.originTop + deltaY, 80, this.screenHeight - this.fabSize - this.fabBottomSpacing)
+			this.fabLeft = this.clamp(this.originLeft + deltaX, 0, Math.max(0, this.screenWidth - this.fabSize))
+			this.fabTop = this.clamp(this.originTop + deltaY, 0, Math.max(0, this.screenHeight - this.fabSize))
 			this.updateFabDockSide()
 		},
 		endDrag() {
@@ -1004,8 +1006,8 @@ export default {
 			}
 			if (this.dragMoved) {
 				this.suppressNextTap = true
-				const edgeLeft = 12
-				const edgeRight = this.screenWidth - this.fabSize - 12
+				const edgeLeft = 0
+				const edgeRight = Math.max(0, this.screenWidth - this.fabSize)
 				this.fabLeft = this.fabLeft + this.fabSize / 2 < this.screenWidth / 2 ? edgeLeft : edgeRight
 				this.updateFabDockSide()
 				if (!this.panelVisible) {
@@ -1302,6 +1304,50 @@ export default {
 	z-index: 1200;
 }
 
+.ai-image-preview {
+	position: fixed;
+	inset: 0;
+	z-index: 1300;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32rpx;
+	box-sizing: border-box;
+	background: rgba(10, 18, 22, 0.82);
+	backdrop-filter: blur(6px);
+}
+
+.ai-image-preview__stage {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ai-image-preview__image {
+	width: 100%;
+	height: 100%;
+}
+
+.ai-image-preview__close {
+	position: absolute;
+	top: max(12rpx, env(safe-area-inset-top));
+	right: 8rpx;
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.16);
+	border: 2rpx solid rgba(255, 255, 255, 0.48);
+	color: #ffffff;
+	font-size: 46rpx;
+	line-height: 1;
+}
+
 .ai-assistant-fab {
 	position: fixed;
 	width: 140rpx;
@@ -1316,11 +1362,11 @@ export default {
 }
 
 .ai-assistant-fab--collapsed.ai-assistant-fab--right {
-	transform: translateX(62rpx);
+	transform: translateX(0);
 }
 
 .ai-assistant-fab--collapsed.ai-assistant-fab--left {
-	transform: translateX(-62rpx);
+	transform: translateX(0);
 }
 
 .ai-assistant-fab--collapsed .ai-assistant-fab__name {
@@ -1348,6 +1394,16 @@ export default {
 
 .ai-assistant-panel {
 	position: fixed;
+	top: 16px;
+	right: 12px;
+	bottom: 16px;
+	left: 12px;
+	width: 360px;
+	max-width: calc(100vw - 24px);
+	height: 540px;
+	max-height: calc(100vh - 32px);
+	margin: auto;
+	box-sizing: border-box;
 	background:
 		linear-gradient(180deg, rgba(248, 253, 250, 0.98), rgba(239, 248, 243, 0.98)),
 		#ffffff;
@@ -1380,6 +1436,11 @@ export default {
 	flex-shrink: 0;
 }
 
+.ai-assistant-panel__header > view:first-child {
+	flex: 1;
+	min-width: 0;
+}
+
 .ai-assistant-panel__eyebrow {
 	display: block;
 	font-size: 20rpx;
@@ -1398,14 +1459,16 @@ export default {
 .ai-assistant-panel__actions {
 	display: flex;
 	align-items: center;
-	gap: 16rpx;
+	gap: 10rpx;
+	flex-shrink: 0;
 }
 
 .ai-assistant-panel__icon,
 .ai-assistant-panel__close {
-	min-width: 72rpx;
+	min-width: 64rpx;
 	height: 56rpx;
-	padding: 0 18rpx;
+	padding: 0 14rpx;
+	box-sizing: border-box;
 	border-radius: 28rpx;
 	display: flex;
 	align-items: center;
@@ -1421,6 +1484,7 @@ export default {
 
 .ai-assistant-panel__messages {
 	flex: 1;
+	width: 100%;
 	min-height: 0;
 	padding: 24rpx 22rpx 18rpx;
 	box-sizing: border-box;
@@ -1443,9 +1507,11 @@ export default {
 }
 
 .ai-message-bubble {
+	min-width: 0;
 	max-width: 82%;
 	padding: 20rpx 22rpx;
 	border-radius: 26rpx;
+	box-sizing: border-box;
 }
 
 .ai-message-bubble--assistant {
@@ -1883,10 +1949,12 @@ export default {
 
 .ai-assistant-panel__textarea {
 	width: 100%;
-	min-height: 92rpx;
-	max-height: 220rpx;
+	height: 176rpx;
+	min-height: 176rpx;
+	max-height: 176rpx;
 	padding: 18rpx 20rpx;
 	box-sizing: border-box;
+	overflow-y: auto;
 	background: linear-gradient(180deg, #ffffff, #f7fbf8);
 	border-radius: 22rpx;
 	border: 2rpx solid rgba(22, 133, 107, 0.12);
