@@ -1350,7 +1350,7 @@ export default {
 					this.hasShownEmptyNotice = true
 					this.createAiSummaryItem('暂无新的关键进展。')
 					this.aiSummaryStatusText = '暂无新的关键进展'
-					this.resetSummaryWindow()
+					this.resetSummaryWindow(true)
 				} else {
 					console.log('[AI-Summary] Skipping duplicate empty notice')
 				}
@@ -1368,7 +1368,7 @@ export default {
 					this.hasShownEmptyNotice = true
 					this.createAiSummaryItem('暂无新的关键进展。')
 					this.aiSummaryStatusText = '暂无新的关键进展'
-					this.resetSummaryWindow()
+					this.resetSummaryWindow(true)
 				}
 				return
 			}
@@ -1377,35 +1377,19 @@ export default {
 		},
 		hasMeaningfulTranscript(line) {
 			if (!line || typeof line !== 'string') return false
-			const text = line.trim()
+			// 去掉“说话人：”前缀后判断正文，避免前缀干扰口头语识别。
+			const text = line.trim().replace(/^[^：:]{1,80}[：:]\s*/, '').trim()
 			if (text.length === 0) return false
-			const meaninglessPatterns = [
-				/^嗯.*$/i,
-				/^啊.*$/i,
-				/^哦.*$/i,
-				/^好$/i,
-				/^行$/i,
-				/^我同意$/i,
-				/^没问题$/i,
-				/^明白了$/i,
-				/^对$/i,
-				/^是的$/i,
-				/^是$/i,
-				/^不是$/i,
-			]
-			for (const pattern of meaninglessPatterns) {
-				if (pattern.test(text)) return false
-			}
-			if (text.length > 3) {
-				return /[0-9]/.test(text) || /[年月日时分秒]/.test(text)
-			}
-			return false
+			// 只排除纯口头语；“嗯，我认为……”仍应作为有效观点交给摘要智能体判断。
+			if (/^(嗯+|啊+|哦+|呃+|额+|好|行|我同意|没问题|明白了|对|是的|是|不是)[。！!？?,，…\s]*$/i.test(text)) return false
+			const meaningfulChars = text.match(/[\u4e00-\u9fffA-Za-z0-9]/g) || []
+			return meaningfulChars.length >= 4
 		},
-		resetSummaryWindow() {
+		resetSummaryWindow(keepEmptyNotice = false) {
 			this.summaryWindowStart = Date.now()
 			this.lastProcessedTranscriptIndex = this.meetingTranscriptLines.length
 			this.lastSummaryTime = null
-			this.hasShownEmptyNotice = false
+			this.hasShownEmptyNotice = keepEmptyNotice
 			console.log('[AI-Summary] Summary window reset')
 		},
 		async runAiSummary() {

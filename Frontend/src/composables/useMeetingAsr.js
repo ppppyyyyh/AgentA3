@@ -5,20 +5,7 @@ import { API_BASE_URL } from '../api/request'
 import { getToken, getUserInfo } from '../utils/auth'
 import { getCurrentDisplayName } from '../utils/meetingUser'
 
-const MEANINGLESS_PATTERNS = [
-  /^嗯.*$/i,
-  /^啊.*$/i,
-  /^哦.*$/i,
-  /^好$/i,
-  /^行$/i,
-  /^我同意$/i,
-  /^没问题$/i,
-  /^明白了$/i,
-  /^对$/i,
-  /^是的$/i,
-  /^是$/i,
-  /^不是$/i,
-]
+const MEANINGLESS_TRANSCRIPT = /^(嗯+|啊+|哦+|呃+|额+|好|行|我同意|没问题|明白了|对|是的|是|不是)[。！!？?,，…\s]*$/i
 
 function computeTextOverlap(text1, text2) {
   if (!text1 || !text2) return 0
@@ -33,13 +20,11 @@ function computeTextOverlap(text1, text2) {
 
 function hasMeaningfulTranscript(line) {
   if (!line || typeof line !== 'string') return false
-  const text = line.trim()
+  const text = line.trim().replace(/^[^：:]{1,80}[：:]\s*/, '').trim()
   if (!text) return false
-  if (MEANINGLESS_PATTERNS.some((pattern) => pattern.test(text))) return false
-  if (text.length > 3) {
-    return /[0-9]/.test(text) || /[年月日时分秒]/.test(text)
-  }
-  return false
+  if (MEANINGLESS_TRANSCRIPT.test(text)) return false
+  const meaningfulChars = text.match(/[\u4e00-\u9fffA-Za-z0-9]/g) || []
+  return meaningfulChars.length >= 4
 }
 
 export function useMeetingAsr(options) {
@@ -692,10 +677,10 @@ export function useMeetingAsr(options) {
     return input.length > 3900 ? input.slice(input.length - 3900) : input
   }
 
-  function resetSummaryWindow() {
+  function resetSummaryWindow(keepEmptyNotice = false) {
     summaryWindowStart = Date.now()
     lastProcessedTranscriptIndex = meetingTranscriptLines.length
-    hasShownEmptyNotice = false
+    hasShownEmptyNotice = keepEmptyNotice
   }
 
   function checkIfShouldSummarize() {
@@ -708,7 +693,7 @@ export function useMeetingAsr(options) {
         hasShownEmptyNotice = true
         createAiSummaryItem('暂无新的关键进展。')
         aiSummaryStatusText.value = '暂无新的关键进展'
-        resetSummaryWindow()
+        resetSummaryWindow(true)
       }
       return
     }
@@ -717,7 +702,7 @@ export function useMeetingAsr(options) {
         hasShownEmptyNotice = true
         createAiSummaryItem('暂无新的关键进展。')
         aiSummaryStatusText.value = '暂无新的关键进展'
-        resetSummaryWindow()
+        resetSummaryWindow(true)
       }
       return
     }

@@ -267,7 +267,7 @@
 import NavBar from '@/components/nav-bar/nav-bar.vue'
 import { deleteMeeting as deleteMeetingApi, getMeetingDetail, getMyMeetingTasks } from '@/api/ai.js'
 import { getCurrentUserId } from '@/utils/storage.js'
-import { repairMojibake } from '@/utils/text.js'
+import { deepRepairMojibake, repairMojibake } from '@/utils/text.js'
 
 export default {
 	components: { NavBar },
@@ -339,7 +339,7 @@ export default {
 		parsedAiResult() {
 			if (!this.aiMinutesResult || !this.aiMinutesResult.answer) return null
 			try {
-				const parsed = JSON.parse(this.aiMinutesResult.answer)
+				const parsed = deepRepairMojibake(JSON.parse(this.aiMinutesResult.answer))
 				// 确保所有字段存在（避免 undefined）
 				return {
 					summary: parsed.summary || '',

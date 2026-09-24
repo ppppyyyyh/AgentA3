@@ -4,6 +4,7 @@ import com.example.appbackend.service.MeetingAsrRecordService;
 import com.example.appbackend.service.SystemConfigService;
 import com.example.appbackend.entity.User;
 import com.example.appbackend.repository.UserRepository;
+import com.example.appbackend.util.TextEncodingUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -278,10 +279,10 @@ public class MeetingAsrWebSocketHandler extends TextWebSocketHandler {
 
     private String speakerName(User user) {
         if (StringUtils.hasText(user.getRealName())) {
-            return user.getRealName().trim();
+            return TextEncodingUtil.repairUtf8Mojibake(user.getRealName().trim());
         }
         if (StringUtils.hasText(user.getUsername())) {
-            return user.getUsername().trim();
+            return TextEncodingUtil.repairUtf8Mojibake(user.getUsername().trim());
         }
         if (StringUtils.hasText(user.getPersonalNumber())) {
             return user.getPersonalNumber().trim();
@@ -291,7 +292,9 @@ public class MeetingAsrWebSocketHandler extends TextWebSocketHandler {
 
     private String fallbackSpeakerName(WebSocketSession session) {
         Object username = session.getAttributes().get("username");
-        return username instanceof String value && StringUtils.hasText(value) ? value : "参会成员";
+        return username instanceof String value && StringUtils.hasText(value)
+                ? TextEncodingUtil.repairUtf8Mojibake(value.trim())
+                : "参会成员";
     }
 
     private void broadcastToMeeting(WebSocketSession sourceSession, Map<String, Object> payload) {

@@ -29,6 +29,7 @@ import com.example.appbackend.entity.TaskStatus;
 import com.example.appbackend.service.LlmService;
 import com.example.appbackend.service.MeetingService;
 import com.example.appbackend.service.UserProfileService;
+import com.example.appbackend.util.TextEncodingUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -837,7 +838,8 @@ public class MeetingServiceImpl implements MeetingService {
         participantRepository.deleteByMeetingSessionId(meetingSessionId);
         List<String> names = participants == null ? List.of() : participants.stream()
                 .filter(StringUtils::hasText)
-                .map(name -> truncate(name.trim(), 80))
+                .map(this::normalizeParticipantName)
+                .map(name -> truncate(name, 80))
                 .distinct()
                 .limit(20)
                 .toList();
@@ -876,10 +878,10 @@ public class MeetingServiceImpl implements MeetingService {
 
     private String resolveUserDisplayName(User user) {
         if (StringUtils.hasText(user.getRealName())) {
-            return user.getRealName().trim();
+            return normalizeParticipantName(user.getRealName());
         }
         if (StringUtils.hasText(user.getUsername())) {
-            return user.getUsername().trim();
+            return normalizeParticipantName(user.getUsername());
         }
         if (StringUtils.hasText(user.getPersonalNumber())) {
             return user.getPersonalNumber().trim();
@@ -888,13 +890,13 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     private void addParticipantIfMissing(Long meetingSessionId, String displayName, Long userId) {
-        String name = truncate(displayName.trim(), 80);
+        String name = truncate(normalizeParticipantName(displayName), 80);
         if (!StringUtils.hasText(name)) {
             return;
         }
         List<MeetingParticipant> participants = participantRepository.findByMeetingSessionIdOrderBySortOrderAscIdAsc(meetingSessionId);
         Optional<MeetingParticipant> existing = participants.stream()
-                .filter(participant -> name.equals(participant.getName()))
+                .filter(participant -> name.equals(normalizeParticipantName(participant.getName())))
                 .findFirst();
         if (existing.isPresent()) {
             MeetingParticipant participant = existing.get();
@@ -922,6 +924,13 @@ public class MeetingServiceImpl implements MeetingService {
             participant.setUserId(userId);
         }
         participantRepository.save(participant);
+    }
+
+    private String normalizeParticipantName(String name) {
+        if (!StringUtils.hasText(name)) {
+            return "";
+        }
+        return TextEncodingUtil.repairUtf8Mojibake(name.trim());
     }
 
     @Override
@@ -1003,7 +1012,9 @@ public class MeetingServiceImpl implements MeetingService {
     private String buildAgentInput(MeetingSession session, String content) {
         List<String> participantNames = participantRepository.findByMeetingSessionIdOrderBySortOrderAscIdAsc(session.getId()).stream()
                 .filter(participant -> Boolean.TRUE.equals(participant.getOnline()))
-                .map(MeetingParticipant::getName)
+                .map(participant -> normalizeParticipantName(participant.getName()))
+                .filter(StringUtils::hasText)
+                .distinct()
                 .toList();
         return String.join("\n",
                 "会议主题：" + session.getTitle(),
@@ -1019,7 +1030,9 @@ public class MeetingServiceImpl implements MeetingService {
         detail.setSession(toSessionItem(session));
         detail.setParticipants(participantRepository.findByMeetingSessionIdOrderBySortOrderAscIdAsc(session.getId()).stream()
                 .filter(participant -> Boolean.TRUE.equals(participant.getOnline()))
-                .map(MeetingParticipant::getName)
+                .map(participant -> normalizeParticipantName(participant.getName()))
+                .filter(StringUtils::hasText)
+                .distinct()
                 .collect(Collectors.toList()));
         detail.setParticipantRecords(buildParticipantRecords(session));
         detail.setRecords(recordRepository.findByMeetingSessionIdOrderByCreateTimeAscIdAsc(session.getId()).stream()
@@ -1098,7 +1111,11 @@ public class MeetingServiceImpl implements MeetingService {
         item.setStartTime(session.getStartTime());
         item.setEndTime(session.getEndTime());
         item.setLastNote(session.getLastNote());
-        item.setParticipantCount(participantRepository.findByMeetingSessionIdOrderBySortOrderAscIdAsc(session.getId()).size());
+        item.setParticipantCount((int) participantRepository.findByMeetingSessionIdOrderBySortOrderAscIdAsc(session.getId()).stream()
+                .map(participant -> normalizeParticipantName(participant.getName()))
+                .filter(StringUtils::hasText)
+                .distinct()
+                .count());
         item.setRecordCount(session.getRecordCount() == null ? 0 : session.getRecordCount());
         item.setResultCount(session.getResultCount() == null ? 0 : session.getResultCount());
         item.setCreateTime(session.getCreateTime());
