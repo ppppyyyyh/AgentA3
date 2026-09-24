@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { message, Drawer, Form, Input, Button, Table, Space, Popconfirm, Tag, Select, Card, Popover, Tooltip, Dropdown, Checkbox } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, FireFilled, CheckCircleOutlined, StopOutlined } from '@ant-design/icons'
 import { getTopicList, createTopic, updateTopic, deleteTopic, batchDeleteTopics, getForumStatistics, getForumRules } from '../../../api/forum'
+import { forumTopicName } from '../../../utils/forumText'
 import './TopicManage.css'
 
 const { Option } = Select
@@ -36,7 +37,7 @@ function TopicManage() {
         const all = Array.isArray(records) ? records : []
         // 过滤掉系统内置的「热门」(id=1)、「最新」(id=2)话题——由系统自动收录管理，无需管理员操作
         const filtered = all.filter((t) => t.id !== 1 && t.id !== 2)
-        setTopics(filtered)
+        setTopics(filtered.map(item => ({ ...item, topicName: forumTopicName(item, item.topicName) })))
         setPagination((prev) => ({ ...prev, current: pageNum, pageSize, total: Math.max((res.data?.total || all.length) - 2, 0) }))
       }
     } catch (error) { console.error('获取话题列表失败:', error) }

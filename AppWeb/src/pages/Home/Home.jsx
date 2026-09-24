@@ -9,6 +9,7 @@ import { getFacilityHeat, getNavigationStatistics, getNearbyFacilityCount } from
 import { getMerchantStatistics } from '../../api/merchant'
 import { getSecondhandReportStatistics, getSecondhandStatistics } from '../../api/secondhand'
 import { getUserList } from '../../api/user'
+import { forumTopicName } from '../../utils/forumText'
 import './Home.css'
 
 const formatNumber = (value) => {
@@ -588,7 +589,7 @@ function Home() {
             <Card className="home-board-card" title="热门话题">
               {loading ? <Skeleton active paragraph={{ rows: 4 }} /> : renderRankList(
                 dashboard.hotTopics,
-                (item) => item.topicName || item.name || `话题 ${item.id}`,
+                (item) => forumTopicName(item, `话题 ${item.id}`),
                 (item) => `${item.description || '论坛活跃话题'}`.slice(0, 40),
               )}
             </Card>

@@ -58,7 +58,7 @@ export const portalGroups = [
     label: '会议模块',
     items: [
       { path: '/meeting/history', label: '会议历史', icon: 'video-camera', pageKey: 'meeting-history' },
-      { path: '/meeting/voice-model', label: '语音模型配置', icon: 'audio', pageKey: 'voice-model-config' },
+      { path: '/meeting/voice-model', label: '讯飞 ASR 配置', icon: 'audio', pageKey: 'voice-model-config' },
     ],
   },
   {
@@ -533,7 +533,7 @@ export const workspacePages = {
     emptyText: '暂无会议历史数据',
   }),
   'voice-model-config': createPage({
-    title: '语音模型配置',
+    title: '讯飞 ASR 配置',
     badge: '会议模块',
     description: '单独维护会议语音转写模型，当前使用 Java 后端直连讯飞实时转写。',
     columns: columns.systemConfig,

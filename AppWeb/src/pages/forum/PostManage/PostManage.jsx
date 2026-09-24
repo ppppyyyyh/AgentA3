@@ -7,6 +7,7 @@ import {
   CloseCircleOutlined, LikeOutlined, MessageOutlined,
 } from '@ant-design/icons'
 import { getAdminPostList, deletePost, batchDeletePosts, togglePostPin, togglePostHidden, getForumStatistics } from '../../../api/forum'
+import { forumTopicName } from '../../../utils/forumText'
 import './PostManage.css'
 
 const { Option } = Select
@@ -43,7 +44,11 @@ function PostManage() {
       })
       if (res.code === 200) {
         const records = res.data?.records || res.data?.list || res.data || []
-        setPosts(Array.isArray(records) ? records : [])
+        setPosts(Array.isArray(records) ? records.map(item => ({
+          ...item,
+          topicName: forumTopicName(item.topic || item, item.topicName),
+          topic: item.topic ? { ...item.topic, topicName: forumTopicName(item.topic, item.topic.topicName) } : item.topic,
+        })) : [])
         setPagination((prev) => ({ ...prev, current: pageNum, pageSize, total: res.data?.total || 0 }))
       }
     } catch (error) {
