@@ -457,6 +457,7 @@ class QwenImageProvider:
 
     @staticmethod
     def _normalize_wan_size(size: str, model_id: str) -> str:
+        """Normalize a ``WxH`` request into the DashScope ``width*height`` format."""
         value = (size or "").strip().upper().replace("X", "*")
         if "*" in value:
             try:
@@ -465,7 +466,7 @@ class QwenImageProvider:
                 h = int(height)
                 if w * h > 1_638_400:
                     return "1024*1024"
-                return f"{h}*{w}"
+                return f"{w}*{h}"
             except Exception:
                 pass
         if value in {"1K", "2K", "4K"}:

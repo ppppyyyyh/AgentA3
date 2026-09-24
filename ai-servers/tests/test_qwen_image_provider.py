@@ -45,3 +45,16 @@ def test_image_item_does_not_fabricate_png_for_unknown_url():
     })
 
     assert response.images[0].contentType == ""
+
+
+def test_wan_size_keeps_width_before_height():
+    # DashScope 的 size 是 ``宽*高``；曾经把两者写反，导致横版请求出成竖版图。
+    assert QwenImageProvider._normalize_wan_size("1664x928", "wan2.7-image") == "1664*928"
+
+
+def test_wan_size_clamps_oversized_canvas():
+    assert QwenImageProvider._normalize_wan_size("4096x4096", "wan2.7-image") == "1024*1024"
+
+
+def test_wan_size_falls_back_to_default_square():
+    assert QwenImageProvider._normalize_wan_size("", "wan2.7-image") == "1328*1328"

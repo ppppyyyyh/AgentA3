@@ -64,6 +64,15 @@ class ImageAgent:
             response = self.execute_request(ImageGenerationRequest(**payload))
         else:
             response = self.execute_batch_request(ImageBatchRequest(**payload, prompts=[enhanced_prompt] * normalized_count))
+        # DashScope may need slightly longer than the provider's first polling
+        # window.  A chat response that leaves here as ``running`` cannot be
+        # rendered as an image attachment, and the floating assistant does not
+        # own the provider credentials needed to finish that polling itself.
+        # Re-enter the provider once with the local task id; the provider keeps
+        # the original request/config in memory and usually returns immediately
+        # when the remote task completed just after the first window.
+        if response.status in {"pending", "running"} and response.taskId:
+            response = self.get_task(response.taskId)
         return response.model_dump()
 
     def generate_images_json(self, topic: str, evidence: List[Dict[str, Any]], chat_service=None) -> str:
