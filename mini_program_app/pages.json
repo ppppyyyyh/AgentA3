@@ -1,6 +1,13 @@
 {
 	"pages": [
 		{
+			"path": "pages/phoneFrame/phoneFrame",
+			"style": {
+				"navigationBarTitleText": "手机版预览",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/login/login",
 			"style": {
 				"navigationBarTitleText": "",

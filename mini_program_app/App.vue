@@ -5,6 +5,12 @@
 		},
 		onLaunch: function() {
 			console.log('App Launch')
+			// H5 默认打开手机模型预览；iframe 内的真实首页使用明确的 index 路由，不会再次重定向。
+			// #ifdef H5
+			if (window.location.hash === '#' || window.location.hash === '#/') {
+				setTimeout(() => uni.reLaunch({ url: '/pages/phoneFrame/phoneFrame' }), 0)
+			}
+			// #endif
 		},
 		onShow: function() {
 			console.log('App Show')
