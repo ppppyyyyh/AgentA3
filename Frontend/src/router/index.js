@@ -9,11 +9,6 @@ import MapView from '../views/MapView.vue'
 import MeetingRoomView from '../views/MeetingRoomView.vue'
 import MeetingWorkspaceView from '../views/MeetingWorkspaceView.vue'
 import MessageCenterView from '../views/MessageCenterView.vue'
-import PythonLearningView from '../views/PythonLearningView.vue'
-import PythonQuestionBankView from '../views/pythonOnline/PythonQuestionBankView.vue'
-import PythonPracticeView from '../views/pythonOnline/PythonPracticeView.vue'
-import KnowledgeGraphView from '../views/KnowledgeGraphView.vue'
-import LearningResourceView from '../views/LearningResourceView.vue'
 import MarketplaceView from '../views/MarketplaceView.vue'
 import MarketplaceChatView from '../views/MarketplaceChatView.vue'
 import ForumView from '../views/ForumView.vue'
@@ -60,30 +55,10 @@ import PaperBankView from '../views/paper/PaperBankView.vue'
 import PaperBankEditView from '../views/paper/PaperBankEditView.vue'
 import PaperBankDetailView from '../views/paper/PaperBankDetailView.vue'
 import PaperQuestionDetailView from '../views/paper/PaperQuestionDetailView.vue'
-import ResumeView from '../views/ResumeView.vue'
-import ResumeWorkspaceView from '../views/ResumeWorkspaceView.vue'
-import ResumeDesigner from '../views/ResumeDesigner.vue'
-import ResumeWizard from '../views/ResumeWizard.vue'
 import CampusCourseView from '../views/CampusCourseView.vue'
 import CampusDiscountView from '../views/CampusDiscountView.vue'
 import DocumentConvertView from '../views/DocumentConvertView.vue'
-import CareerNebulaView from '../views/CareerNebulaView.vue'
-import CareerPlanetView from '../views/CareerPlanetView.vue'
 import HotJobsView from '../views/HotJobsView.vue'
-import InterviewShell from '../views/interview/InterviewShell.vue'
-import InterviewIndex from '../views/interview/pages/Index.vue'
-import InterviewAiMockInterview from '../views/interview/pages/AiMockInterview.vue'
-import InterviewAiConfig from '../views/interview/pages/AiConfig.vue'
-import InterviewAiChat from '../views/interview/pages/AiChat.vue'
-import InterviewAiCareerPlan from '../views/interview/pages/AiCareerPlan.vue'
-import InterviewQuestionBank from '../views/interview/pages/QuestionBank.vue'
-import InterviewAbilityImprovement from '../views/interview/pages/AbilityImprovement.vue'
-import InterviewMy from '../views/interview/pages/My.vue'
-import InterviewMyNote from '../views/interview/pages/MyNote.vue'
-import InterviewWrongQuestionBook from '../views/interview/pages/WrongQuestionBook.vue'
-import InterviewCreateQuestionBank from '../views/interview/pages/CreateQuestionBank.vue'
-import InterviewMockQuestionFilter from '../views/interview/pages/MockQuestionFilter.vue'
-import InterviewAIReport from '../views/interview/pages/AIReport.vue'
 import { getToken } from '../utils/auth'
 
 const routes = [
@@ -127,12 +102,6 @@ const routes = [
     redirect: (to) => (AI_STUDIO_TOOL_IDS.includes(String(to.params.tool || '')) ? `/ai-studio/${to.params.tool}` : '/ai-tools'),
   },
   { path: '/profile-radar', name: 'profile-radar', component: ProfileRadarView },
-  { path: '/learning', name: 'learning', component: PythonQuestionBankView },
-  { path: '/learning/plan', name: 'learning-plan', component: PythonLearningView },
-  { path: '/learning/problems/:id', redirect: (to) => `/learning/practice/${to.params.id}` },
-  { path: '/learning/practice/:id', name: 'python-practice', component: PythonPracticeView },
-  { path: '/learning/knowledge-graph', name: 'knowledge-graph', component: KnowledgeGraphView },
-  { path: '/learning/resources', name: 'learning-resources', component: LearningResourceView },
   { path: '/marketplace', name: 'marketplace', component: MarketplaceView },
   { path: '/marketplace/chat', name: 'marketplace-chat', component: MarketplaceChatView },
   { path: '/forum', name: 'forum', component: ForumView },
@@ -161,35 +130,8 @@ const routes = [
   { path: '/mine/papers/results/:attemptId', name: 'exam-result', component: ExamResultView },
   { path: '/mine/papers/results/:attemptId/details', name: 'exam-detail', component: ExamDetailView },
   { path: '/mine/account-settings', name: 'account-settings', component: AccountSettingsView },
-  { path: '/resume', name: 'resume', component: ResumeView },
-  { path: '/resume/workspace', name: 'resume-workspace', component: ResumeWorkspaceView },
-  { path: '/resume/legacy', redirect: '/resume' },
-  { path: '/resume/designer', name: 'resume-designer', component: ResumeDesigner },
-  { path: '/resume/wizard', name: 'resume-wizard', component: ResumeWizard },
-  { path: '/resume/wizard/edit', name: 'resume-edit', component: ResumeWizard },
-  { path: '/career/nebula/:careerId?', name: 'career-nebula', component: CareerNebulaView },
-  { path: '/career/nebula/:careerId/planet/:skillId', name: 'career-planet', component: CareerPlanetView },
   { path: '/convert', name: 'convert', component: DocumentConvertView },
-  {
-    path: '/interview',
-    component: InterviewShell,
-    children: [
-      { path: '', redirect: '/interview/index' },
-      { path: 'index', name: 'interview-index', component: InterviewIndex },
-      { path: 'ai-mock-interview', name: 'interview-ai-mock', component: InterviewAiMockInterview },
-      { path: 'ai-interview-config', name: 'interview-ai-config', component: InterviewAiConfig },
-      { path: 'ai-chat', name: 'interview-ai-chat', component: InterviewAiChat },
-      { path: 'ai-career-plan', name: 'interview-ai-career-plan', component: InterviewAiCareerPlan },
-      { path: 'question-bank', name: 'interview-question-bank', component: InterviewQuestionBank },
-      { path: 'ability-improvement', name: 'interview-ability', component: InterviewAbilityImprovement },
-      { path: 'my', name: 'interview-my', component: InterviewMy },
-      { path: 'my-note', name: 'interview-my-note', component: InterviewMyNote },
-      { path: 'wrong-question-book', name: 'interview-wrong-book', component: InterviewWrongQuestionBook },
-      { path: 'create-question-bank', name: 'interview-create-bank', component: InterviewCreateQuestionBank },
-      { path: 'mock-question-filter', name: 'interview-mock-filter', component: InterviewMockQuestionFilter },
-      { path: 'evaluation-report', name: 'interview-evaluation-report', component: InterviewAIReport },
-    ],
-  },
+  { path: '/:pathMatch(.*)*', redirect: '/home' },
 ]
 
 const router = createRouter({

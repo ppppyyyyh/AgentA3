@@ -51,8 +51,6 @@ public class PythonAiProxyService {
     private static final String GOAL_DECOMPOSITION_AGENT_NAME = "goal_decomposition_agent";
     private static final String CODING_TUTOR_AGENT_NAME = "python_coding_tutor_agent";
     private static final String GENERATOR_AGENT_NAME = "python_problem_generator_agent";
-    private static final String RESUME_POLISH_EXPAND_AGENT_NAME = "resume_polish_expand_agent";
-    private static final String RESUME_EDIT_AGENT_NAME = "resume_edit_agent";
     private static final String WEEKLY_JOB_AGENT_NAME = "weekly_job_recommendation_agent";
     private static final String WEEKLY_JOB_TOOL_NAME = "weekly_job_recommendation_tool";
     private static final String AGENT_MODEL_BINDING_PREFIX = "ai.agent-bindings.";
@@ -1641,10 +1639,6 @@ public class PythonAiProxyService {
             return requestedModel.trim();
         }
         String boundModel = resolveAgentBoundModel(agentName);
-        if (!StringUtils.hasText(boundModel)
-                && RESUME_POLISH_EXPAND_AGENT_NAME.equals(agentName)) {
-            return resolveAgentBoundModel(RESUME_EDIT_AGENT_NAME);
-        }
         return boundModel;
     }
 

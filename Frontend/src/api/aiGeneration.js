@@ -17,16 +17,6 @@ export const queryLeaderAgent = (data) => unwrap(request({
   },
 }))
 
-export const polishOrExpandResume = (data) => unwrap(request({
-  url: '/api/llm/chat',
-  method: 'POST',
-  data: {
-    ...data,
-    agentName: 'resume_polish_expand_agent',
-    ragStrategy: 'direct_agent',
-  },
-}))
-
 export function streamLeaderAgent(data, handlers = {}) {
   const controller = typeof AbortController === 'function' ? new AbortController() : null
   const done = (async () => {

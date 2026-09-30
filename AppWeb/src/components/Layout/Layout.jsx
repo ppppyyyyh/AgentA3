@@ -15,13 +15,11 @@ function Layout() {
   const breadcrumb = useMemo(() => getBreadcrumbByPath(location.pathname), [location.pathname])
   const hidePageHeading = location.pathname !== '/home'
   const facilityDetailMatch = /^\/facility\/analytics\/[^/]+$/.test(location.pathname)
-  const immersivePage = location.pathname.startsWith('/career/nebula')
-
   return (
-    <div className={`layout notranslate ${mobileOpen ? 'sidebar-open' : ''} ${immersivePage ? 'is-immersive' : ''}`} translate="no">
+    <div className={`layout notranslate ${mobileOpen ? 'sidebar-open' : ''}`} translate="no">
       <NavBar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
       <div className="layout-body">
-        {!immersivePage && <header className="layout-topbar">
+        <header className="layout-topbar">
           <div className="layout-topbar-left">
             <Button
               className="layout-menu-trigger"
@@ -51,7 +49,7 @@ function Layout() {
             </div>
           ) : null}
 
-        </header>}
+        </header>
 
         <main className="layout-content app-content-surface">
           <Outlet />

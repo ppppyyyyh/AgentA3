@@ -23,9 +23,6 @@ const durationText = computed(() => {
   return hours ? `${hours}小时${minutes}分钟${rest}秒` : `${minutes}分钟${rest}秒`
 })
 const submitMethod = computed(() => result.value?.status === 'AUTO_SUBMITTED' ? '系统自动收卷' : '学生主动交卷')
-const careerReturn = computed(() => route.query.returnCareer && route.query.returnSkill
-  ? `/career/nebula/${encodeURIComponent(route.query.returnCareer)}/planet/${encodeURIComponent(route.query.returnSkill)}`
-  : '')
 
 function formatDate(value) {
   if (!value) return '—'
@@ -64,7 +61,6 @@ onMounted(async () => {
       <button class="detail-button" type="button"
         @click="router.push(`/mine/papers/results/${result.id}/details`)">查看试卷详情</button>
       <button class="back-button" type="button" @click="router.push('/mine/papers')">返回我的试卷</button>
-      <button v-if="careerReturn" class="detail-button career-return" type="button" @click="router.push(careerReturn)">返回课程星球并刷新进度</button>
     </main>
     <main v-else class="success-card">正在统计考试成绩…</main>
   </div>

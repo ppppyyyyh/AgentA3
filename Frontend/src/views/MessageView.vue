@@ -12,7 +12,6 @@ const state = {
     { id: 10, moduleType: 'EXAM', eventType: 'SCORE', title: '试卷批改完成', content: '你的《线性代数》试卷已批改，得分 92 分，排名第 3', createTime: ago(180), isRead: false, targetPage: '' },
     { id: 11, moduleType: 'MEETING', eventType: 'SUMMARY', title: '会议总结已生成', content: '2026-07-24 项目周会的 AI 总结已生成，含 12 条待办事项', createTime: ago(60), isRead: true, targetPage: '' },
     { id: 12, moduleType: 'MEETING', eventType: 'INVITE', title: '会议邀请', content: '张老师邀请你参加 7月26日 的班会讨论', createTime: ago(240), isRead: false, targetPage: '' },
-    { id: 13, moduleType: 'LEARNING', eventType: 'PATH_UPDATE', title: '学习路径已更新', content: '根据你的答题情况，Python 学习路径已调整，新增 3 个资源推荐', createTime: ago(10), isRead: false, targetPage: '' },
     { id: 14, moduleType: 'LEARNING', eventType: 'PROFILE', title: '学习画像更新', content: '你的编程能力维度已更新，当前等级：中级', createTime: ago(200), isRead: true, targetPage: '' },
   ],
 }

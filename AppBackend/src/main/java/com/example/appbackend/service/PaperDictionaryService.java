@@ -84,8 +84,8 @@ public class PaperDictionaryService {
         seed("subject", new String[][]{{"1", "Python程序设计"}, {"2", "Java程序设计"}, {"3", "数据库"}, {"4", "计算机网络"}, {"5", "数据结构"}});
         seed("question_type", new String[][]{{"single", "单选题"}, {"multiple", "多选题"}, {"true_false", "判断题"}, {"blank", "填空题"}, {"short_answer", "简答题"}, {"programming", "编程题"}});
         seed("difficulty", new String[][]{{"easy", "简单"}, {"medium", "中等"}, {"hard", "困难"}});
-        seed("paper_category", new String[][]{{"final_exam", "期末考试"}, {"chapter_test", "章节测试"}, {"mock_exam", "模拟练习"}, {"interview", "面试练习"}, {"custom", "自定义"}});
-        seed("bank_type", new String[][]{{"final_review", "期末复习"}, {"interview", "面试题"}, {"chapter_practice", "章节练习"}, {"key_questions", "重点题"}, {"wrong_questions", "错题整理"}, {"custom", "自定义"}});
+        seed("paper_category", new String[][]{{"final_exam", "期末考试"}, {"chapter_test", "章节测试"}, {"mock_exam", "模拟练习"}, {"custom", "自定义"}});
+        seed("bank_type", new String[][]{{"final_review", "期末复习"}, {"chapter_practice", "章节练习"}, {"key_questions", "重点题"}, {"wrong_questions", "错题整理"}, {"custom", "自定义"}});
     }
 
     private void seed(String type, String[][] values) {

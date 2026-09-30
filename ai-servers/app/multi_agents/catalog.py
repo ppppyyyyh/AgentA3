@@ -92,30 +92,6 @@ JOB_RADAR_AGENT_SPECS = {
     ),
 }
 
-RESUME_AGENT_SPECS = {
-    "resume_create_agent": (
-        "AI 简历生成智能体",
-        "resume_create",
-        "通过多轮对话收集用户个人信息、教育背景、工作经历等，最终输出结构化简历 JSON。",
-        "帮我写一份数据结构课程的简历",
-        ["resume_json"],
-    ),
-    "resume_edit_agent": (
-        "AI 一键改简历智能体",
-        "resume_edit",
-        "分析用户上传的现有简历问题，逐段优化完善，使简历更专业、更有竞争力。",
-        "帮我看一下这份简历哪里需要优化，如何改进？",
-        ["resume_optimization_json"],
-    ),
-    "resume_polish_expand_agent": (
-        "简历润色扩展智能体",
-        "resume_polish_expand",
-        "针对简历中的单个字段或经历段落，在不编造事实的前提下进行专业润色，或给出可补充的事实方向与追问清单。",
-        "目标岗位是 Java 后端工程师，请润色这段项目经历，并给出还可以补充哪些真实信息",
-        ["resume_polish_expand_json"],
-    ),
-}
-
 DIAGRAM_AGENT_SPECS = {
     "diagram_mind_map_agent": ("图表思维导图智能体", "diagram_mind_map", "把知识点层级、概念关系和学习路径整理成 Mermaid 思维导图。", "进程调度知识点思维导图材料"),
     "diagram_flowchart_agent": ("图表流程图智能体", "diagram_flowchart", "把算法步骤、业务过程和知识点流程整理成 Mermaid 流程图。", "括号匹配算法流程材料"),
@@ -134,7 +110,6 @@ AGENT_ORDER = [
     *QUESTION_AGENT_SPECS.keys(),
     *MEETING_AGENT_SPECS.keys(),
     *PPT_AGENT_SPECS.keys(),
-    *RESUME_AGENT_SPECS.keys(),
     *JOB_RADAR_AGENT_SPECS.keys(),
     *LEARNING_WORKFLOW_AGENT_SPECS.keys(),
     "python_coding_tutor_agent",
@@ -153,7 +128,6 @@ INTERNAL_VISUAL_AGENTS = frozenset({
     "image_agent",
 })
 FILE_EXPORT_INTERNAL_AGENTS = frozenset({"file_content_planner_agent"})
-RESUME_INTERNAL_AGENTS = frozenset({"resume_create_agent", "resume_edit_agent", "resume_polish_expand_agent"})
 JOB_RADAR_INTERNAL_AGENTS = frozenset({"weekly_job_recommendation_agent"})
 INTERNAL_ONLY_AGENT_NAMES = frozenset({"tool_intent_router_agent"})
 LEADER_CALLABLE_AGENT_ORDER = tuple(
@@ -165,7 +139,6 @@ LEADER_CALLABLE_AGENT_ORDER = tuple(
     and agent_name not in DIAGRAM_SOURCE_AGENTS
     and agent_name not in INTERNAL_VISUAL_AGENTS
     and agent_name not in FILE_EXPORT_INTERNAL_AGENTS
-    and agent_name not in RESUME_INTERNAL_AGENTS
     and agent_name not in JOB_RADAR_INTERNAL_AGENTS
 )
 
@@ -264,29 +237,6 @@ def _job_radar_agent_profile(agent_name: str, role: str, intent: str, purpose: s
         "toolName": "weekly_job_recommendation_tool",
     }
 
-
-def _resume_agent_profile(agent_name: str, role: str, intent: str, purpose: str, example_input: str, outputs: list[str]) -> Dict[str, Any]:
-    input_map = {
-        "resume_create_agent": ["user_request", "conversation_context"],
-        "resume_edit_agent": ["uploaded_resume", "target_position", "conversation_context"],
-        "resume_polish_expand_agent": ["section", "original_text", "target_position", "job_description", "mode"],
-    }
-    return {
-        "role": role,
-        "purpose": purpose,
-        "inputs": input_map[agent_name],
-        "outputs": outputs,
-        "skills": ["resume generation", "resume optimization", "resume polishing", "truthful expansion", intent],
-        "intent": intent,
-        "needRetrieval": False,
-        "executionMode": "direct_agent",
-        "executionModeLabel": f"直接{role.replace('智能体', '')}",
-        "defaultRagStrategy": "",
-        "supportedRagStrategies": [],
-        "aliases": [intent, role, role.replace("智能体", ""), agent_name],
-        "exampleInput": example_input,
-        "requiredModelModalities": TEXT_MODEL_MODALITY,
-    }
 
 def _ppt_profile(agent_name: str, role: str, intent: str, purpose: str, example_input: str) -> Dict[str, Any]:
     output_type = {
@@ -514,10 +464,6 @@ AGENT_PROFILES: Dict[str, Dict[str, Any]] = {
         "requiredModelModalities": IMAGE_MODEL_MODALITY,
     },
     **{
-        agent_name: _resume_agent_profile(agent_name, *spec)
-        for agent_name, spec in RESUME_AGENT_SPECS.items()
-    },
-    **{
         agent_name: _job_radar_agent_profile(agent_name, *spec)
         for agent_name, spec in JOB_RADAR_AGENT_SPECS.items()
     },
@@ -629,7 +575,6 @@ def get_agent_catalog() -> Dict[str, Any]:
             "questionBank": ["leader_agent", "textbook_knowledge_agent", *QUESTION_AGENT_SPECS.keys()],
             "meeting": ["leader_agent", *MEETING_AGENT_SPECS.keys()],
             "ppt": ["leader_agent", "textbook_knowledge_agent", *PPT_AGENT_SPECS.keys()],
-            "resume": ["leader_agent", *RESUME_AGENT_SPECS.keys()],
             "image": ["leader_agent", "textbook_knowledge_agent", *DIAGRAM_AGENT_SPECS.keys()],
             "pythonLearningResources": [
                 "learning_path_agent", "textbook_knowledge_agent", "diagram_mind_map_agent",
@@ -675,7 +620,6 @@ def normalize_leader_request_agent(agent_name: Optional[str]) -> Optional[str]:
         normalized == "leader_agent"
         or normalized in LEADER_CALLABLE_AGENT_ORDER
         or normalized in INTERNAL_ONLY_AGENT_NAMES
-        or normalized in RESUME_INTERNAL_AGENTS
     ):
         return normalized
     return None
