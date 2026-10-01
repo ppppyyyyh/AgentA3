@@ -243,7 +243,7 @@ import { getToken, setToken, setUserInfo } from '../../utils/storage.js'
 const DEFAULT_DEV_USER = {
 	id: 4,
 	userId: 4,
-	username: 'zzs',
+	username: 'test_student',
 	role: 'STUDENT',
 	phone: '13800000000',
 	realName: 'A3演示学生',
@@ -263,7 +263,7 @@ export default {
 			showConfirmPassword: false,
 			rememberMe: false,
 			formData: {
-				username: 'zzs',
+				username: 'test_student',
 				password: 'admin123',
 				confirmPassword: '',
 				email: '',
@@ -285,7 +285,7 @@ export default {
 		},
 		resetForm() {
 			this.formData = {
-				username: this.isLogin ? 'zzs' : '',
+				username: this.isLogin ? 'test_student' : '',
 				password: this.isLogin ? 'admin123' : '',
 				confirmPassword: '',
 				email: '',

@@ -15,8 +15,8 @@ const successMessage = ref('')
 const showPassword = ref(false)
 const mode = ref('login')
 const form = reactive({
-  username: '',
-  password: '',
+  username: 'test_student',
+  password: 'admin123',
 })
 const registerForm = reactive({
   username: '',

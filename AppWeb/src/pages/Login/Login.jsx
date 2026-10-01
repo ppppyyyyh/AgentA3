@@ -7,9 +7,10 @@ import './Login.css'
 
 function Login() {
   const navigate = useNavigate()
+  // 开发默认账号：Web 后台仅限管理员/商家登录（weblogin），故默认填 test_admin
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    username: 'test_admin',
+    password: 'admin123',
   })
   const [loading, setLoading] = useState(false)
   const [errorText, setErrorText] = useState('')

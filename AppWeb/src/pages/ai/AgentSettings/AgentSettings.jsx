@@ -379,7 +379,7 @@ function AgentSettings() {
   const [leaderToolFilter, setLeaderToolFilter] = useState('all')
   const [selectedToolKeys, setSelectedToolKeys] = useState([])
   const [runtimeAgentFilter, setRuntimeAgentFilter] = useState('all')
-  const [testUsername, setTestUsername] = useState('zzs')
+  const [testUsername, setTestUsername] = useState('test_student')
   const [testPassword, setTestPassword] = useState('admin123')
   const [endpointDrawerOpen, setEndpointDrawerOpen] = useState(false)
   const [endpointDrawerTool, setEndpointDrawerTool] = useState(null)
