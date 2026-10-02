@@ -69,12 +69,16 @@ function handleClick() {
 .product-card {
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.16s, box-shadow 0.16s;
+  border: 1px solid rgba(184, 149, 78, 0.24);
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 8px 24px rgba(65, 82, 73, 0.06);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(30, 43, 76, 0.08);
+  transform: translateY(-4px);
+  border-color: #c9983b;
+  box-shadow: 0 0 0 2px rgba(207, 164, 75, 0.72), 0 16px 34px rgba(119, 88, 34, 0.16);
 }
 
 .product-image {
@@ -165,8 +169,8 @@ function handleClick() {
   flex: 0 0 auto;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #5b6b7d;
-  background: #f3f6f9;
+  color: #795a24;
+  background: #f7edda;
   font-size: 11px;
 }
 
@@ -190,7 +194,7 @@ function handleClick() {
 
 .product-copy__foot b {
   display: block;
-  color: #c2410c;
+  color: #a86d24;
   font-size: 18px;
 }
 

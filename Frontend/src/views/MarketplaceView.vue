@@ -198,7 +198,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="feature-page">
+  <div class="feature-page market-shell">
     <AppTabBar />
     <main class="feature-container market-page">
       <header class="feature-heading">
@@ -212,8 +212,10 @@ onMounted(async () => {
         </div>
       </header>
 
-      <div class="market-toolbar feature-card">
-        <div class="feature-tabs market-tabs">
+      <div class="market-layout">
+        <aside class="market-sidebar feature-card">
+          <h2>市集中心</h2>
+          <nav class="market-tabs" aria-label="市集功能">
           <button
             v-for="[value, label] in tabs"
             :key="value"
@@ -223,18 +225,20 @@ onMounted(async () => {
           >
             {{ label }}
           </button>
-        </div>
-        <label v-if="tab === 'market'" class="market-search">
-          <img src="/icons/search.svg" alt="" />
-          <input v-model="keyword" type="search" placeholder="搜索商品名称、描述或分类" />
-          <button v-if="keyword" type="button" aria-label="清除搜索" @click="keyword = ''">×</button>
-        </label>
-      </div>
+          </nav>
+        </aside>
 
-      <div v-if="error" class="feature-error">{{ error }}</div>
-      <div v-if="loading" class="feature-empty">正在加载市集数据…</div>
+        <div class="market-content">
+          <label v-if="tab === 'market'" class="market-search">
+            <img src="/icons/search.svg" alt="" />
+            <input v-model="keyword" type="search" placeholder="搜索商品名称、描述或分类" />
+            <button v-if="keyword" type="button" aria-label="清除搜索" @click="keyword = ''">×</button>
+          </label>
 
-      <template v-else>
+          <div v-if="error" class="feature-error">{{ error }}</div>
+          <div v-if="loading" class="feature-empty">正在加载市集数据…</div>
+
+          <template v-else>
         <section v-if="['market', 'mine', 'favorites', 'history'].includes(tab)">
           <div v-if="tab === 'market'" class="market-categories">
             <button
@@ -324,7 +328,9 @@ onMounted(async () => {
             </div>
           </div>
         </section>
-      </template>
+          </template>
+        </div>
+      </div>
     </main>
 
     <div v-if="selected" class="detail-mask" @click.self="selected = null">
@@ -394,51 +400,207 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.market-page {
-  width: min(100%, 1320px);
+.market-shell {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
 }
 
-.market-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 14px;
-  margin-bottom: 18px;
+.market-shell::before {
+  position: fixed;
+  z-index: -1;
+  inset: 60px 0 0;
+  background:
+    linear-gradient(180deg, rgba(250, 248, 240, 0.9) 0%, rgba(249, 247, 239, 0.82) 48%, rgba(247, 246, 239, 0.88) 100%);
+  content: '';
+  pointer-events: none;
+}
+
+.market-page {
+  width: min(100%, 1320px);
+  font-family: 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
+}
+
+.market-page > .feature-heading {
+  position: relative;
+  padding: 12px 0 12px 22px;
+}
+
+.market-page > .feature-heading::before {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #d9b561, #a9792f);
+  content: '';
+}
+
+.market-page > .feature-heading h1 {
+  color: #123f49;
+  font-family: 'STXingkai', '华文行楷', 'LXGW WenKai Screen', '霞鹜文楷 屏幕阅读版', 'STKaiti', 'KaiTi', serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 5px;
+  line-height: 1.25;
+  text-shadow: 0 1px 0 rgba(185, 138, 50, 0.16);
+}
+
+.market-page > .feature-heading p {
+  color: #647b7c;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.market-page .feature-button {
+  border-color: rgba(176, 132, 51, 0.42);
+  color: #315f60;
+  background: rgba(255, 253, 247, 0.94);
+  box-shadow: 0 4px 12px rgba(75, 91, 78, 0.06);
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.market-page .feature-button:hover {
+  border-color: #bf9139;
+  color: #815c1f;
+  background: #fffaf0;
+  box-shadow: 0 7px 18px rgba(155, 112, 35, 0.14);
+  transform: translateY(-1px);
+}
+
+.market-page .feature-button--primary {
+  border-color: #a97b2f;
+  color: #fffdf6;
+  background: linear-gradient(115deg, #174e58, #277b7d);
+  box-shadow: 0 7px 18px rgba(25, 90, 91, 0.18);
+}
+
+.market-page .feature-button--primary:hover {
+  border-color: #d4ad5a;
+  color: #fff;
+  background: linear-gradient(115deg, #123f49, #216c70);
+}
+
+.market-layout {
+  display: grid;
+  grid-template-columns: 256px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.market-sidebar {
+  position: sticky;
+  top: 84px;
+  min-height: calc(100vh - 108px);
+  padding: 22px 16px;
+  overflow: hidden;
+  border-color: rgba(190, 153, 79, 0.3);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.97) 0%, rgba(255, 253, 248, 0.95) 64%, rgba(245, 249, 244, 0.92) 100%);
+  box-shadow: 0 10px 28px rgba(73, 91, 79, 0.07);
+}
+
+.market-sidebar::after {
+  position: absolute;
+  z-index: 0;
+  right: -46px;
+  bottom: -24px;
+  left: -46px;
+  height: 260px;
+  background: url('../assets/campus-portal-background-v2.png') center bottom / 620px auto no-repeat;
+  content: '';
+  opacity: 0.16;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.34) 32%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.34) 32%, #000 100%);
+}
+
+.market-sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
+.market-sidebar h2 {
+  margin: 0 8px 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(185, 138, 50, 0.2);
+  color: #123f49;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.market-content {
+  min-width: 0;
 }
 
 .market-tabs {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  flex-wrap: nowrap;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .market-tabs button {
+  position: relative;
+  min-height: 44px;
+  padding: 0 14px 0 18px;
+  border-radius: 8px;
+  color: #597172;
+  background: transparent;
+  font-weight: 700;
+  text-align: left;
   white-space: nowrap;
+  transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.market-tabs button:hover {
+  color: #8b6728;
+  background: rgba(255, 250, 238, 0.76);
+}
+
+.market-tabs button.active {
+  color: #744f19;
+  background: linear-gradient(135deg, #fffdf7, #f6e8c4);
+  box-shadow: inset 0 0 0 1px rgba(193, 148, 60, 0.28), 0 3px 10px rgba(144, 105, 38, 0.08);
+}
+
+.market-tabs button.active::before {
+  position: absolute;
+  inset: 8px auto 8px 0;
+  width: 3px;
+  border-radius: 99px;
+  background: #b98a32;
+  content: '';
 }
 
 .market-search {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: min(100%, 320px);
-  padding: 0 12px;
-  border: 1px solid #d7e0e8;
-  border-radius: 8px;
-  background: #f8fafc;
+  gap: 12px;
+  width: 100%;
+  padding: 0 18px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(178, 145, 79, 0.32);
+  border-radius: 11px;
+  background: rgba(255, 253, 248, 0.95);
+  box-shadow: 0 8px 24px rgba(73, 91, 79, 0.06);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.market-search:focus-within {
+  border-color: rgba(185, 138, 50, 0.7);
+  box-shadow: 0 0 0 3px rgba(185, 138, 50, 0.1), 0 8px 24px rgba(73, 91, 79, 0.06);
 }
 
 .market-search img {
-  width: 16px;
-  height: 16px;
-  opacity: 0.45;
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
 }
 
 .market-search input {
   flex: 1;
   min-width: 0;
-  height: 40px;
+  height: 52px;
   border: 0;
   outline: none;
   background: transparent;
@@ -468,23 +630,26 @@ onMounted(async () => {
   gap: 8px;
   min-width: 108px;
   padding: 10px 14px;
-  border: 1px solid #e1e7ed;
+  border: 1px solid rgba(179, 151, 94, 0.3);
   border-radius: 10px;
-  color: #344054;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(30, 43, 76, 0.03);
-  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  color: #405d60;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 4px 14px rgba(73, 91, 79, 0.04);
+  transition: border-color 0.18s, color 0.18s, background 0.18s, transform 0.18s, box-shadow 0.18s;
 }
 
 .market-category:hover {
-  transform: translateY(-1px);
-  border-color: #c7d7e8;
+  transform: translateY(-2px);
+  border-color: #c69b45;
+  color: #835f20;
+  box-shadow: 0 8px 18px rgba(154, 111, 34, 0.11);
 }
 
 .market-category--active {
-  border-color: #9ec3e6;
-  color: #2f76bd;
-  background: #eaf4fd;
+  border-color: #c39742;
+  color: #704d18;
+  background: linear-gradient(135deg, #fffaf0, #f3dfae);
+  box-shadow: inset 0 0 0 1px rgba(190, 142, 52, 0.18);
 }
 
 .market-category__icon {
@@ -493,8 +658,8 @@ onMounted(async () => {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  color: #5f7895;
-  background: #f2f6fa;
+  color: #3f7472;
+  background: #edf4ef;
 }
 
 .market-category__icon :deep(svg) {
@@ -503,8 +668,8 @@ onMounted(async () => {
 }
 
 .market-category--active .market-category__icon {
-  color: #2f76bd;
-  background: #fff;
+  color: #9a6d23;
+  background: rgba(255, 253, 247, 0.86);
 }
 
 .market-category__label {
@@ -807,19 +972,58 @@ onMounted(async () => {
 }
 
 @media (max-width: 1100px) {
+  .market-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 16px;
+  }
+
   .market-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
-  .market-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .market-layout {
+    display: block;
   }
 
-  .market-toolbar {
-    align-items: stretch;
-    flex-direction: column;
+  .market-sidebar {
+    position: static;
+    min-height: 0;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+
+  .market-sidebar::after {
+    display: none;
+  }
+
+  .market-sidebar h2 {
+    margin: 0 4px 8px;
+    padding: 0 4px 8px;
+    font-size: 17px;
+  }
+
+  .market-tabs {
+    overflow-x: auto;
+    flex-direction: row;
+  }
+
+  .market-tabs button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0 12px;
+    text-align: center;
+  }
+
+  .market-tabs button.active::before {
+    inset: auto 10px 0;
+    width: auto;
+    height: 2px;
+  }
+
+  .market-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .market-search {
