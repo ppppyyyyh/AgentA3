@@ -21,11 +21,13 @@ test('markers use lightweight pin icons and keep H5-safe marker payload', () => 
   assert.match(source, /pin-canteen\.png/)
   assert.match(source, /pin-sport\.png/)
   assert.match(source, /pin-infra\.png/)
+  assert.match(source, /pin-dormitory\.png/)
   assert.match(source, /window\.location\.origin/)
   assert.doesNotMatch(source, /\/static\/icons\/lcoal\/dingwei\.png/)
   assert.equal(existsSync(join(__dirname, '../../static/icons/map/pin-teaching.png')), true)
   assert.equal(existsSync(join(__dirname, '../../static/icons/map/pin-canteen.png')), true)
   assert.equal(existsSync(join(__dirname, '../../static/icons/map/pin-sport.png')), true)
+  assert.equal(existsSync(join(__dirname, '../../static/icons/map/pin-dormitory.png')), true)
 })
 
 test('map clusters nearby pins when zoomed out and lets user pick one', () => {

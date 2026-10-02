@@ -17,7 +17,7 @@ function loadMapApiCore() {
 
 test('native pin icons exist for map markers', () => {
   const iconDir = join(__dirname, '../../static/icons/map')
-  ;['pin-teaching.png', 'pin-canteen.png', 'pin-sport.png', 'pin-infra.png', 'pin-active.png', 'pin-cluster.png'].forEach((name) => {
+  ;['pin-teaching.png', 'pin-canteen.png', 'pin-sport.png', 'pin-infra.png', 'pin-dormitory.png', 'pin-active.png', 'pin-cluster.png'].forEach((name) => {
     assert.equal(existsSync(join(iconDir, name)), true, name)
   })
 })

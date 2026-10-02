@@ -247,12 +247,14 @@ function applyCategoryFilters() {
   const visibleIds = new Set(visiblePlaces.map(place => String(place.id)))
   mapPlaces.value.forEach((place) => {
     const visible = visibleIds.has(String(place.id))
-    markerMap[place.id]?.[visible ? 'show' : 'hide']()
     fenceMap[place.id]?.[visible ? 'show' : 'hide']()
   })
+  markerCluster?.setData(visiblePlaces.map(toClusterPoint))
   if (activePoi.value && !visibleIds.has(String(activePoi.value.id))) closeActivePoi()
-  const overlays = visiblePlaces.flatMap(place => [markerMap[place.id], fenceMap[place.id]]).filter(Boolean)
-  if (mapInstance && overlays.length) mapInstance.setFitView(overlays, false, [90, 90, 90, 190], 18)
+  const overlays = visiblePlaces.map(place => fenceMap[place.id]).filter(Boolean)
+  if (mapInstance && (visiblePlaces.length || overlays.length)) {
+    mapInstance.setFitView(null, false, [90, 90, 90, 190], 18)
+  }
 }
 
 function selectCategory(item) {
@@ -309,10 +311,10 @@ function clearSearch() { searchQuery.value = '' }
 const mapReady = ref(false)
 const mapError = ref('')
 let mapInstance = null        /* AMap.Map 实例 */
-const markerMap = {}          /* poi.id → AMap.Marker 映射 */
 const fenceMap = {}           /* poi.id → 围栏覆盖物映射 */
 const mapOverlays = []
 let infoWindow = null         /* 全局信息窗 */
+let markerCluster = null      /* 高德点聚合实例 */
 
 const indoorOpen = ref(false)
 const indoorLoading = ref(false)
@@ -751,10 +753,49 @@ function loadAMapScript() {
   })
 }
 
+function loadAMapPlugin(name) {
+  return new Promise((resolve, reject) => {
+    if (!window.AMap?.plugin) {
+      reject(new Error('高德地图插件不可用'))
+      return
+    }
+    window.AMap.plugin(name, () => resolve())
+  })
+}
+
+function createMarkerContent(poi) {
+  const markerContent = document.createElement('div')
+  markerContent.className = 'real-map-marker'
+  const markerTitle = document.createElement('span')
+  markerTitle.className = 'real-map-marker__title'
+  markerTitle.textContent = poi.name
+  const markerIcon = document.createElement('img')
+  markerIcon.className = 'real-map-marker__icon'
+  markerIcon.src = sceneMeta(poi.sceneType).icon
+  markerIcon.alt = ''
+  markerContent.append(markerTitle, markerIcon)
+  return markerContent
+}
+
+function createClusterContent(count) {
+  const clusterContent = document.createElement('div')
+  clusterContent.className = 'real-map-cluster'
+  clusterContent.textContent = String(count)
+  clusterContent.setAttribute('aria-label', `${count} 个校园地点`)
+  return clusterContent
+}
+
+const toClusterPoint = poi => ({
+  lnglat: [poi.lng, poi.lat],
+  weight: 1,
+  poi,
+})
+
 /* 初始化地图、添加标记点、绑定事件 */
 async function initMap() {
   try {
     await loadAMapScript()
+    await loadAMapPlugin('AMap.MarkerCluster')
     const AMap = window.AMap
     if (!AMap) throw new Error('AMap 未定义')
 
@@ -805,40 +846,38 @@ async function initMap() {
         fenceMap[poi.id] = fenceOverlay
       }
 
-      const markerContent = document.createElement('div')
-      markerContent.className = 'real-map-marker'
-      const markerTitle = document.createElement('span')
-      markerTitle.className = 'real-map-marker__title'
-      markerTitle.textContent = poi.name
-      const markerIcon = document.createElement('img')
-      markerIcon.className = 'real-map-marker__icon'
-      markerIcon.src = meta.icon
-      markerIcon.alt = ''
-      markerContent.append(markerTitle, markerIcon)
-      const marker = new AMap.Marker({
-        position: [poi.lng, poi.lat],
-        title: poi.name,
-        content: markerContent,
-        offset: new AMap.Pixel(-70, -64),
-      })
-
-      marker.on('click', () => {
-        if (poi.sceneType !== 'CANTEEN') return
-        selectPoi(poi, marker)
-      })
       fenceOverlay?.on('click', () => {
         if (poi.sceneType !== 'CANTEEN') return
         mapInstance.setZoomAndCenter(Math.max(mapInstance.getZoom() || MAP_ZOOM, MAP_ZOOM), [poi.lng, poi.lat])
-        selectPoi(poi, marker)
+        selectPoi(poi)
       })
+    })
 
-      markerMap[poi.id] = marker
-      mapInstance.add(marker)
+    markerCluster = new AMap.MarkerCluster(mapInstance, mapPlaces.value.map(toClusterPoint), {
+      gridSize: 72,
+      maxZoom: 18,
+      clusterByZoomChange: true,
+      renderMarker(context) {
+        const poi = context.data?.[0]?.poi
+        if (!poi) return
+        context.marker.setContent(createMarkerContent(poi))
+        context.marker.setOffset(new AMap.Pixel(-70, -64))
+        context.marker.setTitle(poi.name)
+        context.marker.on('click', () => {
+          if (poi.sceneType === 'CANTEEN') selectPoi(poi)
+        })
+      },
+      renderClusterMarker(context) {
+        const count = context.count || context.data?.length || 0
+        context.marker.setContent(createClusterContent(count))
+        context.marker.setOffset(new AMap.Pixel(-23, -23))
+      },
     })
 
     mapReady.value = true
-    const visibleOverlays = [...mapOverlays, ...Object.values(markerMap)]
-    if (visibleOverlays.length > 1) mapInstance.setFitView(visibleOverlays, false, [80, 80, 100, 80], 18)
+    if (mapPlaces.value.length > 1 || mapOverlays.length) {
+      mapInstance.setFitView(null, false, [80, 80, 100, 80], 18)
+    }
   } catch (err) {
     mapError.value = err.message || '地图初始化失败'
     console.error('[MapInit]', err)
@@ -849,8 +888,7 @@ async function initMap() {
 async function flyToPoi(poi) {
   if (!mapInstance) return
   mapInstance.setZoomAndCenter(17, [poi.lng, poi.lat], false, 500)
-  const marker = markerMap[poi.id]
-  await selectPoi(poi, marker)
+  await selectPoi(poi)
 }
 
 /* ═══════════════════════════════════════
@@ -967,6 +1005,8 @@ onUnmounted(() => {
   document.removeEventListener('click', onDocClick)
   stopIndoorDrag()
   if (floorPreviewTimer) clearTimeout(floorPreviewTimer)
+  markerCluster?.setMap?.(null)
+  markerCluster = null
   mapOverlays.splice(0, mapOverlays.length)
   if (mapInstance) { mapInstance.destroy(); mapInstance = null }
 })
@@ -1331,6 +1371,15 @@ onUnmounted(() => {
 .map-canvas :global(.real-map-marker__icon) {
   display: block; width: 28px; height: 36px; filter: drop-shadow(0 3px 4px rgba(15,23,42,.22));
 }
+.map-canvas :global(.real-map-cluster) {
+  display: grid; width: 46px; height: 46px; place-items: center;
+  border: 4px solid rgba(255,255,255,.96); border-radius: 50%;
+  color: #fff; background: #3b82f6;
+  box-shadow: 0 4px 14px rgba(15,23,42,.28);
+  font-size: 14px; font-weight: 800; cursor: pointer;
+  transition: transform .16s ease;
+}
+.map-canvas :global(.real-map-cluster:hover) { transform: scale(1.06); }
 .map-canvas :global(.map-info-window) {
   min-width: 190px; max-width: 260px; padding: 10px 14px;
   color: #334155; font-family: system-ui, sans-serif;

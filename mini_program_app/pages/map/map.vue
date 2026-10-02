@@ -293,14 +293,14 @@ const floorContentInflight = {}
 let mapPlacesInflight = null
 let mapPlacesCache = null
 const POI_MARKER_STYLE = {
-  LANDSCAPE: { icon: '/static/icons/map/pin-infra.png', color: '#6B7C8D' },
-  ADMIN_BUILDING: { icon: '/static/icons/map/pin-infra.png', color: '#6B7C8D' },
-  HOSPITAL: { icon: '/static/icons/map/pin-infra.png', color: '#6B7C8D' },
-  CANTEEN: { icon: '/static/icons/map/pin-canteen.png', color: '#C9864D' },
-  SPORTS_GROUND: { icon: '/static/icons/map/pin-sport.png', color: '#4E8A69' },
-  TEACHING_BUILDING: { icon: '/static/icons/map/pin-teaching.png', color: '#4D6F8F' },
-  DORMITORY_BUILDING: { icon: '/static/icons/map/pin-infra.png', color: '#6B7C8D' },
-  DEFAULT: { icon: '/static/icons/map/pin-teaching.png', color: '#4D6F8F' },
+  LANDSCAPE: { icon: '/static/icons/map/pin-infra.png', color: '#64748B' },
+  ADMIN_BUILDING: { icon: '/static/icons/map/pin-infra.png', color: '#64748B' },
+  HOSPITAL: { icon: '/static/icons/map/pin-infra.png', color: '#64748B' },
+  CANTEEN: { icon: '/static/icons/map/pin-canteen.png', color: '#F97316' },
+  SPORTS_GROUND: { icon: '/static/icons/map/pin-sport.png', color: '#10B981' },
+  TEACHING_BUILDING: { icon: '/static/icons/map/pin-teaching.png', color: '#3B82F6' },
+  DORMITORY_BUILDING: { icon: '/static/icons/map/pin-dormitory.png', color: '#8B5CF6' },
+  DEFAULT: { icon: '/static/icons/map/pin-teaching.png', color: '#3B82F6' },
   SEARCH: { icon: '/static/icons/map/pin-search.png', color: '#5A6E82' },
   ACTIVE: { icon: '/static/icons/map/pin-active.png', color: '#3D5A78' }
 }
@@ -1296,8 +1296,8 @@ export default {
       if (!Number.isFinite(markerId)) return null
       const isSelected = !isSearch && !isPin && this.selectedLocation && this.selectedLocation.id === item.id
       const fullName = item.name || item.shortName || (isPin ? '地图点位' : (isSearch ? '搜索结果' : '地点'))
-      const markerWidth = isSelected ? 30 : 26
-      const markerHeight = isSelected ? 40 : 35
+      const markerWidth = isSelected ? 31 : 28
+      const markerHeight = isSelected ? 40 : 36
       const marker = {
         id: markerId,
         longitude: Number(item.longitude),
@@ -1323,7 +1323,7 @@ export default {
           bgColor: '#ffffff',
           borderWidth: 1,
           borderColor: '#e6ebf0',
-          borderRadius: 8,
+          borderRadius: 5,
           padding: 4,
           textAlign: 'center',
           anchorX: labelLayout.anchorX,
