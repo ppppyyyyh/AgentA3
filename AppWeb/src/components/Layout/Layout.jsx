@@ -29,7 +29,7 @@ function Layout() {
             />
             {!hidePageHeading ? (
               <div>
-                <span className="layout-kicker">{pageMeta?.badge || '智慧校园后台'}</span>
+                <span className="layout-kicker">{pageMeta?.badge || '校园智学后台'}</span>
                 <h2>{pageMeta?.title || '管理驾驶舱'}</h2>
               </div>
             ) : null}

@@ -1,15 +1,26 @@
 .layout {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   display: grid;
   grid-template-columns: 308px minmax(0, 1fr);
-  background:
-    radial-gradient(circle at top left, rgba(74, 127, 173, 0.1), transparent 30%),
-    linear-gradient(180deg, #f2f7fc, #eaf2fa 45%, #f2f7fc 100%);
+  background: #f8faf7;
+}
+
+.layout::before {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 308px;
+  z-index: -1;
+  background: #f8faf7 url('../../assets/campus-dashboard-landscape.png') right top / 100% auto no-repeat;
+  content: '';
 }
 
 .layout-body {
   min-width: 0;
-  padding: 22px 24px 28px;
+  padding: 0 28px 32px;
 }
 
 .layout-topbar {
@@ -17,8 +28,15 @@
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  padding: 8px 4px 24px;
+  position: relative;
+  min-height: 148px;
+  padding: 28px 4px 42px;
+  overflow: visible;
+  background: transparent;
 }
+
+.layout-topbar-left,
+.layout-topbar-right { position: relative; z-index: 1; }
 
 .layout-topbar-left,
 .layout-topbar-right {
@@ -43,7 +61,7 @@
 
 .layout-kicker {
   display: inline-flex;
-  color: var(--color-primary);
+  color: #138985;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -52,7 +70,10 @@
 
 .layout-topbar h2 {
   margin: 6px 0 0;
-  font-size: 28px;
+  color: #103941;
+  font-family: "STSong", "SimSun", serif;
+  font-size: 32px;
+  letter-spacing: .06em;
 }
 
 .layout-topbar-meta {
@@ -69,6 +90,8 @@
 
 .layout-content {
   min-width: 0;
+  position: relative;
+  background: transparent !important;
 }
 
 .layout.is-immersive .layout-body {
@@ -93,6 +116,8 @@
   .layout {
     grid-template-columns: 1fr;
   }
+
+  .layout::before { left: 0; }
 
   .layout-body {
     padding: 14px 14px 24px;

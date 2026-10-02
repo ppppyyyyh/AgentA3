@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Card, Empty, Skeleton, Tag } from 'antd'
-import { ReloadOutlined, RightOutlined } from '@ant-design/icons'
+import {
+  CompassOutlined,
+  MessageOutlined,
+  ReloadOutlined,
+  RightOutlined,
+  ShoppingOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import * as echarts from 'echarts'
 import { getActivityList } from '../../api/activity'
@@ -42,7 +49,7 @@ const formatTrendLabel = (item, index) => {
   return String(raw).length > 10 ? String(raw).slice(5) : raw
 }
 
-const CHART_COLORS = ['#4a7fad', '#5b8f72', '#c07a45', '#8b7bb8', '#c45c5c', '#6b8cae']
+const CHART_COLORS = ['#148b88', '#5b9278', '#d0a34f', '#4f7f89', '#9a7560', '#79aaa2']
 
 function EChart({ option, height = 280 }) {
   const chartRef = useRef(null)
@@ -250,10 +257,10 @@ function Home() {
     || dashboard.popularDestinations.length > 0
 
   const primaryMetrics = useMemo(() => ([
-    { label: '用户总数', value: formatNumber(dashboard.totalUsers), hint: '注册账号规模' },
-    { label: '论坛帖子', value: formatNumber(dashboard.totalPosts), hint: `${formatNumber(dashboard.forum.totalComments)} 条评论互动` },
-    { label: '在售旧物', value: formatNumber(dashboard.onSaleItems), hint: `累计 ${formatNumber(dashboard.totalSecondhandItems)} 件发布` },
-    { label: '优惠活动', value: formatNumber(dashboard.activeDiscountActivities), hint: `${formatNumber(dashboard.activeMerchants)} 家在营商家` },
+    { label: '用户总数', value: formatNumber(dashboard.totalUsers), hint: '注册账号规模', icon: <TeamOutlined /> },
+    { label: '论坛帖子', value: formatNumber(dashboard.totalPosts), hint: `${formatNumber(dashboard.forum.totalComments)} 条评论互动`, icon: <MessageOutlined /> },
+    { label: '在售旧物', value: formatNumber(dashboard.onSaleItems), hint: `累计 ${formatNumber(dashboard.totalSecondhandItems)} 件发布`, icon: <ShoppingOutlined /> },
+    { label: '优惠活动', value: formatNumber(dashboard.activeDiscountActivities), hint: `${formatNumber(dashboard.activeMerchants)} 家在营商家`, icon: <CompassOutlined /> },
   ]), [dashboard])
 
   const secondaryMetrics = useMemo(() => ([
@@ -286,7 +293,7 @@ function Home() {
       barWidth: 14,
       itemStyle: {
         borderRadius: [0, 6, 6, 0],
-        color: '#4a7fad',
+        color: '#148b88',
       },
     }],
   }), [dashboard.hotFacilities])
@@ -311,7 +318,7 @@ function Home() {
   const secondhandStatusOption = useMemo(() => ({
     tooltip: { trigger: 'item' },
     legend: { bottom: 0, left: 'center', textStyle: { fontSize: 11 } },
-    color: ['#4a7fad', '#5b8f72', '#94a3b8'],
+    color: ['#148b88', '#5b9278', '#94aaa8'],
     series: [{
       type: 'pie',
       radius: ['46%', '72%'],
@@ -374,7 +381,7 @@ function Home() {
       symbol: 'circle',
       symbolSize: 6,
       data: dashboard.activityTrend.map(countItemValue),
-      lineStyle: { width: 3, color: '#4a7fad' },
+      lineStyle: { width: 3, color: '#148b88' },
       itemStyle: { color: '#2f6088' },
       areaStyle: { color: 'rgba(74, 127, 173, 0.12)' },
     }],
@@ -513,9 +520,12 @@ function Home() {
           <Card key={item.label} className="home-metric-card home-metric-card--primary" styles={{ body: { padding: '18px 20px' } }}>
             {loading ? <Skeleton active paragraph={{ rows: 1 }} title={false} /> : (
               <>
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-                <em>{item.hint}</em>
+                <div className="home-metric-icon">{item.icon}</div>
+                <div className="home-metric-copy">
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                  <em>{item.hint}</em>
+                </div>
               </>
             )}
           </Card>

@@ -160,10 +160,17 @@ function NavBar({ mobileOpen, onClose }) {
         role="button"
         tabIndex={0}
       >
-        <div className="navbar-brand-mark">SC</div>
+        <div className="navbar-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 52 44" fill="none">
+            <path d="M4 11c8 0 15 3 22 9v19C19 33 12 31 4 31V11Z" />
+            <path d="M48 11c-8 0-15 3-22 9v19c7-6 14-8 22-8V11Z" />
+            <path d="M9 7c7 1 12 4 17 9M43 7c-7 1-12 4-17 9M3 36c9 0 16 2 23 6 7-4 14-6 23-6" />
+            <path d="m18 12 8-10 8 10" />
+          </svg>
+        </div>
         <div>
-          <strong>智慧校园</strong>
-          <span>Smart Campus Console</span>
+          <strong>校园智学</strong>
+          <span>Campus Learning</span>
         </div>
       </div>
 

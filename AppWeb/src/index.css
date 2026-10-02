@@ -9,22 +9,22 @@
 :root {
   /* ===== MASTER.md Design Tokens ===== */
   /* 色彩 */
-  --color-primary: #4a7fad;
+  --color-primary: #148b88;
   --color-on-primary: #ffffff;
-  --color-secondary: #7fa8cc;
-  --color-accent: #6fa9d6;
-  --color-background: #f2f7fc;
-  --color-foreground: #0f172a;
-  --color-muted: #eef4fa;
-  --color-border: #e2ecf6;
+  --color-secondary: #69b7ad;
+  --color-accent: #d4ad61;
+  --color-background: #eef7f5;
+  --color-foreground: #102f38;
+  --color-muted: #edf6f3;
+  --color-border: #d8e8e3;
   --color-destructive: #dc2626;
-  --color-ring: #4a7fad;
+  --color-ring: #148b88;
 
   /* 文字层级 */
-  --text-primary: #0f172a;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
-  --text-faint: #9ca3af;
+  --text-primary: #102f38;
+  --text-secondary: #395c61;
+  --text-muted: #6a8082;
+  --text-faint: #94aaa8;
 
   /* 字体 */
   --font-family: 'Plus Jakarta Sans', 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -56,8 +56,8 @@
 
   /* 兼容旧变量名（迁移期 alias，指向新 token） */
   --brand: var(--color-primary);
-  --brand-deep: #33618f;
-  --surface: #ffffff;
+  --brand-deep: #0b6968;
+  --surface: #fffef9;
   --surface-soft: var(--color-muted);
   --text-soft: var(--text-muted);
 

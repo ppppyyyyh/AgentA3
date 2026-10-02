@@ -13,16 +13,18 @@
 }
 
 .app-page-header .ant-breadcrumb li:not(:last-child) .ant-breadcrumb-link {
-  color: #64748b;
+  color: #648080;
 }
 
 .app-page-header .ant-breadcrumb-separator {
-  color: #94a3b8;
+  color: #a6b8b4;
 }
 
 .app-page-header .app-page-header-active {
-  color: #1e293b;
-  font-weight: 600;
+  color: #103941;
+  font-family: "STSong", "SimSun", serif;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 /* 可点击的父级面包屑 */
@@ -32,7 +34,7 @@
 }
 
 .app-page-header .app-page-header-link:hover {
-  color: #2563eb;
+  color: #148b88;
 }
 
 .app-page-header-extra {

@@ -1,7 +1,7 @@
 /* 通用管理页面样式 */
 .manage-container {
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: transparent;
 }
 
 .manage-main {
@@ -16,17 +16,18 @@
   align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  background: #fff;
+  border: 1px solid rgba(20, 139, 136, .13);
+  background: rgba(255, 255, 252, .9);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 7px 20px rgba(31, 112, 105, .05);
 }
 
 /* 表格 */
 .ant-table-wrapper {
-  background: #fff;
+  background: rgba(255, 255, 252, .92);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 7px 20px rgba(31, 112, 105, .05);
 }
 
 /* 表单行 */

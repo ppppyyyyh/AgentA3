@@ -10,17 +10,17 @@ import AppErrorBoundary from './components/AppErrorBoundary/AppErrorBoundary.jsx
 // 确保 window.dayjs 存在，Ant Design 内部可能依赖它
 window.dayjs = dayjs
 
-// MASTER.md 设计系统主题(淡蓝系):统一 antd 组件(按钮/输入框/卡片/表格)为品牌淡蓝色
+// 千里江山主题：统一 Ant Design 组件为青绿、宣纸白和少量金色。
 const appTheme = {
   token: {
-    colorPrimary: '#2563EB',
-    colorInfo: '#2563EB',
-    colorLink: '#2563EB',
-    colorBgLayout: '#F2F7FC',
-    colorText: '#0F172A',
-    colorTextSecondary: '#4B5563',
-    colorBorder: '#E2ECF6',
-    colorBorderSecondary: '#E8F0F8',
+    colorPrimary: '#148B88',
+    colorInfo: '#148B88',
+    colorLink: '#0F817E',
+    colorBgLayout: '#EEF7F5',
+    colorText: '#102F38',
+    colorTextSecondary: '#526F72',
+    colorBorder: '#D3E5DF',
+    colorBorderSecondary: '#E2EEE9',
     borderRadius: 8,
     borderRadiusLG: 12,
     fontFamily: "'Plus Jakarta Sans', 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', sans-serif",
@@ -35,11 +35,11 @@ const appTheme = {
       headerBg: 'transparent',
     },
     Table: {
-      headerBg: '#EEF4FA',
-      headerColor: '#4B5563',
-      headerSplitColor: '#E2ECF6',
-      rowHoverBg: '#F2F7FC',
-      borderColor: '#E2ECF6',
+      headerBg: '#EDF7F4',
+      headerColor: '#315D61',
+      headerSplitColor: '#D3E5DF',
+      rowHoverBg: '#F2FAF7',
+      borderColor: '#D8E8E3',
     },
   },
 }

@@ -61,34 +61,69 @@ function Login() {
 
   return (
     <div className="login-container">
+      <header className="page-brand" aria-label="校园智学">
+        <svg className="brand-mark" viewBox="0 0 52 44" fill="none" aria-hidden="true">
+          <path d="M4 11c8 0 15 3 22 9v19C19 33 12 31 4 31V11Z" />
+          <path d="M48 11c-8 0-15 3-22 9v19c7-6 14-8 22-8V11Z" />
+          <path d="M9 7c7 1 12 4 17 9M43 7c-7 1-12 4-17 9M3 36c9 0 16 2 23 6 7-4 14-6 23-6" />
+          <path d="m18 12 8-10 8 10" />
+        </svg>
+        <div>
+          <strong>校园智学</strong>
+          <span>SMART CAMPUS</span>
+        </div>
+      </header>
+
       <div className="login-box">
         <div className="login-header">
-          <h1>智慧校园</h1>
+          <span className="header-ornament" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span className="header-line" aria-hidden="true"><b></b></span>
+          <h1>校园智学</h1>
+          <span className="header-line header-line-right" aria-hidden="true"><b></b></span>
         </div>
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="form-group">
-            <label>用户名</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="请输入管理员账号"
-              required
-            />
+            <label htmlFor="login-username">用户名</label>
+            <div className="input-shell">
+              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+              </svg>
+              <input
+                id="login-username"
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="账号"
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
-            <label>密码</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="请输入密码"
-              required
-            />
+            <label htmlFor="login-password">密码</label>
+            <div className="input-shell">
+              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="11" rx="2" />
+                <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                <circle cx="12" cy="15.5" r="1" />
+              </svg>
+              <input
+                id="login-password"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="密码"
+                required
+              />
+              <svg className="password-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </svg>
+            </div>
           </div>
 
           {errorText && (
@@ -101,12 +136,6 @@ function Login() {
             {loading ? '登录中...' : '登录'}
           </button>
         </form>
-      </div>
-
-      <div className="login-background">
-        <div className="bg-circle circle-1"></div>
-        <div className="bg-circle circle-2"></div>
-        <div className="bg-circle circle-3"></div>
       </div>
     </div>
   )
