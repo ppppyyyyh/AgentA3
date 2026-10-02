@@ -26,7 +26,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     # Use utf8mb4 end-to-end so Chinese text and emoji are not decoded through the legacy 3-byte utf8 mode.
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/smart-campus?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_unicode_ci&serverTimezone=Asia/Shanghai}
+    # Note: characterEncoding must be a Java charset name (UTF-8); Connector/J maps it to utf8mb4 server-side.
+    # Using utf8mb4 as characterEncoding throws UnsupportedEncodingException and aborts startup.
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/smart-campus?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci&serverTimezone=Asia/Shanghai}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:123456}
   jpa:
