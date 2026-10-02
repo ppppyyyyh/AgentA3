@@ -109,10 +109,33 @@ const shortcutItems = [
   inset: 0 0 auto;
   z-index: 1000;
   height: 60px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #1e2b4c;
-  color: #ffffff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(223, 193, 128, 0.78);
+  background: linear-gradient(105deg, #153f50 0%, #1c5f70 42%, #318898 72%, #69b4b8 100%);
+  color: #f6f1df;
+  box-shadow: 0 6px 22px rgba(17, 65, 74, 0.2);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.app-site-header::before {
+  position: absolute;
+  inset: 6px 14px;
+  border: 1px solid rgba(232, 205, 146, 0.52);
+  border-radius: 10px;
+  content: '';
+  pointer-events: none;
+}
+
+.app-site-header::after {
+  position: absolute;
+  right: 58px;
+  bottom: 0;
+  width: 250px;
+  height: 58px;
+  background: url('../assets/nav-mountain-ornament.svg') right bottom / contain no-repeat;
+  content: '';
+  opacity: 0.76;
+  pointer-events: none;
 }
 
 .app-site-header--embedded {
@@ -120,6 +143,8 @@ const shortcutItems = [
 }
 
 .app-site-header__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   width: min(1480px, calc(100% - 40px));
@@ -130,7 +155,7 @@ const shortcutItems = [
 
 .app-site-header__brand {
   flex: 0 0 auto;
-  color: #ffffff;
+  color: #f9f4e6;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -139,7 +164,7 @@ const shortcutItems = [
 }
 
 .app-site-header__brand span {
-  color: #00b4ff;
+  color: #e0ba6b;
 }
 
 .app-site-header__nav {
@@ -163,7 +188,7 @@ const shortcutItems = [
   min-height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  color: #ccd5e4;
+  color: rgba(244, 246, 238, 0.82);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -173,14 +198,20 @@ const shortcutItems = [
 }
 
 .app-site-header__nav a:hover {
-  color: #ffffff;
+  color: #fffaf0;
   background: rgba(255, 255, 255, 0.1);
 }
 
 .app-site-header__nav a.router-link-active {
-  color: #ffffff;
-  background: rgba(59, 130, 246, 0.28);
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+  color: #153f46;
+  background: linear-gradient(110deg, #f5edda, #dfc17f);
+  box-shadow: 0 5px 14px rgba(7, 40, 47, 0.28);
+}
+
+.app-tab-nav__avatar {
+  border-color: rgba(224, 186, 107, 0.75);
+  color: #f8f3e7;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 680px) {

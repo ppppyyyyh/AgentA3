@@ -662,7 +662,7 @@ function releasePreview() {
 .home-view {
   isolation: isolate;
   min-height: 100vh;
-  background: #eaf3fc;
+  background: transparent;
   color: #333;
 }
 
@@ -686,8 +686,9 @@ function releasePreview() {
 
 .search-area {
   padding: 40px 0 30px;
-  background: linear-gradient(180deg, #dce8f4 0%, #eaf3fc 100%);
-  border-bottom: 1px solid #d0dceb;
+  background: rgba(249, 247, 239, 0.36);
+  border-bottom: 1px solid rgba(36, 118, 116, 0.16);
+  backdrop-filter: blur(2px);
 }
 
 .search-box-wrap {

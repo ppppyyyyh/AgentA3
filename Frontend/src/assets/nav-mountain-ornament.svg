@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 84" fill="none">
+  <defs>
+    <linearGradient id="mountain" x1="34" y1="26" x2="324" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A9D2C1" stop-opacity=".72"/>
+      <stop offset=".58" stop-color="#83C1B8" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#D4D7A5" stop-opacity=".22"/>
+    </linearGradient>
+    <linearGradient id="ridge" x1="116" y1="20" x2="219" y2="75" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DCE5BE" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#8BC3B7" stop-opacity=".2"/>
+    </linearGradient>
+  </defs>
+  <path d="M11 66c35-1 56-5 73-15 17-10 27-33 45-38 18 5 24 29 42 35 19 7 31-4 48-10 17 4 25 21 45 24 23 4 44-10 67-5 10 2 18 6 28 9" stroke="#E6C98E" stroke-opacity=".72" stroke-width="1.2"/>
+  <path d="M31 66c32-5 50-16 70-38 6-6 12-11 19-15-11 20-14 39-35 53H31Z" fill="url(#mountain)"/>
+  <path d="M76 66c20-12 29-41 50-54 9 15 15 37 36 54H76Z" fill="url(#ridge)"/>
+  <path d="M119 66c12-12 15-27 24-38 7 14 15 27 29 38h-53Zm42 0c18-10 28-26 45-33 11 8 16 23 31 33h-76Zm70 0c18-8 25-20 42-25 14 6 23 17 40 25h-82Z" fill="url(#mountain)"/>
+  <path d="M93 58c14-10 18-27 31-39m-20 42c13-12 17-29 23-42m10 42c-3-13-5-26-10-42m18 43c-5-12-9-25-18-43m48 42c11-8 18-19 30-26m-18 28c7-8 12-17 18-28m43 27c11-6 20-14 30-18" stroke="#E6C98E" stroke-opacity=".55" stroke-width=".9"/>
+  <path d="M32 29c10 0 15-3 20-9-1 7 5 11 13 11 9 0 16-5 19-11 2 10-7 18-19 18-8 0-15-3-20-8-4 3-8 4-13 4-7 0-13-2-18-5 6 1 12 1 18 0Z" fill="#F1DFC0" fill-opacity=".8"/>
+</svg>

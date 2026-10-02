@@ -1,9 +1,7 @@
 <script setup>
-import loginBg from '@/assets/login-bg.jpg'
-
+import loginBg from '@/assets/campus-login-landscape-v2.png'
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
 import { login, register } from '../api/user'
 import { setToken, setUserInfo } from '../utils/auth'
 
@@ -14,20 +12,10 @@ const errorMessage = ref('')
 const successMessage = ref('')
 const showPassword = ref(false)
 const mode = ref('login')
-const form = reactive({
-  username: 'test_student',
-  password: 'admin123',
-})
-const registerForm = reactive({
-  username: '',
-  password: '',
-  confirmPassword: '',
-})
+const form = reactive({ username: 'test_student', password: 'admin123' })
+const registerForm = reactive({ username: '', password: '', confirmPassword: '' })
 
-function togglePassword() {
-  showPassword.value = !showPassword.value
-}
-
+function togglePassword() { showPassword.value = !showPassword.value }
 function switchMode(target) {
   mode.value = target
   errorMessage.value = ''
@@ -37,76 +25,34 @@ function switchMode(target) {
 
 async function handleLogin() {
   errorMessage.value = ''
-
-  if (!form.username.trim()) {
-    errorMessage.value = '请输入用户名'
-    return
-  }
-
-  if (!form.password || form.password.length < 6) {
-    errorMessage.value = '密码长度至少6位'
-    return
-  }
-
+  if (!form.username.trim()) return void (errorMessage.value = '请输入用户名')
+  if (!form.password || form.password.length < 6) return void (errorMessage.value = '密码长度至少6位')
   loading.value = true
   try {
-    const result = await login({
-      username: form.username.trim(),
-      password: form.password,
-    })
+    const result = await login({ username: form.username.trim(), password: form.password })
     const user = result.data || {}
-
     setToken(user.token)
     setUserInfo({
-      id: user.id,
-      userId: user.id,
-      username: user.username,
-      role: user.role,
-      phone: user.phone,
-      realName: user.realName,
-      college: user.college,
-      major: user.major,
-      className: user.className,
-      personalNumber: user.personalNumber,
-      studentId: user.personalNumber,
-      avatar: user.avatar,
+      id: user.id, userId: user.id, username: user.username, role: user.role,
+      phone: user.phone, realName: user.realName, college: user.college,
+      major: user.major, className: user.className, personalNumber: user.personalNumber,
+      studentId: user.personalNumber, avatar: user.avatar,
     })
-
     router.replace(String(route.query.redirect || '/home'))
   } catch (error) {
     errorMessage.value = error.message || '登录失败'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 
 async function handleRegister() {
   errorMessage.value = ''
   successMessage.value = ''
-
-  if (registerForm.username.trim().length < 3) {
-    errorMessage.value = '用户名长度至少3位'
-    return
-  }
-
-  if (!registerForm.password || registerForm.password.length < 6) {
-    errorMessage.value = '密码长度至少6位'
-    return
-  }
-
-  if (registerForm.password !== registerForm.confirmPassword) {
-    errorMessage.value = '两次输入的密码不一致'
-    return
-  }
-
+  if (registerForm.username.trim().length < 3) return void (errorMessage.value = '用户名长度至少3位')
+  if (!registerForm.password || registerForm.password.length < 6) return void (errorMessage.value = '密码长度至少6位')
+  if (registerForm.password !== registerForm.confirmPassword) return void (errorMessage.value = '两次输入的密码不一致')
   loading.value = true
   try {
-    await register({
-      username: registerForm.username.trim(),
-      password: registerForm.password,
-      role: 'STUDENT',
-    })
-
+    await register({ username: registerForm.username.trim(), password: registerForm.password, role: 'STUDENT' })
     form.username = registerForm.username.trim()
     form.password = ''
     registerForm.password = ''
@@ -116,699 +62,120 @@ async function handleRegister() {
     successMessage.value = '注册成功，请使用新账号登录'
   } catch (error) {
     errorMessage.value = error.message || '注册失败'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 </script>
 
 <template>
-  <main
-    class="login-page"
-    :style="{ backgroundImage: `url(${loginBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }"
-  >
-    <div class="login-card">
-      <div class="card-border-glow"></div>
+  <main class="login-page" :style="{ backgroundImage: `url(${loginBg})` }">
+    <header class="site-brand" aria-label="校园智学">
+      <svg viewBox="0 0 64 56" fill="none" aria-hidden="true">
+        <path d="M9 31V14c9 0 17 3 23 9v24C25 40 17 37 9 37v-6Z" />
+        <path d="M55 31V14c-9 0-17 3-23 9v24c7-7 15-10 23-10v-6Z" />
+        <path d="M6 43c10-1 19 1 26 7 7-6 16-8 26-7" />
+        <path class="brand-gold" d="M18 13 32 3l14 10" />
+      </svg>
+      <strong>校园智学</strong>
+    </header>
 
-      <div class="card-particles">
-        <span class="particle p1"></span>
-        <span class="particle p2"></span>
-        <span class="particle p3"></span>
-        <span class="particle p4"></span>
-        <span class="particle p5"></span>
-      </div>
-
-      <div class="brand-area">
-        <div class="brand-logo">
-          <div class="logo-ring"></div>
-          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-            <text class="logo-text" x="50%" y="50%" dominant-baseline="central" text-anchor="middle"
-                  font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif"
-                  font-size="26" font-weight="900" fill="white"
-                  stroke="white" stroke-width="2"
-                  style="paint-order: stroke fill;"
-                  letter-spacing="1.5">A3</text>
-          </svg>
-        </div>
-        <div class="brand-text-group">
-          <h1 class="brand-title">A3 Campus</h1>
-        </div>
+    <section class="login-panel">
+      <div class="panel-title">
+        <small>{{ mode === 'login' ? 'WELCOME' : 'JOIN US' }}</small>
+        <h1>{{ mode === 'login' ? '欢迎登录' : '注册账号' }}</h1>
+        <i></i>
       </div>
 
       <form v-if="mode === 'login'" class="login-form" @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label class="form-label">账号</label>
-          <div class="input-wrapper">
-            <input
-              v-model="form.username"
-              class="form-input"
-              autocomplete="username"
-              placeholder="请输入账号"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">密码</label>
-          <div class="input-wrapper">
-            <input
-              v-model="form.password"
-              class="form-input"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="current-password"
-              placeholder="请输入密码"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              @click="togglePassword"
-            >
-              <svg v-if="!showPassword" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <svg v-else class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                <line x1="1" y1="1" x2="23" y2="23"></line>
-              </svg>
-              <span class="toggle-text">{{ showPassword ? '隐藏' : '显示' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <p v-if="successMessage" class="form-success">{{ successMessage }}</p>
-        <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
-
+        <label class="input-field">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.8-4.2 3.3-6.3 7.5-6.3s6.7 2.1 7.5 6.3"/></svg>
+          <input v-model="form.username" autocomplete="username" placeholder="手机号 / 学号 / 用户名" />
+        </label>
+        <label class="input-field">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
+          <input v-model="form.password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="密码" />
+          <button type="button" class="password-toggle" :aria-label="showPassword ? '隐藏密码' : '显示密码'" @click="togglePassword">
+            <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+            <svg v-else viewBox="0 0 24 24" fill="none"><path d="m3 3 18 18M10.5 6.2c.5-.1 1-.2 1.5-.2 6 0 9.5 6 9.5 6a16 16 0 0 1-2.1 2.8M6.1 6.2C3.7 8 2.5 12 2.5 12s3.5 6 9.5 6c1 0 1.9-.2 2.7-.4"/></svg>
+          </button>
+        </label>
+        <p v-if="successMessage" class="form-message success">{{ successMessage }}</p>
+        <p v-if="errorMessage" class="form-message error">{{ errorMessage }}</p>
         <div class="button-group">
-          <button
-            class="submit-btn"
-            :disabled="loading"
-            type="submit"
-          >
-            <span v-if="loading" class="btn-loading"></span>
-            <span class="btn-text">{{ loading ? '登录中...' : '进入校园助手' }}</span>
+          <button class="submit-btn" :disabled="loading" type="submit">
+            <span v-if="loading" class="spinner"></span><span>{{ loading ? '登录中...' : '登录' }}</span>
+            <svg v-if="!loading" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
           </button>
-
-          <button
-            class="register-btn"
-            type="button"
-            @click="switchMode('register')"
-          >
-            注册新账号
-          </button>
+          <button class="register-btn" type="button" @click="switchMode('register')">注册账号</button>
         </div>
       </form>
 
       <form v-else class="login-form" @submit.prevent="handleRegister">
-        <div class="form-group">
-          <label class="form-label">账号</label>
-          <div class="input-wrapper">
-            <input
-              v-model="registerForm.username"
-              class="form-input"
-              autocomplete="username"
-              placeholder="请设置账号（3-50位）"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">密码</label>
-          <div class="input-wrapper">
-            <input
-              v-model="registerForm.password"
-              class="form-input"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              placeholder="请设置密码（至少6位）"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              @click="togglePassword"
-            >
-              <svg v-if="!showPassword" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <svg v-else class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                <line x1="1" y1="1" x2="23" y2="23"></line>
-              </svg>
-              <span class="toggle-text">{{ showPassword ? '隐藏' : '显示' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">确认密码</label>
-          <div class="input-wrapper">
-            <input
-              v-model="registerForm.confirmPassword"
-              class="form-input"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              placeholder="请再次输入密码"
-            />
-          </div>
-        </div>
-
-        <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
-
+        <label class="input-field"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.8-4.2 3.3-6.3 7.5-6.3s6.7 2.1 7.5 6.3"/></svg><input v-model="registerForm.username" autocomplete="username" placeholder="请设置账号（3-50位）" /></label>
+        <label class="input-field"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input v-model="registerForm.password" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="请设置密码（至少6位）" /><button type="button" class="password-toggle" @click="togglePassword"><svg viewBox="0 0 24 24" fill="none"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg></button></label>
+        <label class="input-field"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input v-model="registerForm.confirmPassword" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="请再次输入密码" /></label>
+        <p v-if="errorMessage" class="form-message error">{{ errorMessage }}</p>
         <div class="button-group">
-          <button
-            class="submit-btn"
-            :disabled="loading"
-            type="submit"
-          >
-            <span v-if="loading" class="btn-loading"></span>
-            <span class="btn-text">{{ loading ? '注册中...' : '注册账号' }}</span>
-          </button>
-
-          <button
-            class="register-btn"
-            type="button"
-            @click="switchMode('login')"
-          >
-            返回登录
-          </button>
+          <button class="submit-btn" :disabled="loading" type="submit"><span v-if="loading" class="spinner"></span><span>{{ loading ? '注册中...' : '注册账号' }}</span></button>
+          <button class="register-btn" type="button" @click="switchMode('login')">返回登录</button>
         </div>
       </form>
-    </div>
+    </section>
   </main>
 </template>
 
 <style scoped>
+/* 校园智学登录页 */
 .login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
+  position: relative; display: flex; min-height: 100vh; align-items: center; justify-content: flex-end;
+  padding: clamp(92px, 10vh, 140px) clamp(48px, 8vw, 140px) 48px; overflow: hidden;
+  background-color: #dff4f1; background-position: center; background-size: cover;
+  color: #123d43; font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
 }
-
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 44px 40px 36px;
-  box-shadow: 0 25px 60px rgba(37, 99, 235, 0.12), 0 8px 24px rgba(37, 99, 235, 0.06);
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  animation: card-reveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+.login-page::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(224,247,244,.06), transparent 45%, rgba(226,246,242,.12)); content: ''; pointer-events: none; }
+.site-brand { position: absolute; top: clamp(28px, 5vh, 62px); left: clamp(34px, 5vw, 86px); z-index: 2; display: flex; align-items: center; gap: 15px; color: #103b42; }
+.site-brand svg { width: 58px; height: 52px; stroke: #237f77; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.site-brand .brand-gold { stroke: #c99e51; }
+.site-brand strong { font-family: "STKaiti", "KaiTi", serif; font-size: clamp(27px, 2.2vw, 38px); font-weight: 700; letter-spacing: .12em; }
+.login-panel { position: relative; z-index: 2; width: min(100%, 470px); padding: 54px 52px 44px; border: 1px solid rgba(255,255,255,.68); border-radius: 28px; background: rgba(255,255,252,.9); box-shadow: 0 24px 65px rgba(38,105,98,.16); backdrop-filter: blur(18px); }
+.panel-title { margin-bottom: 34px; }
+.panel-title small { display: block; margin-bottom: 6px; color: #3b8c83; font-size: 11px; font-weight: 700; letter-spacing: .22em; }
+.panel-title h1 { margin: 0; color: #112f35; font-family: "STKaiti", "KaiTi", serif; font-size: 42px; line-height: 1.2; }
+.panel-title i { display: block; width: 48px; height: 3px; margin-top: 12px; border-radius: 99px; background: #218b7d; }
+.login-form { display: grid; gap: 18px; }
+.input-field { display: flex; min-height: 58px; align-items: center; gap: 14px; padding: 0 18px; border: 1px solid rgba(85,118,124,.28); border-radius: 12px; background: rgba(255,255,255,.72); transition: border-color .2s, box-shadow .2s, background .2s; }
+.input-field:hover { border-color: rgba(33,139,125,.42); }
+.input-field:focus-within { border-color: #278d80; background: rgba(255,255,255,.94); box-shadow: 0 0 0 3px rgba(39,141,128,.1); }
+.input-field > svg, .password-toggle svg { width: 22px; height: 22px; flex: 0 0 auto; stroke: #75878b; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.input-field input { width: 100%; min-width: 0; height: 56px; border: 0; outline: 0; background: transparent; color: #153d42; font: inherit; font-size: 15px; }
+.input-field input::placeholder { color: #879397; }
+.password-toggle { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+.password-toggle:hover { background: rgba(35,127,119,.08); }
+.form-message { margin: 0; padding: 10px 13px; border-radius: 9px; font-size: 13px; }
+.form-message.error { border: 1px solid #f2c7bd; background: #fff5f2; color: #ad4337; }
+.form-message.success { border: 1px solid #b9ddcf; background: #f1faf6; color: #26725f; }
+.button-group { display: grid; gap: 14px; margin-top: 8px; }
+.submit-btn, .register-btn { display: flex; height: 58px; align-items: center; justify-content: center; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 700; letter-spacing: .12em; cursor: pointer; transition: transform .2s, box-shadow .2s, background .2s; }
+.submit-btn { position: relative; gap: 12px; border: 0; background: linear-gradient(110deg,#3ba493,#267b70); color: #fff; box-shadow: 0 10px 22px rgba(31,126,113,.22); }
+.submit-btn > svg { position: absolute; right: 14px; width: 28px; height: 28px; padding: 6px; border-radius: 50%; background: rgba(255,255,255,.88); stroke: #267b70; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.submit-btn:hover:not(:disabled), .register-btn:hover { transform: translateY(-1px); }
+.submit-btn:disabled { opacity: .65; cursor: not-allowed; }
+.register-btn { border: 1.5px solid #278779; background: rgba(255,255,255,.55); color: #267b70; }
+.register-btn:hover { background: rgba(239,250,246,.9); }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) {
+  .login-page { justify-content: center; padding: 112px 24px 34px; background-position: 42% center; }
+  .login-page::before { position: absolute; inset: 0; background: rgba(228,247,244,.26); content: ''; }
+  .site-brand { top: 28px; left: 28px; }
+  .site-brand svg { width: 46px; height: 42px; }
+  .login-panel { width: min(100%,440px); padding: 42px 34px 34px; }
 }
-
-@keyframes card-reveal {
-  0% {
-    opacity: 0;
-    transform: translateY(30px) scale(0.96);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.card-border-glow {
-  position: absolute;
-  inset: 0;
-  border-radius: 24px;
-  padding: 1.5px;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    rgba(59, 130, 246, 0.15) 15%,
-    rgba(59, 130, 246, 0.4) 30%,
-    rgba(37, 99, 235, 0.2) 50%,
-    rgba(59, 130, 246, 0.4) 70%,
-    rgba(59, 130, 246, 0.15) 85%,
-    transparent 100%
-  );
-  background-size: 300% 300%;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: border-flow 8s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes border-flow {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.card-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: 24px;
-}
-
-.particle {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: #3b82f6;
-  border-radius: 50%;
-  opacity: 0;
-  animation: particle-float 6s ease-in-out infinite;
-}
-
-.p1 { top: 12%; left: 15%; animation-delay: 0s; }
-.p2 { top: 25%; right: 18%; animation-delay: 1.2s; }
-.p3 { bottom: 30%; left: 20%; animation-delay: 2.4s; width: 2px; height: 2px; }
-.p4 { top: 50%; right: 12%; animation-delay: 3.6s; width: 4px; height: 4px; }
-.p5 { bottom: 15%; right: 25%; animation-delay: 4.8s; }
-
-@keyframes particle-float {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.5);
-  }
-  20% {
-    opacity: 0.6;
-    transform: translateY(-8px) scale(1);
-  }
-  80% {
-    opacity: 0.3;
-    transform: translateY(-16px) scale(0.8);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-24px) scale(0.5);
-  }
-}
-
-.brand-area {
-  text-align: center;
-  margin-bottom: 40px;
-  animation: fade-slide-up 0.6s ease-out 0.1s both;
-}
-
-@keyframes fade-slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.brand-logo {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  background-size: 200% 200%;
-  border-radius: 16px;
-  color: #ffffff;
-  margin-bottom: 16px;
-  box-shadow:
-    0 8px 24px rgba(37, 99, 235, 0.3),
-    0 0 0 0 rgba(59, 130, 246, 0.4);
-  animation:
-    logo-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
-    logo-gradient 4s ease infinite 1s,
-    logo-float 3s ease-in-out infinite 1s;
-}
-
-.brand-logo .logo-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border: 2px solid rgba(59, 130, 246, 0.4);
-  border-radius: 16px;
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 0;
-  animation: logo-ring 2s ease-out infinite 1s;
-}
-
-.brand-logo svg {
-  width: 34px;
-  height: 34px;
-  animation: logo-rotate 8s linear infinite 1s;
-}
-
-.brand-logo .logo-text {
-  animation: logo-text-pulse 2s ease-in-out infinite 1s;
-}
-
-@keyframes logo-appear {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) rotate(-15deg);
-  }
-  60% {
-    transform: scale(1.1) rotate(3deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0);
-  }
-}
-
-@keyframes logo-gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes logo-float {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow:
-      0 8px 24px rgba(37, 99, 235, 0.3),
-      0 0 0 0 rgba(59, 130, 246, 0.4);
-  }
-  50% {
-    transform: translateY(-3px);
-    box-shadow:
-      0 12px 30px rgba(37, 99, 235, 0.4),
-      0 0 0 0 rgba(59, 130, 246, 0.3);
-  }
-}
-
-@keyframes logo-ring {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.6);
-    opacity: 0;
-  }
-}
-
-@keyframes logo-rotate {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-2deg);
-  }
-  75% {
-    transform: rotate(2deg);
-  }
-}
-
-@keyframes logo-text-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.85;
-  }
-}
-
-.brand-text-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.brand-title {
-  font-size: 34px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  letter-spacing: 1px;
-  line-height: 1.2;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  animation: field-enter 0.5s ease-out both;
-}
-
-.form-group:nth-child(1) { animation-delay: 0.3s; }
-.form-group:nth-child(2) { animation-delay: 0.4s; }
-
-@keyframes field-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.form-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 12px;
-  background: #f8fafc;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.input-wrapper:hover {
-  border-color: #bfdbfe;
-  background: #ffffff;
-}
-
-.input-wrapper:focus-within {
-  border-color: #3b82f6;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-}
-
-.form-input {
-  flex: 1;
-  height: 46px;
-  padding: 0 16px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  color: #111827;
-  font-family: inherit;
-  transition: all 0.2s ease;
-}
-
-.form-input::placeholder {
-  color: #9ca3af;
-}
-
-.toggle-password {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  margin-right: 6px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #6b7280;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-password:hover {
-  color: #1d4ed8;
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.toggle-password:active {
-  transform: scale(0.95);
-}
-
-.eye-icon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s ease;
-}
-
-.toggle-password:hover .eye-icon {
-  transform: scale(1.1);
-}
-
-.form-error {
-  margin: 0;
-  padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 10px;
-  color: #dc2626;
-  font-size: 13px;
-  animation: error-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-}
-
-.form-success {
-  margin: 0;
-  padding: 10px 14px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 10px;
-  color: #16a34a;
-  font-size: 13px;
-}
-
-@keyframes error-shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(5px); }
-}
-
-.button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 6px;
-  animation: field-enter 0.5s ease-out 0.5s both;
-}
-
-.submit-btn {
-  height: 48px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3),
-              0 1px 2px rgba(37, 99, 235, 0.2);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-
-.submit-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4),
-              0 2px 4px rgba(37, 99, 235, 0.3);
-}
-
-.submit-btn:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.submit-btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-}
-
-.submit-btn:disabled {
-  background: #bfdbfe;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.btn-loading {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.btn-text {
-  position: relative;
-  z-index: 1;
-}
-
-.register-btn {
-  height: 44px;
-  border: 1.5px solid #3b82f6;
-  border-radius: 12px;
-  background: transparent;
-  color: #2563eb;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.register-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.register-btn:hover {
-  background: transparent;
-  border-color: #2563eb;
-  color: #1d4ed8;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-}
-
-.register-btn:hover::before {
-  opacity: 1;
-}
-
-.register-btn:active {
-  transform: translateY(0) scale(0.98);
+@media (max-width: 520px) {
+  .login-page { align-items: flex-start; padding: 105px 14px 24px; }
+  .site-brand strong { font-size: 25px; }
+  .login-panel { padding: 34px 24px 28px; border-radius: 22px; }
+  .panel-title { margin-bottom: 26px; }
+  .panel-title h1 { font-size: 34px; }
+  .input-field, .submit-btn { min-height: 54px; }
 }
 </style>
