@@ -16,6 +16,8 @@ public class DishReviewDTO {
 
     private Long stallId;
 
+    private Long stallPlaceId;
+
     @NotNull(message = "评分不能为空")
     private BigDecimal rating;
 

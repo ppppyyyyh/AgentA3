@@ -31,7 +31,7 @@
 				<view
 					class="home-quick-entry__item home-quick-entry__item--food"
 					aria-label="美食"
-					@click="navigate('/subpackage_facility/restaurantDetail/restaurantDetail?id=3')"
+					@click="navigate('/subpackage_facility/restaurantDetail/restaurantDetail')"
 				>
 					<image class="home-quick-entry__icon" src="/static/index/quick-entry/food.png" mode="aspectFit" />
 					<text class="home-quick-entry__text">美食</text>

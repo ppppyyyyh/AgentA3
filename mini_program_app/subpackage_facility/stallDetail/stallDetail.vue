@@ -114,6 +114,7 @@ export default {
       reviewDraft: '',
       activeDish: null,
       stallId: '',
+      stallPlaceId: '',
       stallName: '档口详情',
       dishList: [],
       // 当前菜品的评价列表
@@ -130,6 +131,9 @@ export default {
   onLoad(options) {
     if (options.stallId) {
       this.stallId = options.stallId
+    }
+    if (options.stallPlaceId) {
+      this.stallPlaceId = options.stallPlaceId
     }
     this.loadDishes()
   },
@@ -196,6 +200,7 @@ export default {
         await createDishReview({
           dishId: this.activeDish.id,
           stallId: this.activeDish.stallId,
+          stallPlaceId: this.activeDish.stallPlaceId,
           rating: 5.0,
           content: this.reviewDraft.trim(),
           isAnonymous: false
@@ -215,7 +220,10 @@ export default {
     },
     async loadDishes() {
       try {
-        const res = await getDishList({ stallId: this.stallId })
+        const params = this.stallPlaceId
+          ? { stallPlaceId: this.stallPlaceId }
+          : { stallId: this.stallId }
+        const res = await getDishList(params)
         this.dishList = res.data || []
 
         // 获取档口名称

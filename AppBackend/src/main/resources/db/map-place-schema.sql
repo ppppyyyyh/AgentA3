@@ -73,3 +73,7 @@ CREATE TABLE IF NOT EXISTS map_place_indoor_position (
     CONSTRAINT fk_map_indoor_place FOREIGN KEY (place_id) REFERENCES map_place(id),
     CONSTRAINT fk_map_indoor_plan FOREIGN KEY (floor_plan_id) REFERENCES map_floor_plan(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 新餐饮链路的评价关联。已有数据库升级时执行以下两条语句；新环境由 Hibernate 自动同步。
+-- ALTER TABLE dish_review MODIFY COLUMN stall_id BIGINT NULL COMMENT '旧档口 ID';
+-- ALTER TABLE dish_review ADD COLUMN stall_place_id BIGINT NULL COMMENT '点位档口 ID';

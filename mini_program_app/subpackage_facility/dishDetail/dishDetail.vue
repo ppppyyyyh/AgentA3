@@ -349,6 +349,7 @@ export default {
         await createDishReview({
           dishId: this.dishId,
           stallId: this.dishInfo.stallId,
+          stallPlaceId: this.dishInfo.stallPlaceId,
           rating: ratingMap[this.verdictType],
           content: this.reviewContent.trim(),
           images: imageUrls.join(','),

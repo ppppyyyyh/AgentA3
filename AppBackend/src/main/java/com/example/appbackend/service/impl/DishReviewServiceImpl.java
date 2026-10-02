@@ -5,11 +5,13 @@ import com.example.appbackend.dto.DishReviewSummaryDTO;
 import com.example.appbackend.entity.DishReview;
 import com.example.appbackend.entity.Dish;
 import com.example.appbackend.entity.CanteenStall;
+import com.example.appbackend.entity.MapPlace;
 import com.example.appbackend.entity.User;
 import com.example.appbackend.exception.BusinessException;
 import com.example.appbackend.repository.DishReviewRepository;
 import com.example.appbackend.repository.DishRepository;
 import com.example.appbackend.repository.CanteenStallRepository;
+import com.example.appbackend.repository.MapPlaceRepository;
 import com.example.appbackend.repository.UserRepository;
 import com.example.appbackend.service.DishReviewService;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +35,9 @@ public class DishReviewServiceImpl implements DishReviewService {
 
     @Autowired
     private CanteenStallRepository canteenStallRepository;
+
+    @Autowired
+    private MapPlaceRepository mapPlaceRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -73,6 +78,7 @@ public class DishReviewServiceImpl implements DishReviewService {
         review.setDishId(request.getDishId());
         review.setUserId(userId);
         review.setStallId(dish.getStallId());
+        review.setStallPlaceId(dish.getStallPlaceId());
         review.setRating(request.getRating());
         review.setContent(request.getContent());
         review.setImages(request.getImages());
@@ -177,6 +183,11 @@ public class DishReviewServiceImpl implements DishReviewService {
             CanteenStall stall = canteenStallRepository.findById(review.getStallId()).orElse(null);
             if (stall != null) {
                 dto.setStallName(stall.getStallName());
+            }
+        } else if (review.getStallPlaceId() != null) {
+            MapPlace stallPlace = mapPlaceRepository.findById(review.getStallPlaceId()).orElse(null);
+            if (stallPlace != null) {
+                dto.setStallName(stallPlace.getName());
             }
         }
 

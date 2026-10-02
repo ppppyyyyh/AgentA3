@@ -1,5 +1,24 @@
 import { request } from '@/utils/request'
 
+export function getCanteenList() {
+  return request({
+    url: '/api/v1/map-places',
+    method: 'GET',
+    params: {
+      sceneType: 'CANTEEN',
+      placeType: 'CANTEEN',
+      status: 'ENABLED',
+    },
+  })
+}
+
+export function getCanteenStructure(canteenId) {
+  return request({
+    url: `/api/v1/map-places/canteens/${canteenId}/structure`,
+    method: 'GET',
+  })
+}
+
 export function getCanteenStallList(params = {}) {
   return request({
     url: '/api/v1/canteen-stall/list',

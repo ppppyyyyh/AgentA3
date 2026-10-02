@@ -19,8 +19,11 @@ public class DishReview {
     @Column(name = "user_id", nullable = false, columnDefinition = "BIGINT NOT NULL COMMENT '用户 ID'")
     private Long userId;
 
-    @Column(name = "stall_id", nullable = false, columnDefinition = "BIGINT NOT NULL COMMENT '档口 ID'")
+    @Column(name = "stall_id", columnDefinition = "BIGINT COMMENT '旧档口 ID'")
     private Long stallId;
+
+    @Column(name = "stall_place_id", columnDefinition = "BIGINT COMMENT '点位档口 ID'")
+    private Long stallPlaceId;
 
     @Column(name = "rating", nullable = false, columnDefinition = "DECIMAL(3,2) NOT NULL COMMENT '评分 (0-5)'")
     private java.math.BigDecimal rating;
@@ -67,4 +70,8 @@ public class DishReview {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stall_id", insertable = false, updatable = false)
     private CanteenStall stall;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stall_place_id", insertable = false, updatable = false)
+    private MapPlace stallPlace;
 }

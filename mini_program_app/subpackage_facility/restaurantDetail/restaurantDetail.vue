@@ -199,7 +199,7 @@
 
 <script>
 import AiFloatAssistant from '@/components/ai-float-assistant/ai-float-assistant.vue'
-import { getCanteenStallList, getDishList, getDishReviewCount } from '@/api/dining.js'
+import { getCanteenList, getCanteenStructure, getDishList, getDishReviewCount } from '@/api/dining.js'
 import NavBar from '@/components/nav-bar/nav-bar.vue'
 
 export default {
@@ -220,13 +220,10 @@ export default {
         { name: '重庆小面', badge: '新' },
         { name: '沙县小吃', badge: '热' }
       ],
-      currentRestaurantId: '1',
-      // 食堂（餐厅）列表 - 对应 campus_facility 表 facility_type=1 的数据
-      canteenList: [
-        { id: '1', name: '第一学生餐厅' },
-        { id: '2', name: '第二学生餐厅' },
-        { id: '3', name: '清真餐厅' }
-      ],
+      currentRestaurantId: '',
+      requestedRestaurantId: '',
+      // 从智慧校园后台 map_place 加载的食堂列表
+      canteenList: [],
       // 从 API 加载的档口数据
       stallList: [],
       // 从 API 加载的菜品数据
@@ -237,15 +234,15 @@ export default {
   },
   computed: {
     currentRestaurant() {
-      return this.canteenList.find(item => item.id === this.currentRestaurantId) || this.canteenList[0]
+      return this.canteenList.find(item => String(item.id) === String(this.currentRestaurantId)) || this.canteenList[0] || { name: '校园美食' }
     },
-    // 过滤当前食堂的档口
     filteredStalls() {
-      return this.stallList.filter(stall => stall.restaurantId.toString() === this.currentRestaurantId)
+      return this.stallList
     },
     // 人气热榜 - 按推荐率排序取前 3
     hotRanking() {
       return [...this.filteredStalls]
+        .filter(item => Number(item.recommendRate) > 0)
         .sort((a, b) => b.recommendRate - a.recommendRate)
         .slice(0, 3)
         .map((item, index) => ({
@@ -256,20 +253,14 @@ export default {
     },
     // 过滤当前食堂的菜品
     filteredDishes() {
-      // 获取当前餐厅所有档口的 ID
-      const currentStallIds = this.filteredStalls.map(stall => stall.id)
-      // 过滤出属于这些档口的菜品
-      return this.dishList.filter(dish => currentStallIds.includes(dish.stallId))
+      return this.dishList
     }
   },
   onLoad(options) {
     if (options && options.id) {
-      this.currentRestaurantId = options.id
+      this.requestedRestaurantId = String(options.id)
     }
-    // 加载档口数据
-    this.loadStalls()
-    // 加载菜品数据
-    this.loadDishes()
+    this.loadCanteens()
   },
   methods: {
     // 获取食物样式类
@@ -288,22 +279,49 @@ export default {
       }
       return classMap[category] || 'food-amber'
     },
-    // 加载档口数据
-    async loadStalls() {
+    async loadCanteens() {
       try {
-        const res = await getCanteenStallList()
-        this.stallList = res.data || []
+        const res = await getCanteenList()
+        this.canteenList = (res.data || []).filter(item => item.status === 'ENABLED')
+        const requested = this.canteenList.find(item => String(item.id) === this.requestedRestaurantId)
+        this.currentRestaurantId = (requested || this.canteenList[0] || {}).id || ''
+        if (this.currentRestaurantId) {
+          await this.loadStalls()
+        }
       } catch (error) {
-        console.error('加载档口数据失败:', error)
+        console.error('加载食堂数据失败:', error)
+        uni.showToast({ title: '食堂数据加载失败', icon: 'none' })
       }
     },
-    // 加载菜品数据
+    async loadStalls() {
+      try {
+        const res = await getCanteenStructure(this.currentRestaurantId)
+        const structure = res.data || []
+        const floors = structure.filter(item => item.placeType === 'FLOOR')
+        this.stallList = structure
+          .filter(item => item.placeType === 'CANTEEN_STALL' && item.status === 'ENABLED')
+          .map(item => ({
+            ...item,
+            stallName: item.name,
+            restaurantId: this.currentRestaurantId,
+            floor: floors.find(floor => String(floor.id) === String(item.parentId))?.name || '',
+            category: item.usagePurpose || '',
+            image: item.imageUrl || '',
+            reviewCount: 0,
+            recommendRate: 0,
+          }))
+        await this.loadDishes()
+      } catch (error) {
+        console.error('加载档口数据失败:', error)
+        this.stallList = []
+        this.dishList = []
+      }
+    },
     async loadDishes() {
       try {
-        const res = await getDishList()
-        this.dishList = res.data || []
-        // 加载每个菜品的评价数量
-        this.loadReviewCounts()
+        const responses = await Promise.all(this.stallList.map(stall => getDishList({ stallPlaceId: stall.id })))
+        this.dishList = responses.reduce((list, res) => list.concat(res.data || []), [])
+        await this.loadReviewCounts()
       } catch (error) {
         console.error('加载菜品数据失败:', error)
       }
@@ -324,13 +342,17 @@ export default {
       return this.reviewCountMap[dishId] || 0
     },
     // 切换食堂
-    switchRestaurant(id) {
+    async switchRestaurant(id) {
+      if (String(id) === String(this.currentRestaurantId)) return
       this.currentRestaurantId = id
+      this.stallList = []
+      this.dishList = []
+      await this.loadStalls()
     },
     // 打开档口详情
     openStallDetail(stall) {
       uni.navigateTo({
-        url: `/subpackage_facility/stallDetail/stallDetail?stallId=${stall.id}&restaurantId=${stall.restaurantId}`
+        url: `/subpackage_facility/stallDetail/stallDetail?stallPlaceId=${stall.id}&restaurantId=${stall.restaurantId}`
       })
     },
     // 打开菜品详情
