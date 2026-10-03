@@ -653,6 +653,13 @@ function getActivitiesForDay(day) {
 
 <style scoped>
 .campus-activities-view {
+  --ca-surface-warm: rgba(255, 253, 248, 0.96);
+  --ca-surface-warm-solid: #fffdf8;
+  --ca-accent: #b98a32;
+  --ca-accent-dark: #815c1f;
+  --ca-accent-border: #c99a3d;
+  --ca-accent-soft: #fff5dc;
+  --ca-accent-shadow: rgba(185, 138, 50, 0.22);
   min-height: 100vh;
   background: #f4f7fb;
   color: #1f2937;
@@ -683,17 +690,19 @@ function getActivitiesForDay(day) {
   margin: 4px 0 24px;
   padding-bottom: 18px;
   border-bottom: 1px solid transparent;
-  border-image: linear-gradient(90deg, rgba(59, 130, 246, 0.25) 0%, rgba(148, 163, 184, 0.15) 50%, transparent 100%) 1;
+  border-image: linear-gradient(90deg, rgba(185, 138, 50, 0.36) 0%, rgba(148, 163, 184, 0.15) 50%, transparent 100%) 1;
   animation: caFadeDown 0.45s ease-out;
 }
 
 .ca-header__copy h2 {
   margin: 0;
-  color: #17233a;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
+  color: #123f49;
+  font-family: 'STXingkai', '华文行楷', 'LXGW WenKai Screen', '霞鹜文楷 屏幕阅读版', 'STKaiti', 'KaiTi', serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 5px;
   line-height: 1.25;
+  text-shadow: 0 1px 0 rgba(185, 138, 50, 0.16);
 }
 
 
@@ -706,7 +715,7 @@ function getActivitiesForDay(day) {
   padding: 6px 14px;
   border: 1px solid #dbe4ee;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--ca-surface-warm);
   color: #5b6b7d;
   font-size: 13px;
   font-weight: 600;
@@ -716,7 +725,7 @@ function getActivitiesForDay(day) {
 .ca-header__pill .ca-icon {
   width: 15px;
   height: 15px;
-  color: #3b82f6;
+  color: var(--ca-accent);
 }
 
 .ca-header__actions {
@@ -732,7 +741,7 @@ function getActivitiesForDay(day) {
   margin-bottom: 24px;
   border: 1px solid #e6ecf3;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--ca-surface-warm);
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   animation: caFadeDown 0.45s ease-out 0.06s backwards;
 }
@@ -772,7 +781,7 @@ function getActivitiesForDay(day) {
   padding: 0 14px;
   border: 1px solid #dbe4ee;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   color: #5b6b7d;
   font-size: 13px;
   line-height: 1;
@@ -782,17 +791,17 @@ function getActivitiesForDay(day) {
 }
 
 .ca-chip:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: var(--ca-accent-border);
+  background: var(--ca-accent-soft);
+  color: var(--ca-accent-dark);
 }
 
 .ca-chip.active {
-  border-color: #2563eb;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-  font-weight: 600;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  border-color: var(--ca-accent-border);
+  background: linear-gradient(135deg, #fffdf7, #f3dfae);
+  color: #704d18;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(190, 142, 52, 0.14), 0 4px 10px var(--ca-accent-shadow);
 }
 
 .ca-toolbar__main {
@@ -809,13 +818,13 @@ function getActivitiesForDay(day) {
   padding: 0 6px 0 14px;
   border: 1.5px solid #d7e0e8;
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ca-search:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: var(--ca-accent-border);
+  box-shadow: 0 0 0 3px rgba(185, 138, 50, 0.12);
 }
 
 .ca-search > .ca-icon {
@@ -845,7 +854,7 @@ function getActivitiesForDay(day) {
   height: 32px;
   padding: 0 16px;
   border-radius: 8px;
-  background: #2563eb;
+  background: linear-gradient(180deg, #d9b561, #a9792f);
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
@@ -854,7 +863,7 @@ function getActivitiesForDay(day) {
 }
 
 .ca-search__btn:hover {
-  background: #1d4ed8;
+  background: linear-gradient(180deg, #cda54e, #936824);
 }
 
 .ca-search__btn:active {
@@ -889,12 +898,12 @@ function getActivitiesForDay(day) {
 }
 
 .ca-seg__item:hover {
-  color: #2563eb;
+  color: var(--ca-accent-dark);
 }
 
 .ca-seg__item.active {
-  background: #ffffff;
-  color: #2563eb;
+  background: var(--ca-surface-warm-solid);
+  color: var(--ca-accent-dark);
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
 }
@@ -919,7 +928,7 @@ function getActivitiesForDay(day) {
   padding: 48px 20px;
   border: 1px solid #eef2f7;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--ca-surface-warm);
   color: #718096;
   text-align: center;
   animation: caFadeUp 0.35s ease-out;
@@ -959,7 +968,7 @@ function getActivitiesForDay(day) {
   width: 34px;
   height: 34px;
   border: 3px solid #e4eaf1;
-  border-top-color: #3b82f6;
+  border-top-color: var(--ca-accent);
   border-radius: 50%;
   animation: caSpin 0.8s linear infinite;
 }
@@ -967,10 +976,10 @@ function getActivitiesForDay(day) {
 .ca-btn {
   min-height: 38px;
   padding: 0 18px;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--ca-accent-border);
   border-radius: 9px;
-  background: #ffffff;
-  color: #2563eb;
+  background: var(--ca-surface-warm-solid);
+  color: var(--ca-accent-dark);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -978,8 +987,8 @@ function getActivitiesForDay(day) {
 }
 
 .ca-btn:hover {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--ca-accent-soft);
+  color: var(--ca-accent-dark);
 }
 
 /* ---------- Card grid ---------- */
@@ -994,7 +1003,7 @@ function getActivitiesForDay(day) {
   flex-direction: column;
   border: 1px solid #eef2f7;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--ca-surface-warm);
   overflow: hidden;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(23, 35, 58, 0.05);
@@ -1003,8 +1012,8 @@ function getActivitiesForDay(day) {
 }
 
 .ca-card:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 20px 40px rgba(30, 43, 76, 0.12), 0 0 0 1px rgba(59, 130, 246, 0.08), 0 8px 24px rgba(59, 130, 246, 0.08);
+  border-color: var(--ca-accent-border);
+  box-shadow: 0 20px 40px rgba(91, 68, 27, 0.10), 0 0 0 1px rgba(185, 138, 50, 0.18), 0 8px 24px rgba(185, 138, 50, 0.12);
   transform: translateY(-4px);
 }
 
@@ -1033,7 +1042,7 @@ function getActivitiesForDay(day) {
   gap: 6px;
   padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 253, 248, 0.95);
   box-shadow: 0 2px 10px rgba(16, 24, 40, 0.14);
   backdrop-filter: blur(6px);
 }
@@ -1041,7 +1050,7 @@ function getActivitiesForDay(day) {
 .ca-card__date-icon {
   width: 15px;
   height: 15px;
-  color: #2563eb;
+  color: var(--ca-accent);
 }
 
 .ca-card__date-main {
@@ -1146,7 +1155,7 @@ function getActivitiesForDay(day) {
   height: 34px;
   border: 1px solid rgba(228, 234, 241, 0.9);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 253, 248, 0.92);
   color: #7b8b9c;
   cursor: pointer;
   transition: color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -1269,7 +1278,7 @@ function getActivitiesForDay(day) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #2563eb;
+  color: var(--ca-accent);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -1279,7 +1288,7 @@ function getActivitiesForDay(day) {
 }
 
 .ca-link:hover {
-  color: #1d4ed8;
+  color: var(--ca-accent-dark);
 }
 
 .ca-link .ca-icon {
@@ -1302,7 +1311,7 @@ function getActivitiesForDay(day) {
   padding: 14px 20px;
   border: 1px solid #e6ecf3;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   animation: caFadeUp 0.35s ease-out 0.1s backwards;
 }
@@ -1333,16 +1342,16 @@ function getActivitiesForDay(day) {
   padding: 0;
   border: 1px solid #dbe4ee;
   border-radius: 9px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   color: #5b6b7d;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
 .ca-pagination__btn:hover:not(:disabled) {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: var(--ca-accent-border);
+  background: var(--ca-accent-soft);
+  color: var(--ca-accent-dark);
 }
 
 .ca-pagination__btn:disabled {
@@ -1372,15 +1381,15 @@ function getActivitiesForDay(day) {
 .ca-pagination__num:hover {
   border-color: #dbe4ee;
   background: #f8fafc;
-  color: #2563eb;
+  color: var(--ca-accent-dark);
 }
 
 .ca-pagination__num.active {
-  border-color: #2563eb;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
+  border-color: var(--ca-accent-border);
+  background: linear-gradient(135deg, #fffdf7, #f3dfae);
+  color: #704d18;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 10px var(--ca-accent-shadow);
   cursor: default;
 }
 
@@ -1404,7 +1413,7 @@ function getActivitiesForDay(day) {
 .ca-calendar__side {
   border: 1px solid #e6ecf3;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 
@@ -1434,8 +1443,8 @@ function getActivitiesForDay(day) {
   padding: 0 12px;
   border: 1px solid #dbe4ee;
   border-radius: 8px;
-  background: #ffffff;
-  color: #2563eb;
+  background: var(--ca-surface-warm-solid);
+  color: var(--ca-accent-dark);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -1443,8 +1452,8 @@ function getActivitiesForDay(day) {
 }
 
 .ca-calendar__today:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: var(--ca-accent-border);
+  background: var(--ca-accent-soft);
 }
 
 .ca-calendar__nav {
@@ -1454,16 +1463,16 @@ function getActivitiesForDay(day) {
   height: 32px;
   border: 1px solid #dbe4ee;
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   color: #64748b;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
 .ca-calendar__nav:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: var(--ca-accent-border);
+  background: var(--ca-accent-soft);
+  color: var(--ca-accent-dark);
 }
 
 .ca-calendar__nav .ca-icon {
@@ -1500,7 +1509,7 @@ function getActivitiesForDay(day) {
   padding: 8px;
   border: 1px solid transparent;
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
@@ -1522,12 +1531,12 @@ function getActivitiesForDay(day) {
 }
 
 .ca-cal-day.today {
-  border-color: #3b82f6;
+  border-color: var(--ca-accent-border);
 }
 
 .ca-cal-day.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--ca-accent-border);
+  background: var(--ca-accent-soft);
 }
 
 .ca-cal-day__num {
@@ -1538,7 +1547,7 @@ function getActivitiesForDay(day) {
 
 .ca-cal-day.today .ca-cal-day__num,
 .ca-cal-day.selected .ca-cal-day__num {
-  color: #2563eb;
+  color: var(--ca-accent-dark);
 }
 
 .ca-cal-day__dots {
@@ -1645,8 +1654,8 @@ function getActivitiesForDay(day) {
   gap: 6px;
   padding: 5px 12px;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--ca-accent-soft);
+  color: var(--ca-accent-dark);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -1669,15 +1678,15 @@ function getActivitiesForDay(day) {
   padding: 14px 16px;
   border: 1px solid #e6ecf3;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   animation: caCardIn 0.4s ease-out backwards;
 }
 
 .ca-day-card:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 8px 20px rgba(30, 43, 76, 0.08);
+  border-color: var(--ca-accent-border);
+  box-shadow: 0 8px 20px rgba(185, 138, 50, 0.13);
   transform: translateY(-2px);
 }
 
@@ -1784,7 +1793,7 @@ function getActivitiesForDay(day) {
   padding: 0 14px;
   border: 1px solid #dbe4ee;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--ca-surface-warm-solid);
   color: #5b6b7d;
   font-size: 13px;
   font-weight: 600;
@@ -1793,15 +1802,15 @@ function getActivitiesForDay(day) {
 }
 
 .ca-cal-btn:hover {
-  border-color: #3b82f6;
-  color: #2563eb;
+  border-color: var(--ca-accent-border);
+  color: var(--ca-accent-dark);
 }
 
 .ca-cal-btn.active {
-  border-color: #2563eb;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  border-color: var(--ca-accent-border);
+  background: linear-gradient(135deg, #fffdf7, #f3dfae);
+  color: #704d18;
+  box-shadow: 0 4px 10px var(--ca-accent-shadow);
 }
 
 .ca-cal-btn .ca-icon {
