@@ -1,7 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import AppTabBar from '../components/AppTabBar.vue'
-import { getDiscountActivityList, getDiscountActivityDetail, favoriteActivity, unfavoriteActivity } from '../api/discount'
+import {
+  claimDiscountActivity,
+  favoriteActivity,
+  getDiscountActivityDetail,
+  getDiscountActivityList,
+  getDiscountCategories,
+  getMyClaims,
+  getMyFavorites,
+  unfavoriteActivity,
+} from '../api/discount'
 
 const loading = ref(true)
 const items = ref([])
@@ -10,6 +19,15 @@ const selected = ref(null)
 const page = ref(1)
 const pageSize = 9
 const total = ref(0)
+const activeSection = ref('offers')
+const categories = ref([])
+const selectedCategory = ref('')
+
+const sections = [
+  ['offers', '优惠广场'],
+  ['favorites', '我的收藏'],
+  ['claims', '领取记录'],
+]
 
 const STATUS_MAP = {
   0: { text: '未开始', cls: 'badge-default' },
@@ -40,18 +58,57 @@ function resolveList(raw) {
   return records
 }
 
+const displayedItems = computed(() => {
+  if (activeSection.value === 'offers') return items.value
+  const query = keyword.value.trim().toLowerCase()
+  if (!query) return items.value
+  return items.value.filter((item) => `${item.title || ''} ${item.merchantName || ''}`.toLowerCase().includes(query))
+})
+
+const emptyText = computed(() => {
+  if (activeSection.value === 'favorites') return '暂未收藏优惠'
+  if (activeSection.value === 'claims') return '暂无领取记录'
+  return '暂无优惠活动'
+})
+
 async function load() {
   loading.value = true
   try {
-    items.value = resolveList(await getDiscountActivityList({
-      current: page.value, size: pageSize,
-      keyword: keyword.value || undefined,
-    }))
-  } catch { items.value = [] }
+    if (activeSection.value === 'offers') {
+      items.value = resolveList(await getDiscountActivityList({
+        current: page.value,
+        size: pageSize,
+        categoryId: selectedCategory.value || undefined,
+        keyword: keyword.value || undefined,
+      }))
+    } else if (activeSection.value === 'favorites') {
+      items.value = resolveList(await getMyFavorites({ current: page.value, size: pageSize }))
+    } else {
+      items.value = resolveList(await getMyClaims({ current: page.value, size: pageSize }))
+    }
+  } catch {
+    items.value = []
+    total.value = 0
+  }
   loading.value = false
 }
 
 function search() {
+  page.value = 1
+  if (activeSection.value === 'offers') load()
+}
+
+function switchSection(section) {
+  activeSection.value = section
+  page.value = 1
+  keyword.value = ''
+  load()
+}
+
+function openCategory(categoryId) {
+  activeSection.value = 'offers'
+  selectedCategory.value = categoryId
+  keyword.value = ''
   page.value = 1
   load()
 }
@@ -63,8 +120,9 @@ function goToPage(p) {
 }
 
 async function open(item) {
+  const activityId = item.activityId || item.id
   try {
-    const res = await getDiscountActivityDetail(item.id)
+    const res = await getDiscountActivityDetail(activityId)
     selected.value = res?.data || res
   } catch { selected.value = item }
 }
@@ -82,13 +140,29 @@ async function toggleFav(item) {
   } catch (e) { alert(e.message) }
 }
 
+async function claim(item) {
+  try {
+    await claimDiscountActivity(item.id)
+    alert('领取成功，可在“领取记录”中查看')
+    selected.value = null
+    await load()
+  } catch (e) { alert(e.message) }
+}
+
 function fmt(t) {
   if (!t) return ''
   const d = t.replace('T', ' ')
   return d.length >= 16 ? d.slice(0, 16) : d
 }
 
-onMounted(load)
+onMounted(async () => {
+  try {
+    const response = await getDiscountCategories()
+    const list = response?.data || response
+    categories.value = Array.isArray(list) ? list.filter((item) => item.status === undefined || Number(item.status) === 1) : []
+  } catch { categories.value = [] }
+  await load()
+})
 </script>
 
 <template>
@@ -101,70 +175,116 @@ onMounted(load)
           <h1>校园优惠</h1>
           <p>精选校园周边商家优惠券，线下领取享折扣</p>
         </div>
-        <div class="discount-search">
-          <input
-            v-model="keyword"
-            type="text"
-            placeholder="搜索商家名称..."
-            @keyup.enter="search"
-          />
-          <button class="discount-search__btn" @click="search">搜索</button>
-        </div>
       </header>
 
-      <div v-if="loading" class="discount-empty">正在加载优惠活动…</div>
+      <div class="discount-layout">
+        <aside class="discount-sidebar">
+          <h2>优惠中心</h2>
+          <nav class="discount-sidebar__nav" aria-label="优惠功能">
+            <button
+              v-for="[value, label] in sections"
+              :key="value"
+              type="button"
+              :class="{ active: activeSection === value }"
+              @click="switchSection(value)"
+            >
+              {{ label }}
+            </button>
+          </nav>
 
-      <div v-else-if="!items.length" class="discount-empty">
-        <div class="discount-empty__icon">🎫</div>
-        <p>暂无优惠活动</p>
-      </div>
+          <div class="discount-sidebar__group">
+            <h3>优惠分类</h3>
+            <button
+              type="button"
+              :class="{ active: !selectedCategory }"
+              @click="openCategory('')"
+            >
+              全部优惠
+            </button>
+            <button
+              v-for="category in categories"
+              :key="category.id"
+              type="button"
+              :class="{ active: String(selectedCategory) === String(category.id) && activeSection === 'offers' }"
+              @click="openCategory(category.id)"
+            >
+              {{ category.categoryName || category.name }}
+            </button>
+          </div>
+        </aside>
 
-      <div v-else class="discount-grid">
-        <button
-          v-for="item in items"
-          :key="item.id"
-          class="discount-card"
-          type="button"
-          @click="open(item)"
-        >
-          <img
-            v-if="item.coverImage"
-            :src="item.coverImage"
-            alt=""
-            class="discount-card__img"
-          />
-          <div v-else class="discount-card__placeholder">🎫</div>
+        <section class="discount-content">
+          <form class="discount-search" @submit.prevent="search">
+            <img src="/icons/search.svg" alt="" />
+            <input
+              v-model="keyword"
+              type="search"
+              :placeholder="activeSection === 'offers' ? '搜索商家名称或优惠内容' : '搜索当前记录'"
+            />
+            <button v-if="keyword" type="button" class="discount-search__clear" aria-label="清除搜索" @click="keyword = ''; search()">×</button>
+            <button class="discount-search__btn" type="submit">搜索</button>
+          </form>
 
-          <span
-            v-if="item.status !== undefined"
-            :class="['discount-badge', STATUS_MAP[item.status]?.cls]"
-          >
-            {{ STATUS_MAP[item.status]?.text || '未知' }}
-          </span>
+          <div v-if="loading" class="discount-empty">正在加载优惠数据…</div>
 
-          <span class="discount-card__merchant">{{ item.merchantName || '校园商家' }}</span>
-          <h3 class="discount-card__title">{{ item.title }}</h3>
-        </button>
-      </div>
+          <div v-else-if="!displayedItems.length" class="discount-empty">
+            <span class="discount-empty__mark" aria-hidden="true">券</span>
+            <p>{{ emptyText }}</p>
+          </div>
 
-      <div v-if="total > 0" class="discount-pagination">
-        <button
-          class="discount-pagination__btn"
-          :disabled="page === 1"
-          @click="goToPage(page - 1)"
-        >
-          ← 上一页
-        </button>
-        <span class="discount-pagination__info">
-          第 {{ page }} / {{ Math.ceil(total / pageSize) }} 页（共 {{ total }} 个活动）
-        </span>
-        <button
-          class="discount-pagination__btn"
-          :disabled="page >= Math.ceil(total / pageSize)"
-          @click="goToPage(page + 1)"
-        >
-          下一页 →
-        </button>
+          <div v-else class="discount-grid">
+            <article
+              v-for="item in displayedItems"
+              :key="item.activityId || item.id"
+              class="discount-card"
+              tabindex="0"
+              @click="open(item)"
+              @keyup.enter="open(item)"
+            >
+              <div class="discount-card__visual">
+                <img
+                  v-if="item.coverImage"
+                  :src="item.coverImage"
+                  alt=""
+                  class="discount-card__img"
+                />
+                <div v-else class="discount-card__placeholder"><span>券</span></div>
+                <span
+                  v-if="item.status !== undefined"
+                  :class="['discount-badge', STATUS_MAP[item.status]?.cls]"
+                >
+                  {{ item.statusText || STATUS_MAP[item.status]?.text || '未知' }}
+                </span>
+                <button
+                  v-if="activeSection !== 'claims'"
+                  type="button"
+                  class="discount-card__favorite"
+                  :class="{ active: item.isFavorited }"
+                  :aria-label="item.isFavorited ? '取消收藏' : '收藏优惠'"
+                  @click.stop="toggleFav(item)"
+                >
+                  {{ item.isFavorited ? '★' : '☆' }}
+                </button>
+              </div>
+              <div class="discount-card__body">
+                <span class="discount-card__merchant">{{ item.merchantName || '校园商家' }}</span>
+                <h3 class="discount-card__title">{{ item.title }}</h3>
+                <div class="discount-card__meta">
+                  <span v-if="activeSection === 'claims' && item.claimTime">领取于 {{ fmt(item.claimTime) }}</span>
+                  <span v-else-if="item.endTime">有效期至 {{ fmt(item.endTime) }}</span>
+                  <span v-else>查看优惠详情</span>
+                  <span>查看详情 →</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div v-if="total > 0" class="discount-pagination">
+            <button class="discount-pagination__btn" :disabled="page === 1" @click="goToPage(page - 1)">← 上一页</button>
+            <span class="discount-pagination__info">第 {{ page }} / {{ Math.max(1, Math.ceil(total / pageSize)) }} 页（共 {{ total }} 条）</span>
+            <button class="discount-pagination__btn" :disabled="page >= Math.ceil(total / pageSize)" @click="goToPage(page + 1)">下一页 →</button>
+          </div>
+        </section>
       </div>
     </main>
 
@@ -198,7 +318,7 @@ onMounted(load)
         <h2>{{ selected.title }}</h2>
 
         <div class="discount-detail__merchant">
-          <span class="discount-detail__merchant-icon">🏪</span>
+          <span class="discount-detail__merchant-icon">店</span>
           <span>{{ selected.merchantName || '校园商家' }}</span>
         </div>
 
@@ -231,7 +351,15 @@ onMounted(load)
             :class="['discount-detail__fav', { 'discount-detail__fav--active': selected.isFavorited }]"
             @click="toggleFav(selected)"
           >
-            {{ selected.isFavorited ? '❤️ 已收藏' : '🤍 收藏' }}
+            {{ selected.isFavorited ? '★ 已收藏' : '☆ 收藏' }}
+          </button>
+          <button
+            v-if="selected.status === 1 && activeSection !== 'claims'"
+            class="discount-detail__claim"
+            type="button"
+            @click="claim(selected)"
+          >
+            立即领取
           </button>
         </div>
       </div>
@@ -735,5 +863,568 @@ onMounted(load)
   color: #7a8ca5;
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* ===== Campus discount center redesign ===== */
+.discount-page {
+  min-height: 100vh;
+  overflow: visible;
+  color: #263e43;
+  background: transparent;
+  font-family: 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
+}
+
+.discount-page::before {
+  z-index: 0;
+  inset: 60px 0 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(250, 248, 240, 0.9), rgba(249, 247, 239, 0.82) 48%, rgba(247, 246, 239, 0.88));
+}
+
+.discount-page::after {
+  display: none;
+}
+
+.discount-container {
+  width: min(1320px, calc(100% - 40px));
+  max-width: none;
+  padding: 88px 0 56px;
+}
+
+.discount-heading {
+  position: relative;
+  align-items: flex-start;
+  padding: 12px 0 12px 22px;
+  margin-bottom: 22px;
+}
+
+.discount-heading::before {
+  position: absolute;
+  inset: 12px auto 12px 0;
+  width: 4px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #d9b561, #a9792f);
+  content: '';
+}
+
+.discount-heading__left h1 {
+  margin: 0;
+  color: #123f49;
+  font-family: 'STXingkai', '华文行楷', 'LXGW WenKai Screen', '霞鹜文楷 屏幕阅读版', 'STKaiti', 'KaiTi', serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 5px;
+  text-shadow: 0 1px 0 rgba(185, 138, 50, 0.16);
+}
+
+.discount-heading__left p {
+  margin-top: 8px;
+  color: #647b7c;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.discount-layout {
+  display: grid;
+  grid-template-columns: 256px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.discount-sidebar {
+  position: sticky;
+  top: 84px;
+  min-height: calc(100vh - 108px);
+  padding: 22px 16px;
+  overflow: hidden;
+  border: 1px solid rgba(190, 153, 79, 0.3);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.97), rgba(255, 253, 248, 0.95) 64%, rgba(245, 249, 244, 0.92));
+  box-shadow: 0 10px 28px rgba(73, 91, 79, 0.07);
+}
+
+.discount-sidebar::after {
+  position: absolute;
+  z-index: 0;
+  right: -46px;
+  bottom: -24px;
+  left: -46px;
+  height: 260px;
+  background: url('../assets/campus-portal-background-v2.png') center bottom / 620px auto no-repeat;
+  content: '';
+  opacity: 0.16;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.34) 32%, #000);
+  mask-image: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.34) 32%, #000);
+}
+
+.discount-sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
+.discount-sidebar h2 {
+  margin: 0 8px 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(185, 138, 50, 0.2);
+  color: #123f49;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.discount-sidebar__nav,
+.discount-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.discount-sidebar__nav button,
+.discount-sidebar__group button {
+  position: relative;
+  min-height: 42px;
+  padding: 0 14px 0 18px;
+  border: 0;
+  border-radius: 8px;
+  color: #597172;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.discount-sidebar__nav button:hover,
+.discount-sidebar__group button:hover {
+  color: #8b6728;
+  background: rgba(255, 250, 238, 0.76);
+}
+
+.discount-sidebar__nav button.active,
+.discount-sidebar__group button.active {
+  color: #744f19;
+  background: linear-gradient(135deg, #fffdf7, #f6e8c4);
+  box-shadow: inset 0 0 0 1px rgba(193, 148, 60, 0.28);
+}
+
+.discount-sidebar__nav button.active::before,
+.discount-sidebar__group button.active::before {
+  position: absolute;
+  inset: 8px auto 8px 0;
+  width: 3px;
+  border-radius: 99px;
+  background: #b98a32;
+  content: '';
+}
+
+.discount-sidebar__group {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid rgba(185, 138, 50, 0.2);
+}
+
+.discount-sidebar__group h3 {
+  margin: 0 10px 6px;
+  color: #315f60;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.discount-content {
+  min-width: 0;
+}
+
+.discount-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0 8px 0 18px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(178, 145, 79, 0.32);
+  border-radius: 11px;
+  background: rgba(255, 253, 248, 0.95);
+  box-shadow: 0 8px 24px rgba(73, 91, 79, 0.06);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.discount-search:focus-within {
+  border-color: rgba(185, 138, 50, 0.7);
+  box-shadow: 0 0 0 3px rgba(185, 138, 50, 0.1), 0 8px 24px rgba(73, 91, 79, 0.06);
+}
+
+.discount-search > img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
+}
+
+.discount-search input {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #263e43;
+  background: transparent;
+  box-shadow: none;
+}
+
+.discount-search input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.discount-search__clear {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  color: #7d8e8e;
+  background: #eef3ef;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.discount-search__btn {
+  height: 40px;
+  padding: 0 22px;
+  border: 1px solid #a97b2f;
+  border-radius: 8px;
+  color: #fffdf6;
+  background: linear-gradient(115deg, #174e58, #277b7d);
+  box-shadow: 0 5px 14px rgba(25, 90, 91, 0.16);
+}
+
+.discount-search__btn:hover {
+  border-color: #d4ad5a;
+  background: linear-gradient(115deg, #123f49, #216c70);
+  box-shadow: 0 7px 18px rgba(25, 90, 91, 0.2);
+}
+
+.discount-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.discount-card {
+  position: relative;
+  padding: 0;
+  border: 1px solid rgba(189, 162, 106, 0.32);
+  border-radius: 13px;
+  color: #263e43;
+  background: rgba(255, 254, 250, 0.97);
+  box-shadow: 0 7px 20px rgba(63, 79, 70, 0.07);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.discount-card:hover,
+.discount-card:focus-visible {
+  border-color: #c79a42;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(199, 154, 66, 0.22), 0 13px 28px rgba(127, 92, 31, 0.13);
+  transform: translateY(-3px);
+}
+
+.discount-card__visual {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.discount-card__img,
+.discount-card__placeholder {
+  height: 178px;
+}
+
+.discount-card__placeholder {
+  color: #8a6729;
+  background: linear-gradient(145deg, #f2eee1, #e5f1ed);
+}
+
+.discount-card__placeholder::before,
+.discount-card__placeholder::after {
+  display: none;
+}
+
+.discount-card__placeholder span {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(185, 138, 50, 0.35);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.75);
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 24px;
+}
+
+.discount-card .discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  margin: 0;
+  backdrop-filter: blur(5px);
+}
+
+.discount-card__favorite {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(185, 138, 50, 0.28);
+  border-radius: 50%;
+  color: #71807d;
+  background: rgba(255, 254, 250, 0.9);
+  font-size: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+}
+
+.discount-card__favorite.active,
+.discount-card__favorite:hover {
+  color: #a87420;
+  border-color: rgba(185, 138, 50, 0.62);
+  background: #fff8e8;
+}
+
+.discount-card__body {
+  padding: 15px 16px 16px;
+}
+
+.discount-card__merchant {
+  margin: 0;
+  color: #738584;
+  font-size: 12px;
+}
+
+.discount-card__title {
+  min-height: 50px;
+  margin: 7px 0 11px;
+  color: #263e43;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.discount-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(185, 138, 50, 0.14);
+  color: #849291;
+  font-size: 11px;
+}
+
+.discount-card__meta span:last-child {
+  flex-shrink: 0;
+  color: #966d28;
+  font-weight: 700;
+}
+
+.discount-empty {
+  border: 1px solid rgba(190, 153, 79, 0.24);
+  color: #738584;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 8px 24px rgba(73, 91, 79, 0.06);
+}
+
+.discount-empty__mark {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  border: 1px solid rgba(185, 138, 50, 0.36);
+  border-radius: 50%;
+  color: #9a702a;
+  background: #fff9eb;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  font-size: 24px;
+}
+
+.discount-pagination__btn {
+  border-color: rgba(185, 138, 50, 0.3);
+  color: #315f60;
+  background: rgba(255, 253, 248, 0.95);
+  box-shadow: none;
+}
+
+.discount-pagination__btn:hover:not(:disabled) {
+  border-color: #bf9139;
+  color: #815c1f;
+  background: #fffaf0;
+  box-shadow: 0 6px 14px rgba(155, 112, 35, 0.12);
+}
+
+.discount-pagination__info {
+  color: #738584;
+}
+
+.discount-detail {
+  border: 1px solid rgba(185, 138, 50, 0.3);
+  color: #263e43;
+  background: #fffefa;
+}
+
+.discount-detail__back {
+  color: #315f60;
+  background: #eef5f1;
+}
+
+.discount-detail__merchant-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  color: #257473;
+  background: #eaf4ef;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.discount-detail__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.discount-detail__fav,
+.discount-detail__claim {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.discount-detail__fav {
+  border: 1px solid rgba(185, 138, 50, 0.38);
+  color: #7a602f;
+  background: #fffaf0;
+}
+
+.discount-detail__fav--active,
+.discount-detail__fav:hover,
+.discount-detail__fav--active:hover {
+  border-color: #b98a32;
+  color: #895f19;
+  background: #f7e9c7;
+}
+
+.discount-detail__claim {
+  border: 1px solid #a97b2f;
+  color: #fffdf6;
+  background: linear-gradient(115deg, #174e58, #277b7d);
+}
+
+@media (max-width: 1100px) {
+  .discount-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .discount-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .discount-container {
+    width: min(100% - 24px, 720px);
+  }
+
+  .discount-layout {
+    display: block;
+  }
+
+  .discount-sidebar {
+    position: static;
+    min-height: 0;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+
+  .discount-sidebar::after {
+    display: none;
+  }
+
+  .discount-sidebar h2 {
+    margin: 0 4px 8px;
+    padding: 0 4px 8px;
+    font-size: 17px;
+  }
+
+  .discount-sidebar__nav,
+  .discount-sidebar__group {
+    overflow-x: auto;
+    flex-direction: row;
+  }
+
+  .discount-sidebar__group {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .discount-sidebar__group h3 {
+    display: none;
+  }
+
+  .discount-sidebar__nav button,
+  .discount-sidebar__group button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0 12px;
+    text-align: center;
+  }
+
+  .discount-sidebar__nav button.active::before,
+  .discount-sidebar__group button.active::before {
+    inset: auto 10px 0;
+    width: auto;
+    height: 2px;
+  }
+}
+
+@media (max-width: 520px) {
+  .discount-heading__left h1 {
+    font-size: 34px;
+  }
+
+  .discount-search {
+    gap: 8px;
+    padding-left: 12px;
+  }
+
+  .discount-search__btn {
+    padding: 0 14px;
+  }
+
+  .discount-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .discount-pagination {
+    gap: 8px;
+    padding-inline: 0;
+  }
+
+  .discount-pagination__info {
+    font-size: 11px;
+  }
 }
 </style>

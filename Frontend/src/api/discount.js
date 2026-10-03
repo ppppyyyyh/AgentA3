@@ -9,6 +9,7 @@ export function getDiscountActivityList(params = {}) {
       current: params.current || 1,
       size: params.size || 10,
       merchantId: params.merchantId || undefined,
+      categoryId: params.categoryId || undefined,
       keyword: params.keyword || undefined,
       status: params.status || undefined,
       lat: params.lat || undefined,
@@ -16,6 +17,10 @@ export function getDiscountActivityList(params = {}) {
       sort: params.sort || undefined,
     },
   })
+}
+
+export function getDiscountCategories() {
+  return request({ url: '/api/merchant/category/list', method: 'GET' })
 }
 
 export function getDiscountActivityDetail(id) {
