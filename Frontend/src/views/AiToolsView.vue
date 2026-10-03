@@ -2,9 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import examHero from '../assets/ai-tools/exam-hero.png'
-import campusIllustrations from '../assets/ai-tools/campus-illustrations-strip.png'
-import toolIllustrations from '../assets/ai-tools/tool-illustrations-strip.png'
+import campusIllustrations from '../assets/ai-tools/oriental-campus-tools.png'
+import toolIllustrations from '../assets/ai-tools/oriental-core-tools.png'
 import { getCampusCourses } from '../api/campusCourse'
 import AppTabBar from '../components/AppTabBar.vue'
 
@@ -28,8 +27,10 @@ const heroSlides = [
     title: '试卷生成',
     subtitle: '智能生成各学科标准化试卷',
     features: ['多学科支持', '题型智能匹配', '一键导出打印'],
-    color: '#ff3943',
-    image: examHero,
+    color: '#174e58',
+    image: toolIllustrations,
+    artSet: 'core',
+    art: 2,
     route: '/paper',
   },
   {
@@ -38,7 +39,7 @@ const heroSlides = [
     title: '思维导图',
     subtitle: '把复杂知识整理成清晰结构',
     features: ['章节知识梳理', '层级关系清晰', '支持继续编辑'],
-    color: '#6c43d9',
+    color: '#315f63',
     image: toolIllustrations,
     artSet: 'core',
     art: 4,
@@ -50,7 +51,7 @@ const heroSlides = [
     title: 'PPT生成',
     subtitle: '从主题到演示文稿一站完成',
     features: ['智能规划大纲', '自动生成逐页内容', '快速导出课件'],
-    color: '#ff9900',
+    color: '#9b7739',
     image: toolIllustrations,
     artSet: 'core',
     art: 3,
@@ -62,7 +63,7 @@ const heroSlides = [
     title: 'AI文生图',
     subtitle: '把文字描述转化为视觉作品',
     features: ['自然语言描述', '多种画面风格', '生成结果预览'],
-    color: '#7546d9',
+    color: '#527679',
     image: toolIllustrations,
     artSet: 'core',
     art: 1,
@@ -74,7 +75,7 @@ const heroSlides = [
     title: '智能写作',
     subtitle: '快速生成校园常用文稿',
     features: ['多种表达语气', '目标字数控制', '支持继续润色'],
-    color: '#2975df',
+    color: '#456a70',
     image: toolIllustrations,
     artSet: 'core',
     art: 0,
@@ -86,7 +87,7 @@ const heroSlides = [
     title: 'AI对话',
     subtitle: '上传资料，即问即答',
     features: ['多资源理解', '图片智能识别', '校园服务协作'],
-    color: '#1768e6',
+    color: '#2f7475',
     image: campusIllustrations,
     artSet: 'service',
     art: 0,
@@ -95,19 +96,19 @@ const heroSlides = [
 ]
 
 const categories = [
-  { key: 'hot', label: '热门工具', icon: 'flame', color: '#ff343f' },
-  { key: 'creation', label: 'AI创作', icon: 'bolt', color: '#7546d9' },
-  { key: 'diagram', label: '图表设计', icon: 'campus', color: '#18a37d' },
-  { key: 'learning', label: '学习测评', icon: 'book', color: '#f59e0b' },
-  { key: 'campus', label: '校园求职', icon: 'briefcase', color: '#1768e6' },
-  { key: 'convert', label: '格式转换', icon: 'convert', color: '#315f8c' },
+  { key: 'hot', label: '热门工具', icon: 'flame', color: '#b58732' },
+  { key: 'creation', label: 'AI创作', icon: 'bolt', color: '#2f7373' },
+  { key: 'diagram', label: '图表设计', icon: 'campus', color: '#3d7f78' },
+  { key: 'learning', label: '学习测评', icon: 'book', color: '#a97b2f' },
+  { key: 'campus', label: '校园求职', icon: 'briefcase', color: '#416d72' },
+  { key: 'convert', label: '格式转换', icon: 'convert', color: '#5d7372' },
 ]
 
 const baseTools = [
   { name: '校园 AI 助手', desc: '多资源上传、识图与校园智能问答', category: ['hot', 'campus'], artSet: 'service', art: 0, route: '/ai', accent: '#1768e6' },
   { name: '智能写作', desc: '生成校园常用文稿并支持润色', category: ['hot', 'creation'], artSet: 'core', art: 0, route: '/ai-studio/writing', accent: '#4077de' },
   { name: 'AI 文生图', desc: '根据文字描述生成图片', category: ['hot', 'creation'], artSet: 'core', art: 1, route: '/ai-studio/image', accent: '#7546d9' },
-  { name: 'AI伪原创', desc: '图片内容创作与水印处理', category: ['hot', 'creation'], artSet: 'core', art: 5, route: '/ai-original', accent: '#8b63e8' },
+  { name: 'AI伪原创', desc: '图片内容创作与水印处理', category: ['hot', 'creation'], artSet: 'core', art: 1, route: '/ai-original', accent: '#8b63e8' },
   { name: '试卷生成', desc: '生成结构化练习与标准试卷', category: ['hot', 'learning'], artSet: 'core', art: 2, route: '/paper', accent: '#ff3943' },
   { name: 'PPT 生成', desc: '生成演示大纲与文稿资源', category: ['hot', 'creation', 'learning'], artSet: 'core', art: 3, route: '/ai-studio/presentation', accent: '#ff9900' },
   { name: '思维导图', desc: '梳理主题与课程知识结构', category: ['hot', 'diagram', 'learning'], artSet: 'core', art: 4, route: '/ai-studio/mind_map', accent: '#7546d9' },
@@ -115,12 +116,12 @@ const baseTools = [
   { name: '流程图', desc: '生成清晰的业务与逻辑流程', category: ['diagram'], artSet: 'core', art: 6, route: '/ai-studio/flowchart', accent: '#ee5eaa' },
   { name: '校园地图', desc: '查询校园地点、设施和导航', category: ['campus'], artSet: 'service', art: 1, route: '/map', accent: '#56aa1b' },
   { name: '岗位雷达', desc: 'AI 整理近一周软件工程热门岗位', category: ['hot', 'campus'], artSet: 'service', art: 3, route: '/jobs/hot', accent: '#527797' },
-  { name: 'PDF → Word', desc: 'PDF 转 Word 文档', category: ['convert'], artSet: 'core', art: 0, route: '/convert?type=pdf_to_docx', accent: '#5C7A99' },
-  { name: 'PPT → Word', desc: 'PPT 转 Word 文档', category: ['convert'], artSet: 'core', art: 1, route: '/convert?type=ppt_to_docx', accent: '#6B9B7A' },
-  { name: 'Word → PDF', desc: 'Word 转 PDF 文档', category: ['convert'], artSet: 'core', art: 2, route: '/convert?type=docx_to_pdf', accent: '#B89B7A' },
-  { name: 'PDF → PPT', desc: 'PDF 转 PPT 演示文稿', category: ['convert'], artSet: 'core', art: 3, route: '/convert?type=pdf_to_ppt', accent: '#8B7AB8' },
-  { name: 'PPT → PDF', desc: 'PPT 转 PDF 文档', category: ['convert'], artSet: 'core', art: 4, route: '/convert?type=ppt_to_pdf', accent: '#7A9BB8' },
-  { name: 'Word → PPT', desc: 'Word 转 PPT 演示文稿', category: ['convert'], artSet: 'core', art: 5, route: '/convert?type=docx_to_ppt', accent: '#A67B7B' },
+  { name: 'PDF → Word', desc: 'PDF 转 Word 文档', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=pdf_to_docx', accent: '#5C7A99' },
+  { name: 'PPT → Word', desc: 'PPT 转 Word 文档', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=ppt_to_docx', accent: '#6B9B7A' },
+  { name: 'Word → PDF', desc: 'Word 转 PDF 文档', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=docx_to_pdf', accent: '#B89B7A' },
+  { name: 'PDF → PPT', desc: 'PDF 转 PPT 演示文稿', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=pdf_to_ppt', accent: '#8B7AB8' },
+  { name: 'PPT → PDF', desc: 'PPT 转 PDF 文档', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=ppt_to_pdf', accent: '#7A9BB8' },
+  { name: 'Word → PPT', desc: 'Word 转 PPT 演示文稿', category: ['convert'], artSet: 'core', art: 7, route: '/convert?type=docx_to_ppt', accent: '#A67B7B' },
 ]
 
 const displayedTools = computed(() => {
@@ -239,11 +240,26 @@ function openHero(slide) {
 
 function spriteStyle(artSet, index) {
   const isService = artSet === 'service'
-  return {
-    backgroundImage: `url(${isService ? campusIllustrations : toolIllustrations})`,
-    backgroundSize: `${isService ? 300 : 700}% 100%`,
-    backgroundPosition: `${index * (isService ? 50 : (100 / 6))}% center`,
+  const safeIndex = Number(index) || 0
+  if (!isService) {
+    const column = safeIndex % 4
+    const row = Math.floor(safeIndex / 4)
+    return {
+      backgroundImage: `url(${toolIllustrations})`,
+      backgroundSize: '400% 200%',
+      backgroundPosition: `${column * (100 / 3)}% ${row * 100}%`,
+    }
   }
+  return {
+    backgroundImage: `url(${campusIllustrations})`,
+    backgroundSize: '300% 100%',
+    backgroundPosition: `${safeIndex * 50}% center`,
+  }
+}
+
+function toolCategoryLabel(tool) {
+  const key = tool.category?.find((item) => item !== 'hot') || activeCategory.value
+  return categories.find((item) => item.key === key)?.label || '智能工具'
 }
 
 function heroArtStyle(slide) {
@@ -409,9 +425,10 @@ onBeforeUnmount(() => {
               >
                 <span class="tool-poster__art" :style="spriteStyle(tool.artSet, tool.art)"></span>
                 <span class="tool-poster__content">
+                  <span class="tool-poster__tag">{{ toolCategoryLabel(tool) }}</span>
                   <strong>{{ tool.name }}</strong>
                   <em>{{ tool.desc }}</em>
-                  <span v-if="toolPosition === index" class="tool-poster__action">
+                  <span class="tool-poster__action" :class="{ visible: toolPosition === index }">
                     立即使用
                     <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" /></svg>
                   </span>
@@ -1156,6 +1173,272 @@ svg {
 @keyframes action-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Oriental campus visual system: keep the carousel mechanics, unify its material and color language. */
+.ai-tools-page {
+  --ink: #183d42;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 247, 0.88), rgba(247, 247, 239, 0.78)),
+    url('../assets/campus-portal-background-v2.png') center 44px / cover fixed no-repeat,
+    #f7f5ed;
+  font-family: 'Source Han Sans SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
+}
+
+.hero-stage {
+  height: clamp(360px, 32vw, 475px);
+  margin-top: 18px;
+}
+
+.hero-stage::before {
+  position: absolute;
+  inset: 5% 5% 10%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 251, 239, 0.82), rgba(255, 251, 239, 0));
+  content: '';
+  pointer-events: none;
+}
+
+.hero-stage::after {
+  height: 70px;
+  background: linear-gradient(180deg, transparent, rgba(46, 99, 96, 0.08));
+}
+
+.hero-slide {
+  border: 1px solid rgba(209, 170, 91, 0.62);
+  border-radius: 24px;
+  background: var(--hero-color);
+  box-shadow: 0 18px 42px rgba(37, 69, 65, 0.16), inset 0 0 0 1px rgba(255, 252, 238, 0.18);
+}
+
+.hero-slide.active {
+  box-shadow: 0 24px 56px rgba(23, 69, 72, 0.22), 0 0 0 2px rgba(211, 173, 94, 0.28), inset 0 0 0 1px rgba(255, 252, 238, 0.3);
+}
+
+.hero-slide.previous,
+.hero-slide.next {
+  opacity: 0.82;
+  filter: saturate(0.52) sepia(0.12) brightness(1.04);
+}
+
+.hero-slide.previous-far,
+.hero-slide.next-far {
+  opacity: 0.42;
+  filter: saturate(0.28) sepia(0.18) brightness(1.08);
+}
+
+.hero-slide__image {
+  inset: 0 0 0 auto;
+  width: 62%;
+  filter: none;
+  background-color: #f6f0df;
+  background-blend-mode: normal;
+}
+
+.hero-slide__veil {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--hero-color) 97%, #0e3439) 0%, color-mix(in srgb, var(--hero-color) 96%, transparent) 43%, color-mix(in srgb, var(--hero-color) 24%, transparent) 70%, rgba(244, 239, 214, 0.04) 100%),
+    radial-gradient(circle at 82% 16%, rgba(226, 190, 111, 0.3), transparent 26%);
+}
+
+.hero-slide__content {
+  width: 54%;
+  color: #fffdf4;
+  text-shadow: 0 1px 2px rgba(11, 45, 49, 0.22);
+}
+
+.hero-slide__content > span {
+  color: #ead39b;
+  opacity: 1;
+}
+
+.hero-slide h1 {
+  font-family: 'STXingkai', '华文行楷', 'LXGW WenKai Screen', 'STKaiti', 'KaiTi', serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.hero-slide li svg {
+  color: #153f45;
+  background: #dec185;
+}
+
+.hero-slide__content > button {
+  border: 1px solid rgba(209, 166, 80, 0.72);
+  color: #5f461e;
+  background: linear-gradient(135deg, #fffdf6, #f4dfad);
+  box-shadow: 0 8px 20px rgba(15, 54, 57, 0.18);
+}
+
+.carousel-arrow,
+.tool-arrow {
+  border-color: rgba(185, 138, 50, 0.42);
+  color: #234f54;
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 8px 22px rgba(53, 77, 67, 0.12);
+}
+
+.carousel-arrow:hover,
+.tool-arrow:hover:not(:disabled) {
+  color: #9a6c22;
+  border-color: #c39742;
+}
+
+.hero-dots button,
+.tool-dots button {
+  background: #bac9c4;
+}
+
+.hero-dots button.active,
+.tool-dots button.active {
+  background: #b98a32;
+}
+
+.category-dock {
+  min-height: 70px;
+  border-color: rgba(185, 138, 50, 0.38);
+  background: rgba(255, 253, 247, 0.95);
+  box-shadow: 0 16px 34px rgba(56, 82, 70, 0.12);
+}
+
+.category-dock button {
+  color: #405e60;
+  font-size: 16px;
+}
+
+.category-dock button + button::before {
+  background: rgba(185, 138, 50, 0.2);
+}
+
+.category-dock button:hover {
+  color: #855f20;
+  background: rgba(250, 241, 216, 0.58);
+}
+
+.category-dock button.active {
+  color: #fff9e9;
+  background: linear-gradient(135deg, #174e58, #337d79);
+  box-shadow: inset 0 0 0 1px rgba(226, 190, 111, 0.55), 0 10px 22px rgba(27, 83, 83, 0.2);
+}
+
+.category-dock button.active .category-icon {
+  color: #e8ca88;
+}
+
+.tools-section {
+  padding-top: 58px;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0), rgba(255, 253, 247, 0.2));
+}
+
+.section-title p {
+  color: #123f49;
+  font-family: 'STXingkai', '华文行楷', 'LXGW WenKai Screen', 'STKaiti', 'KaiTi', serif;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 3px;
+}
+
+.section-title p::after {
+  height: 3px;
+  background: #b98a32;
+}
+
+.section-title h2 {
+  color: #697d7c;
+}
+
+.section-title > button,
+.drag-hint {
+  border-color: rgba(185, 138, 50, 0.34);
+  color: #315f60;
+  background: rgba(255, 253, 247, 0.9);
+}
+
+.tool-poster {
+  height: 350px;
+  border-color: rgba(190, 153, 79, 0.38);
+  border-radius: 14px;
+  color: #173f45;
+  background: #fffdf8;
+  box-shadow: 0 12px 28px rgba(57, 79, 68, 0.09);
+}
+
+.tool-poster:hover {
+  border-color: #c39742;
+  box-shadow: 0 15px 30px rgba(147, 107, 38, 0.14);
+}
+
+.tool-poster.active {
+  border-color: #b98a32;
+  box-shadow: 0 18px 38px rgba(131, 96, 35, 0.18), 0 0 0 2px rgba(185, 138, 50, 0.18);
+}
+
+.tool-poster__art {
+  position: relative;
+  height: 190px;
+  border-bottom: 1px solid rgba(185, 138, 50, 0.22);
+  filter: none;
+  background-color: #fbf7eb;
+  background-blend-mode: normal;
+}
+
+.tool-poster__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 17px 15px;
+  border-top: 0;
+  background: linear-gradient(180deg, #fffdf8, #fbf6e9);
+}
+
+.tool-poster__tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid rgba(185, 138, 50, 0.25);
+  border-radius: 999px;
+  color: #8a6425;
+  background: #faf0d7;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.tool-poster__content strong {
+  color: #173f45;
+  font-family: 'LXGW WenKai Screen', '霞鹜文楷 屏幕阅读版', 'STKaiti', 'KaiTi', serif;
+  font-size: 19px;
+  letter-spacing: 0.03em;
+}
+
+.tool-poster__content em {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #6a7d7c;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.tool-poster__action {
+  width: auto;
+  min-height: 27px;
+  padding: 0 10px;
+  margin-top: auto;
+  border: 1px solid rgba(185, 138, 50, 0.38);
+  color: #567071;
+  background: rgba(255, 253, 247, 0.72);
+  opacity: 0.72;
+  animation: none;
+}
+
+.tool-poster__action.visible {
+  border-color: #a97b2f;
+  color: #fffaf0;
+  background: linear-gradient(115deg, #174e58, #327b78);
+  opacity: 1;
 }
 
 @media (max-width: 1120px) {
