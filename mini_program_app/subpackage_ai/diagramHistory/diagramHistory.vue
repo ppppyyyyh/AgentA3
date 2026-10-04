@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="历史记录" :showBack="true" :border="false">
       <template #right>
         <view class="nav-right">

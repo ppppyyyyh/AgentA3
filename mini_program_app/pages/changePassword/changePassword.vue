@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--mine-child">
     <nav-bar title="修改密码" :showBack="true" />
     <view class="form-card">
       <view class="field">

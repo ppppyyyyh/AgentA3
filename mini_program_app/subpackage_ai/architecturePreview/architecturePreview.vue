@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar
       :title="architectureData.title || 'AI 架构图'"
       :showBack="true"

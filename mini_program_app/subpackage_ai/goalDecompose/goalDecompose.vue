@@ -1,5 +1,5 @@
 <template>
-  <view class="page study-plan-page">
+  <view class="page study-plan-page ancient-screen ancient-screen--ai">
     <nav-bar
       title="学习计划拆解"
       :showBack="true"

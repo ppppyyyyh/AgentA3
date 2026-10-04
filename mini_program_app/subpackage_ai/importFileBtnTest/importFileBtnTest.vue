@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="导入按钮测试" :showBack="true" :border="false" />
 
     <view class="tip">点击右侧灰色感叹号，气泡应出现在「导入文件」按钮正上方</view>

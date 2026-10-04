@@ -1,5 +1,5 @@
 <template>
-	<view class="meeting-app-page">
+	<view class="meeting-app-page ancient-screen ancient-screen--meeting">
 		<nav-bar title="会议" :showBack="true" fixed placeholder :border="false" background="#FFFFFF" />
 
 		<scroll-view class="meeting-scroll" scroll-y>

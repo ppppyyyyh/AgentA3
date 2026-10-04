@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <view class="preview-header print-hidden">
       <view class="preview-heading"><view class="eye-mark"><view class="eye-pupil"></view></view><text>真实 Word PDF 预览</text></view>
       <button class="regenerate-button" :disabled="loading" @click="load"><text class="refresh-mark">↻</text>重新生成预览</button>

@@ -325,9 +325,11 @@ export default {
 			}
 			return true
 		},
-		enterWithDefaultAccount() {
-			setToken('dev-local-skip-token')
-			setUserInfo({ ...DEFAULT_DEV_USER })
+		async enterWithDefaultAccount() {
+			this.loading = true
+			const result = await apiLogin({ username: 'test_student', password: 'admin123' })
+			setToken(result.data.token)
+			setUserInfo({ ...DEFAULT_DEV_USER, id: result.data.id, userId: result.data.id, username: result.data.username, role: result.data.role, realName: result.data.realName, phone: result.data.phone, shareCode: result.data.shareCode })
 			uni.showToast({ title: '已用默认账号进入', icon: 'none' })
 			setTimeout(() => {
 				uni.reLaunch({

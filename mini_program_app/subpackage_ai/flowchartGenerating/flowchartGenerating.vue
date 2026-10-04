@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 顶部 -->
     <view v-if="pageState !== 'error'" class="header">
       <view class="header-back" @tap="goBack">

@@ -1,5 +1,5 @@
 <template>
-  <view class="community-container">
+  <view class="community-container ancient-screen ancient-screen--activity">
     <view id="pageFixedHeader" class="page-fixed-header">
       <nav-bar title="校园活动" :showBack="true" />
 

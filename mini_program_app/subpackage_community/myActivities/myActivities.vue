@@ -1,5 +1,5 @@
 ﻿<template>
-  <view class="my-activities-page">
+  <view class="my-activities-page ancient-screen ancient-screen--mine-child">
     <nav-bar title="我的活动" :showBack="true" fixed placeholder />
 
     <view class="filter-bar">

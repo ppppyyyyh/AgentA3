@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 通用导航栏 -->
     <nav-bar title="AI试卷生成" :showBack="true" />
 

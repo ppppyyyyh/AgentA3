@@ -1,5 +1,5 @@
 <template>
-  <view class="promotion-page">
+  <view class="promotion-page ancient-screen ancient-screen--promotion">
     <nav-bar title="优惠上新" :fixed="true" :placeholder="true" />
 
     <view class="search-bar" @click="openSearchPage">

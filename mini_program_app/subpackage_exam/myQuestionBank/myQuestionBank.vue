@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--mine-child">
     <nav-bar title="我的题库" :showBack="true" fixed placeholder />
 
     <view class="tabs">

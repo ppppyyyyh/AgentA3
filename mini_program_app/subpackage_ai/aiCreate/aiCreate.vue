@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 通用导航栏 -->
     <nav-bar title="AI创作" :showBack="true" />
     
@@ -630,5 +630,87 @@ const handleToolTap = (tool) => {
 .tool-emoji {
   font-size: 32rpx;
   line-height: 1;
+}
+
+/* AI 创作主页最终主题覆盖：统一按钮、标签与工具图标的颜色层级 */
+.page.ancient-screen--ai {
+  background: linear-gradient(rgba(247, 244, 231, .86), rgba(243, 239, 226, .97)), url('/static/ancient/mist-pavilion.png') center top / cover no-repeat !important;
+}
+
+.ancient-screen--ai .section-card,
+.ancient-screen--ai .hero-main,
+.ancient-screen--ai .hero-small,
+.ancient-screen--ai .quick-item,
+.ancient-screen--ai .tools-section,
+.ancient-screen--ai .tool-item {
+  border: 1rpx solid rgba(190, 160, 103, .58) !important;
+  border-radius: 12rpx !important;
+  background: rgba(248, 244, 229, .95) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--ai .hero-main-title,
+.ancient-screen--ai .hero-small-title,
+.ancient-screen--ai .quick-label,
+.ancient-screen--ai .tool-name,
+.ancient-screen--ai .tab-text {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--ai .hero-main-subtitle,
+.ancient-screen--ai .hero-small-subtitle,
+.ancient-screen--ai .tool-desc,
+.ancient-screen--ai .course-state,
+.ancient-screen--ai .course-state-subtitle {
+  color: #78918a !important;
+}
+
+.ancient-screen--ai .hero-main-cta,
+.ancient-screen--ai .course-state-action,
+.ancient-screen--ai .tab-item--active,
+.ancient-screen--ai .tool-action {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 6rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--ai .quick-icon-wrap,
+.ancient-screen--ai .icon-wrapper,
+.ancient-screen--ai .icon-inner {
+  border: 1rpx solid rgba(181, 138, 83, .52) !important;
+  background: #e8efdf !important;
+}
+
+.ancient-screen--ai .icon-wrapper::before {
+  background: rgba(181, 167, 126, .24) !important;
+}
+
+.ancient-screen--ai .tab-item--active .tab-text {
+  color: #315e62 !important;
+}
+
+.ancient-screen--ai .tab-indicator {
+  background: #b58a53 !important;
+}
+
+/* 原素材为白色图标，统一转为主题青黛色，避免功能键像空白圆圈 */
+.ancient-screen--ai .quick-icon,
+.ancient-screen--ai .tool-icon,
+.ancient-screen--ai .hero-small-icon,
+.ancient-screen--ai .hero-main-icon {
+  filter: brightness(0) saturate(100%) invert(39%) sepia(18%) saturate(662%) hue-rotate(129deg) brightness(91%) contrast(86%) !important;
+}
+
+.ancient-screen--ai .tab-item--active {
+  border: 1rpx solid rgba(181, 138, 83, .55) !important;
+  border-radius: 8rpx !important;
+  background: rgba(232, 239, 223, .86) !important;
+}
+
+.ancient-screen--ai .tab-item:not(.tab-item--active) {
+  background: transparent !important;
+  color: #78918a !important;
 }
 </style>

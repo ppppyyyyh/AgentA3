@@ -1,5 +1,5 @@
 <template>
-	<view class="schedule-page">
+	<view class="schedule-page ancient-screen ancient-screen--schedule">
 		<view class="status-bar"></view>
 		<view class="schedule-header">
 			<view class="header-back" @click="uni.navigateBack()">

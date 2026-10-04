@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 顶部工具栏 -->
     <view class="top-bar">
       <view class="top-action" @tap="goGuide">

@@ -1,5 +1,5 @@
 <template>
-  <view class="page-wrap">
+  <view class="page-wrap ancient-screen ancient-screen--mine">
     <nav-bar title="个人中心" :showBack="false" />
     <view class="mine-page">
       <!-- 头部：纯白背景 -->
@@ -416,5 +416,57 @@ export default {
   margin-left: 72rpx;
   margin-right: 0;
   background-color: #E5E5EA;
+}
+
+/* 个人中心页的古风收口样式，覆盖原有白色系统卡片 */
+.page-wrap.ancient-screen--mine {
+  background: linear-gradient(rgba(247, 244, 231, .86), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') center top / cover no-repeat !important;
+}
+
+.ancient-screen--mine .header-block,
+.ancient-screen--mine .menu-block {
+  border: 1rpx solid rgba(190, 160, 103, .58) !important;
+  border-radius: 18rpx !important;
+  background: linear-gradient(135deg, rgba(249, 246, 232, .96), rgba(226, 238, 222, .9)), url('/static/ancient/blue-pavilion.png') center / cover !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .09) !important;
+}
+
+.ancient-screen--mine .header-block {
+  padding: 28rpx 26rpx !important;
+}
+
+.ancient-screen--mine .user-name,
+.ancient-screen--mine .cell-label {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--mine .user-id,
+.ancient-screen--mine .cell-desc {
+  color: #78918a !important;
+}
+
+.ancient-screen--mine .cell {
+  min-height: 96rpx !important;
+  border-bottom: 1rpx solid rgba(190, 160, 103, .28) !important;
+}
+
+.ancient-screen--mine .cell-icon {
+  width: 54rpx !important;
+  height: 54rpx !important;
+  margin-right: 22rpx !important;
+  border: 1rpx solid #c5a56e !important;
+  border-radius: 50% !important;
+  background: rgba(232, 239, 223, .9) !important;
+}
+
+.ancient-screen--mine .cell-icon-img {
+  width: 32rpx !important;
+  height: 32rpx !important;
+  opacity: .72;
+}
+
+.ancient-screen--mine .cell-arrow {
+  color: #a67b4e !important;
 }
 </style>

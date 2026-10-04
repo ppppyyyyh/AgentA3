@@ -1,5 +1,5 @@
 <template>
-  <view class="history-page">
+  <view class="history-page ancient-screen ancient-screen--mine-child">
     <nav-bar title="AI 会话历史" :showBack="true" fixed placeholder />
 
     <view class="history-toolbar">

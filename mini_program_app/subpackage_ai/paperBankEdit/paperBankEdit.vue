@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar :title="id ? '编辑题库组' : '新建题库组'" :showBack="true" placeholder />
     <view class="form">
       <view class="field" @tap="focusNameInput">

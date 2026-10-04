@@ -21,6 +21,8 @@
 	}
 </script>
 
+<style src="./styles/ancient-theme.scss" lang="scss"></style>
+
 <style>
 	/* 工业级画布：全局 body/页面背景极浅灰 */
 	page {

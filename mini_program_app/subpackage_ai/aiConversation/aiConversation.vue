@@ -1,5 +1,5 @@
 <template>
-  <view class="conversation-page">
+  <view class="conversation-page ancient-screen ancient-screen--conversation">
     <nav-bar title="智能助手" :showBack="true" fixed placeholder />
 
     <view class="conversation-actions">

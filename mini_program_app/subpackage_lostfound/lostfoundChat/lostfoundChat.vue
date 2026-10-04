@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root">
+  <view class="page-root ancient-screen ancient-screen--chat-detail">
     <view class="screen">
       <view class="container">
         <common-page-header :title="chatTitle" :fixed="true" :placeholder="true" :showBack="true" />

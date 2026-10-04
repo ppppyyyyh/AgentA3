@@ -1,5 +1,5 @@
 <template>
-	<view class="message-container">
+	<view class="message-container ancient-screen ancient-screen--message-child">
 		<nav-bar title="消息通知" />
 		
 		<!-- 分类板块 -->

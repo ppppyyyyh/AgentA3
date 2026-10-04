@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="试卷生成" :showBack="true" placeholder />
     <scroll-view scroll-y class="scroll">
       <view class="feature-grid">

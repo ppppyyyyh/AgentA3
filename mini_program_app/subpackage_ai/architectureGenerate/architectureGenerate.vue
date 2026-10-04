@@ -1,5 +1,5 @@
 <template>
-  <view class="architecture-page">
+  <view class="architecture-page ancient-screen ancient-screen--ai">
     <nav-bar title="AI 架构图" :showBack="true" :border="false" />
 
     <scroll-view scroll-y class="architecture-scroll" :show-scrollbar="false">

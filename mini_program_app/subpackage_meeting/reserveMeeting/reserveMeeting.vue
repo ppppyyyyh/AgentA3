@@ -1,5 +1,5 @@
 <template>
-	<view class="meeting-app-page soft-page">
+	<view class="meeting-app-page soft-page ancient-screen ancient-screen--reserve">
 		<view class="status-bar"></view>
 		<view class="top-bar">
 			<view class="back" @click="back">‹</view>

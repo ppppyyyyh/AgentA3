@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--course-list">
     <nav-bar title="校园课程" :showBack="true" fixed placeholder />
 
     <!-- 搜索栏 -->

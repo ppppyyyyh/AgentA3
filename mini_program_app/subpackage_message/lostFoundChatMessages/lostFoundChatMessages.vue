@@ -1,5 +1,5 @@
 <template>
-  <view class="chat-message-page">
+  <view class="chat-message-page ancient-screen ancient-screen--chat-list">
     <nav-bar title="聊天消息" />
 
     <scroll-view scroll-y class="page-scroll" :show-scrollbar="false">

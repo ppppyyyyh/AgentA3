@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--notice">
     <nav-bar title="通知公告" :showBack="true" />
     <view class="notice-list">
       <view v-for="item in notices" :key="item.id" class="notice-item">

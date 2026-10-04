@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root" :class="{ 'page-root--market-list': currentPage === 'list' }">
+  <view class="page-root ancient-screen ancient-screen--market-list" :class="{ 'page-root--market-list': currentPage === 'list' }">
     <view class="screen">
       <view class="container">
       <!-- 列表页 -->

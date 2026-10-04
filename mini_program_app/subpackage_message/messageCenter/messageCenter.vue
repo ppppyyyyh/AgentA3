@@ -1,5 +1,5 @@
 <template>
-  <view class="message-center-page">
+  <view class="message-center-page ancient-screen ancient-screen--mine-child">
     <nav-bar title="消息" />
 
     <scroll-view scroll-y class="message-scroll" :show-scrollbar="false">

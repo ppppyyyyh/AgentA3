@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="活动图结果" :showBack="true" :border="false" :fixed="true" :placeholder="true" titleAlign="center" />
     <!-- 顶部工具栏 -->
                  <view class="top-bar" style="background: linear-gradient(180deg, #e8f7ed 0%, #edf8f1 100%) !important; border-bottom: 0 !important;">

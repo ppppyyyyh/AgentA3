@@ -1,5 +1,5 @@
 <template>
-	<view class="meeting-app-page">
+	<view class="meeting-app-page ancient-screen ancient-screen--meeting">
 		<nav-bar title="会议详情" :showBack="true" fixed placeholder :border="false" background="#FFFFFF" @right-click="shareMeeting">
 			<template #right>
 				<view class="share-btn" @click="shareMeeting">

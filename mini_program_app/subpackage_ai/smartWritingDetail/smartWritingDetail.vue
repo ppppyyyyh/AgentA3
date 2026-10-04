@@ -1,5 +1,5 @@
 <template>
-  <view class="detail-page">
+  <view class="detail-page ancient-screen ancient-screen--ai">
     <nav-bar title="作品详情页" :showBack="true" fixed placeholder />
 
     <view v-if="record" class="detail-card">

@@ -232,6 +232,41 @@ export default {
 	box-shadow: 0 14rpx 32rpx rgba(36, 87, 70, 0.13);
 }
 
+.home-schedule-card {
+	background:
+		linear-gradient(180deg, rgba(249, 246, 231, .88), rgba(243, 239, 222, .96)),
+		url('/static/ancient/blue-pavilion.png') center / cover no-repeat;
+	border: 1rpx solid #c8aa70;
+	border-radius: 8rpx;
+	box-shadow: 0 10rpx 20rpx rgba(70, 91, 82, .1);
+}
+
+.home-schedule-footer {
+	border-bottom: 1rpx solid rgba(187, 149, 84, .46);
+}
+
+.home-schedule-week {
+	color: #315e62;
+	font-family: serif;
+}
+
+.home-schedule-desc,
+.home-day-text,
+.home-period-text {
+	color: #78908a;
+}
+
+.home-schedule-board {
+	background: rgba(255, 252, 239, .56);
+	border: 1rpx solid rgba(186, 157, 101, .34);
+}
+
+.home-course-block {
+	border: 1rpx solid rgba(169, 130, 75, .48);
+	background: rgba(210, 229, 214, .84) !important;
+	box-shadow: none;
+}
+
 .home-schedule-top {
 	display: grid;
 	grid-template-columns: 68rpx repeat(7, 1fr);

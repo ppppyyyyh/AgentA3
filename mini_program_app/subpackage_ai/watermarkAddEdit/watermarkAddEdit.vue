@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="加水印编辑" :showBack="true"></nav-bar>
 
     <scroll-view scroll-y class="scroll-wrap">

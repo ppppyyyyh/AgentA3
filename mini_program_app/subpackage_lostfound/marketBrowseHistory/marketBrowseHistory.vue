@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root">
+  <view class="page-root ancient-screen ancient-screen--mine-child">
     <view class="container">
       <common-page-header title="浏览记录" :fixed="true" :placeholder="true" :showBack="true">
         <template #right>

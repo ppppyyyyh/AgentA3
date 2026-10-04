@@ -1,5 +1,5 @@
 <template>
-  <view class="exam-page">
+  <view class="exam-page ancient-screen ancient-screen--mine-child">
     <nav-bar title="我的试卷" :showBack="true" fixed placeholder />
     <view class="toolbar">
       <view class="search-box">

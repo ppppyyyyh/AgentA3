@@ -1,5 +1,5 @@
 <template>
-  <view class="canteen-page">
+  <view class="canteen-page ancient-screen ancient-screen--food">
     <nav-bar
       :title="currentRestaurant.name"
       :fixed="true"

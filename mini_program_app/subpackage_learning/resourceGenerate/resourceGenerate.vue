@@ -1,5 +1,5 @@
 <template>
-  <view class="learning-page">
+  <view class="learning-page ancient-screen ancient-screen--ai">
     <nav-bar class="resource-nav" :class="{ 'resource-nav--presentation': isPresentationMode }" title="个性化资源包" :showBack="true" fixed placeholder>
       <template #right>
         <view v-if="isPresentationMode" class="presentation-history-action" @tap.stop="openPresentationHistory">

@@ -1,5 +1,5 @@
 <template>
-	<view class="page-wrap">
+  <view class="page-wrap ancient-screen ancient-screen--ai">
 		<!-- 替换为全局导航组件，和使用帮助头部样式完全一致 -->
 		<nav-bar title="水印工具" :showBack="true"></nav-bar>
 

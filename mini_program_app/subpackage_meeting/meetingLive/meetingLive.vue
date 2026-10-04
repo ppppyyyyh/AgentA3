@@ -1,5 +1,5 @@
 <template>
-	<view class="live-page">
+	<view class="live-page ancient-screen ancient-screen--meeting">
 		<view class="status-bar"></view>
 
 		<!-- 顶部导航栏 对齐参考布局 -->

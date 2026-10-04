@@ -1,5 +1,5 @@
 <template>
-  <view class="learning-page">
+  <view class="learning-page ancient-screen ancient-screen--ai">
     <nav-bar title="Python 个性化学习" :showBack="true" fixed placeholder />
 
     <view class="hero">

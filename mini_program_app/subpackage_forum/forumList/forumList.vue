@@ -1,5 +1,5 @@
 <template>
-  <view class="forum-container">
+  <view class="forum-container ancient-screen ancient-screen--forum">
     <view class="page-fixed-header">
       <nav-bar title="校园论坛" :showBack="true" />
       <!-- 顶部搜索栏 + 个人主页入口 -->

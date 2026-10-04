@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root">
+  <view class="page-root ancient-screen ancient-screen--mine-child">
     <common-page-header title="我的" :fixed="true" :placeholder="true" :showBack="true" :autoBack="false" @back="onBackToApp" />
 
     <scroll-view scroll-y class="page-body">

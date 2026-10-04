@@ -1,5 +1,5 @@
 <template>
-  <view class="page-wrap">
+  <view class="page-wrap ancient-screen ancient-screen--ai">
     <nav-bar title="使用帮助" :showBack="true"></nav-bar>
     <scroll-view class="scroll-wrap" scroll-y>
       <view class="content">

@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root">
+    <view class="page-root ancient-screen ancient-screen--market">
     <view class="screen">
       <view class="container">
         <view class="page-content">

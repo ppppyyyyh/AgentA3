@@ -1,5 +1,5 @@
 <template>
-  <view class="page-wrap">
+  <view class="page-wrap ancient-screen ancient-screen--mine-child">
     <nav-bar title="个人画像" />
     <scroll-view class="page-scroll" scroll-y>
       <view class="profile-page">

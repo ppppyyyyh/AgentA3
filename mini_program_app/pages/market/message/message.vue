@@ -1,5 +1,5 @@
 <template>
-  <view class="page-root">
+  <view class="page-root ancient-screen ancient-screen--market-message">
     <common-page-header title="消息" :fixed="true" :placeholder="true" :showBack="true" :autoBack="false" @back="onBackToApp" />
 
     <view class="screen">

@@ -1,5 +1,5 @@
 <template>
-	<view class="page">
+	<view class="page ancient-screen ancient-screen--ai">
 		<!-- 导航栏，使用插槽把管理按钮放到导航栏右上角 -->
 		<nav-bar title="历史记录" :showBack="true">
 			<template #right>

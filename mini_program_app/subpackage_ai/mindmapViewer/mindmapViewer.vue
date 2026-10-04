@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar :title="mindmap.title || 'AI 思维导图'" :showBack="true" :border="false" :fixed="true" :placeholder="true" />
 
     <view class="canvas-wrapper">

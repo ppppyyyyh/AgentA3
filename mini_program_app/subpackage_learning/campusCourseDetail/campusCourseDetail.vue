@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+    <view class="page ancient-screen ancient-screen--ai">
     <nav-bar :title="course?.name || '课程详情'" :showBack="true" fixed placeholder />
 
     <view v-if="loading" class="state-box">加载中...</view>

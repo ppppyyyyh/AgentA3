@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 顶部（共用 nav-bar） -->
     <nav-bar :subtitle="navSubtitle" :showBack="true" :border="false">
       <template #center>

@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="选择试题" :showBack="true" placeholder />
     <view class="steps"><view class="step active"><text class="step-no">1</text><text>试卷信息与选题</text></view><view class="step"><text class="step-no">2</text><text>页面格式</text></view><view class="step"><text class="step-no">3</text><text>预览与确认</text></view></view>
     <view v-if="paperId" class="summary">

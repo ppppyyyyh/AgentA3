@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="AI 流程图" :showBack="true" :border="false" />
 
     <scroll-view class="content" scroll-y :show-scrollbar="false">

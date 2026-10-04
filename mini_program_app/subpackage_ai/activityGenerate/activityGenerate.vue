@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <!-- 导航栏 -->
     <view class="nav-bar">
       <view class="nav-back" @tap="goBack">

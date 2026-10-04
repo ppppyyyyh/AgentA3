@@ -1,5 +1,5 @@
 <template>
-	<view class="category-container">
+	<view class="category-container ancient-screen ancient-screen--message-child">
 		<nav-bar :title="pageTitle" fixed placeholder />
 		
 		<view class="category-header" v-if="list.length">

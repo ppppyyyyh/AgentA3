@@ -1,5 +1,5 @@
 <template>
-  <view class="generating-page">
+  <view class="generating-page ancient-screen ancient-screen--ai">
     <nav-bar title="智能写作" :showBack="true" fixed placeholder />
 
     <view class="generating-card">

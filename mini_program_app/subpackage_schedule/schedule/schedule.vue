@@ -1,5 +1,5 @@
 <template>
-	<view class="schedule-page"
+	<view class="schedule-page ancient-screen ancient-screen--schedule"
 		@touchstart="handleTouchStart"
 		@touchmove="handleTouchMove"
 		@touchend="handleTouchEnd">

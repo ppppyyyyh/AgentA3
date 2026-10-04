@@ -1,5 +1,5 @@
 <template>
-	<view class="message-detail-container">
+	<view class="message-detail-container ancient-screen ancient-screen--message-child">
 		<nav-bar :title="messageTitle" fixed placeholder />
 		
 		<view class="detail-content">

@@ -1,0 +1,1133 @@
+/* Shared ancient-landscape theme for feature pages. */
+page {
+  background: #f3efe2 !important;
+}
+
+.ancient-screen {
+  min-height: 100vh;
+  color: #315e62 !important;
+  background-color: #f3efe2 !important;
+  background-repeat: no-repeat !important;
+  background-position: center top !important;
+  background-size: 100% auto !important;
+}
+
+.ancient-screen--activity {
+  background-image: linear-gradient(rgba(243, 239, 226, .86), rgba(243, 239, 226, .96)), url('/static/ancient/willow-lake.png') !important;
+}
+
+.ancient-screen--food {
+  background-image: linear-gradient(rgba(243, 239, 226, .9), rgba(243, 239, 226, .96)), url('/static/ancient/blue-pavilion.png') !important;
+}
+
+.ancient-screen--market {
+  background-image: linear-gradient(rgba(243, 239, 226, .86), rgba(243, 239, 226, .96)), url('/static/ancient/waterfall-palace.png') !important;
+}
+
+.ancient-screen--forum,
+.ancient-screen--meeting {
+  background-image: linear-gradient(rgba(235, 237, 226, .88), rgba(243, 239, 226, .97)), url('/static/ancient/mountain-city.png') !important;
+}
+
+.ancient-screen--promotion {
+  background-image: linear-gradient(rgba(243, 239, 226, .84), rgba(243, 239, 226, .96)), url('/static/ancient/waterfall-palace.png') !important;
+}
+
+.ancient-screen--notice,
+.ancient-screen--ai {
+  background-image: linear-gradient(rgba(249, 248, 241, .84), rgba(243, 239, 226, .97)), url('/static/ancient/mist-pavilion.png') !important;
+}
+
+.ancient-screen--schedule {
+  background-image: linear-gradient(rgba(241, 242, 235, .88), rgba(243, 239, 226, .97)), url('/static/ancient/blue-pavilion.png') !important;
+}
+
+.ancient-screen--mine,
+.ancient-screen--mine-child {
+  background-image: linear-gradient(rgba(247, 244, 231, .88), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') !important;
+}
+
+.ancient-screen--map {
+  background: #d8e8df !important;
+}
+
+.ancient-screen--map .map-fullscreen {
+  background: linear-gradient(rgba(236, 239, 224, .16), rgba(211, 229, 216, .28)), url('/static/ancient/waterfall-palace.png') center / cover no-repeat !important;
+}
+
+.ancient-screen--map .search-box-map,
+.ancient-screen--map .back-btn-map,
+.ancient-screen--map .category-bar,
+.ancient-screen--map .nearby-sheet-map,
+.ancient-screen--map .search-suggest-panel {
+  border: 1rpx solid rgba(188, 151, 86, .64) !important;
+  background: rgba(248, 245, 229, .94) !important;
+  box-shadow: 0 8rpx 20rpx rgba(52, 82, 75, .14) !important;
+}
+
+.ancient-screen--map .category-bar__label,
+.ancient-screen--map .nearby-sheet__title,
+.ancient-screen--map .nearby-name,
+.ancient-screen--map .cluster-item__name {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--map .category-bar {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 28rpx !important;
+  background: linear-gradient(135deg, rgba(248, 244, 229, .98), rgba(239, 234, 214, .96)) !important;
+  box-shadow: 0 10rpx 24rpx rgba(52, 82, 75, .18) !important;
+}
+
+.ancient-screen--map .category-bar__item {
+  color: #496d6b !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--map .category-bar__item.active,
+.ancient-screen--map .category-bar__item:active {
+  color: #315e62 !important;
+}
+
+.ancient-screen--map .category-bar__icon {
+  border: 1rpx solid rgba(181, 138, 83, .42) !important;
+  background: rgba(247, 242, 223, .96) !important;
+  box-shadow: none !important;
+}
+
+.ancient-screen--map .category-bar__glyph {
+  filter: sepia(.2) saturate(.65) hue-rotate(120deg) !important;
+}
+
+.ancient-screen--mine .mine-page {
+  padding: 20rpx 24rpx 260rpx !important;
+}
+
+.ancient-screen--mine .header-block,
+.ancient-screen--mine .menu-block,
+.ancient-screen--mine-child .card,
+.ancient-screen--mine-child .list-card,
+.ancient-screen--mine-child .panel,
+.ancient-screen--mine-child .section-card,
+.ancient-screen--mine-child .state-card,
+.ancient-screen--mine-child .form-card {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: rgba(252, 249, 237, .9) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--mine .header-block {
+  padding: 30rpx 26rpx !important;
+  background: linear-gradient(120deg, rgba(230, 239, 221, .95), rgba(249, 244, 224, .92)), url('/static/ancient/blue-pavilion.png') center / cover !important;
+}
+
+.ancient-screen--mine .avatar {
+  border: 4rpx solid #c5a56e !important;
+  box-shadow: 0 0 0 6rpx rgba(245, 232, 190, .8) !important;
+}
+
+.ancient-screen--mine .user-name,
+.ancient-screen--mine .cell-label,
+.ancient-screen--mine-child .card-title,
+.ancient-screen--mine-child .section-title,
+.ancient-screen--mine-child .page-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--mine .cell {
+  min-height: 92rpx !important;
+  border-color: rgba(190, 160, 103, .35) !important;
+}
+
+.ancient-screen--mine .cell-icon {
+  border: 1rpx solid #c5a56e !important;
+  border-radius: 50% !important;
+  background: #e9dfbd !important;
+}
+
+.ancient-screen--mine .cell-arrow {
+  color: #a67b4e !important;
+}
+
+.ancient-screen--mine-child .toolbar,
+.ancient-screen--mine-child .tabs,
+.ancient-screen--mine-child .filter-bar,
+.ancient-screen--mine-child .history-toolbar,
+.ancient-screen--mine-child .module-tabs {
+  border-color: rgba(190, 160, 103, .44) !important;
+  background: rgba(247, 244, 231, .86) !important;
+}
+
+.ancient-screen--mine-child .tab--active,
+.ancient-screen--mine-child .filter-item.active,
+.ancient-screen--mine-child .module-tab.active {
+  color: #2f7375 !important;
+  border-color: #b58a53 !important;
+}
+
+.ancient-screen--mine-child .campus-entry,
+.ancient-screen--mine-child .banner,
+.ancient-screen--mine-child .course-card,
+.ancient-screen--mine-child .recommend-item {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: linear-gradient(90deg, rgba(247, 244, 231, .92), rgba(232, 241, 227, .84)), url('/static/ancient/blue-pavilion.png') center / cover !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--mine-child .campus-entry-title,
+.ancient-screen--mine-child .banner-title,
+.ancient-screen--mine-child .course-name,
+.ancient-screen--mine-child .recommend-name {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--mine-child .campus-entry-desc,
+.ancient-screen--mine-child .banner-course,
+.ancient-screen--mine-child .course-meta-line,
+.ancient-screen--mine-child .progress-text {
+  color: #76908a !important;
+}
+
+.ancient-screen--mine-child .continue-btn,
+.ancient-screen--mine-child .retry-btn,
+.ancient-screen--mine-child .add-btn,
+.ancient-screen--mine-child .campus-entry-arrow,
+.ancient-screen--mine-child .detail-btn {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 999rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+  box-shadow: 0 5rpx 12rpx rgba(54, 105, 88, .18) !important;
+}
+
+.ancient-screen--mine-child .progress,
+.ancient-screen--mine-child .mini-progress-inner {
+  background: #b58a53 !important;
+}
+
+.ancient-screen--course-list,
+.ancient-screen--reserve,
+.ancient-screen--conversation {
+  background-image: linear-gradient(rgba(247, 244, 231, .88), rgba(243, 239, 226, .97)), url('/static/ancient/mist-pavilion.png') !important;
+}
+
+.ancient-screen--course-list .campus-entry,
+.ancient-screen--course-list .category-section,
+.ancient-screen--course-list .course-card,
+.ancient-screen--course-list .recommend-item {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: linear-gradient(90deg, rgba(249, 246, 232, .94), rgba(226, 239, 225, .84)), url('/static/ancient/blue-pavilion.png') center / cover !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--course-list .category-item.active,
+.ancient-screen--course-list .tab.active {
+  color: #315e62 !important;
+  border-color: #b58a53 !important;
+  background: #d9e8d9 !important;
+}
+
+.ancient-screen--course-list .retry-btn,
+.ancient-screen--course-list .course-action,
+.ancient-screen--course-list .enter-btn {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 999rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--schedule .header-module,
+.ancient-screen--schedule .schedule-board,
+.ancient-screen--schedule .schedule-grid,
+.ancient-screen--schedule .week-header {
+  border-color: rgba(190, 160, 103, .52) !important;
+  background: rgba(249, 246, 232, .9) !important;
+}
+
+.ancient-screen--schedule .week-info--current .week-text,
+.ancient-screen--schedule .today-chip__text,
+.ancient-screen--schedule .weekday-date,
+.ancient-screen--schedule .manage-text {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--schedule .manage-btn,
+.ancient-screen--schedule .share-btn,
+.ancient-screen--schedule .today-chip {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 8rpx !important;
+  background: #f5edd3 !important;
+  color: #315e62 !important;
+}
+
+.ancient-screen--reserve .top-bar,
+.ancient-screen--reserve .panel,
+.ancient-screen--reserve .type-card,
+.ancient-screen--reserve .input-box,
+.ancient-screen--reserve .picker-value {
+  border-color: rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: rgba(249, 246, 232, .92) !important;
+}
+
+.ancient-screen--reserve .nav-title,
+.ancient-screen--reserve .panel-title,
+.ancient-screen--reserve .type-name,
+.ancient-screen--reserve .field-label {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--reserve .type-card--active,
+.ancient-screen--reserve .main-button {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--conversation .conversation-actions {
+  border-bottom: 1rpx solid rgba(190, 160, 103, .48) !important;
+  background: rgba(247, 244, 231, .9) !important;
+}
+
+.ancient-screen--conversation .composer-zone {
+  border-top: 1rpx solid rgba(190, 160, 103, .48) !important;
+  background: rgba(247, 244, 231, .96) !important;
+}
+
+.ancient-screen--conversation .composer-tools {
+  background: transparent !important;
+}
+
+.ancient-screen--conversation .composer-tool {
+  border: 1rpx solid rgba(190, 160, 103, .52) !important;
+  border-radius: 999rpx !important;
+  background: rgba(249, 246, 232, .92) !important;
+  color: #78918a !important;
+}
+
+.ancient-screen--conversation .composer-tool--active {
+  border-color: #b58a53 !important;
+  background: #e8efdF !important;
+  color: #315e62 !important;
+}
+
+.ancient-screen--conversation .composer {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: rgba(249, 246, 232, .96) !important;
+  box-shadow: 0 6rpx 14rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--conversation .composer-attach {
+  border-color: rgba(190, 160, 103, .56) !important;
+  background: #e8efdf !important;
+  color: #4d8e78 !important;
+}
+
+.ancient-screen--conversation .composer-input {
+  color: #315e62 !important;
+  background: transparent !important;
+}
+
+.ancient-screen--conversation .send-btn {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 999rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--conversation .send-btn.disabled {
+  background: #c6d5ca !important;
+  color: #f7f4e7 !important;
+}
+
+.ancient-screen--conversation .conversation-action,
+.ancient-screen--conversation .message-bubble,
+.ancient-screen--conversation .conversation-empty,
+.ancient-screen--conversation .composer-bar {
+  border: 1rpx solid rgba(190, 160, 103, .5) !important;
+  border-radius: 10rpx !important;
+  background: rgba(249, 246, 232, .92) !important;
+  color: #315e62 !important;
+}
+
+.ancient-screen--conversation .conversation-action--primary,
+.ancient-screen--conversation .send-button {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--conversation .conversation-empty__title,
+.ancient-screen--conversation .assistant-identity__name,
+.ancient-screen--conversation .message-text {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen .nav-bar,
+.ancient-screen .page-fixed-header,
+.ancient-screen .schedule-header {
+  background: rgba(246, 242, 226, .94) !important;
+  border-bottom: 1rpx solid #c6a36a !important;
+  box-shadow: 0 6rpx 18rpx rgba(73, 97, 87, .08) !important;
+}
+
+.ancient-screen .nav-title,
+.ancient-screen .header-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+  letter-spacing: 4rpx !important;
+}
+
+.ancient-screen .nav-back-icon,
+.ancient-screen .header-back,
+.ancient-screen .header-actions {
+  color: #a3784b !important;
+}
+
+.ancient-screen .search-bar,
+.ancient-screen .search-block,
+.ancient-screen .top-search,
+.ancient-screen .category-wrap,
+.ancient-screen .category-scroll,
+.ancient-screen .canteen-tabs,
+.ancient-screen .nav-secondary-wrap,
+.ancient-screen .calendar-wrap {
+  background: rgba(247, 244, 231, .86) !important;
+  border-color: rgba(191, 158, 99, .46) !important;
+}
+
+.ancient-screen .search-input,
+.ancient-screen .search-pill,
+.ancient-screen .search-scan-btn,
+.ancient-screen .top-search {
+  border: 1rpx solid #cbb27d !important;
+  border-radius: 8rpx !important;
+  background: rgba(255, 253, 244, .9) !important;
+  box-shadow: none !important;
+}
+
+.ancient-screen .category-item.active,
+.ancient-screen .canteen-tab.active,
+.ancient-screen .category-pill.active,
+.ancient-screen .date-active {
+  color: #2f7375 !important;
+  border-color: #b58a53 !important;
+}
+
+.ancient-screen .active-line {
+  background: #b58a53 !important;
+}
+
+.ancient-screen .section-card,
+.ancient-screen .notice-item,
+.ancient-screen .promo-card,
+.ancient-screen .hot-card,
+.ancient-screen .meeting-item,
+.ancient-screen .meeting-card,
+.ancient-screen .section,
+.ancient-screen .banner-card,
+.ancient-screen .content-card {
+  border: 1rpx solid rgba(190, 160, 103, .58) !important;
+  border-radius: 10rpx !important;
+  background: rgba(251, 248, 235, .9) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen .section-title,
+.ancient-screen .notice-title,
+.ancient-screen .promo-title,
+.ancient-screen .meeting-name,
+.ancient-screen .hot-name,
+.ancient-screen .hero-main-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+  letter-spacing: 2rpx !important;
+}
+
+.ancient-screen .quick-item,
+.ancient-screen .quick-action,
+.ancient-screen .category-pill,
+.ancient-screen .status-chip,
+.ancient-screen .detail-btn,
+.ancient-screen .hero-main-cta {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 6rpx !important;
+  background: rgba(239, 230, 198, .76) !important;
+  color: #496d6b !important;
+}
+
+.ancient-screen .empty-state,
+.ancient-screen .empty-tip,
+.ancient-screen .section-empty {
+  color: #80918a !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--meeting .quick-item,
+.ancient-screen--meeting .section,
+.ancient-screen--meeting .meeting-item,
+.ancient-screen--meeting .meeting-card,
+.ancient-screen--meeting .meeting-panel,
+.ancient-screen--meeting .form-card,
+.ancient-screen--meeting .join-card,
+.ancient-screen--meeting .live-panel,
+.ancient-screen--ai .section-card,
+.ancient-screen--ai .hero-main,
+.ancient-screen--ai .hero-small,
+.ancient-screen--ai .quick-item,
+.ancient-screen--ai .tools-section,
+.ancient-screen--ai .tool-item,
+.ancient-screen--ai .tabs-section,
+.ancient-screen--ai .history-card,
+.ancient-screen--ai .detail-card,
+.ancient-screen--ai .result-card,
+.ancient-screen--ai .form-card {
+  border: 1rpx solid rgba(190, 160, 103, .52) !important;
+  border-radius: 12rpx !important;
+  background: rgba(248, 244, 229, .94) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--meeting .quick-label,
+.ancient-screen--meeting .section-title,
+.ancient-screen--meeting .meeting-name,
+.ancient-screen--meeting .page-title,
+.ancient-screen--ai .hero-main-title,
+.ancient-screen--ai .hero-small-title,
+.ancient-screen--ai .quick-label,
+.ancient-screen--ai .tool-name,
+.ancient-screen--ai .page-title,
+.ancient-screen--ai .history-title,
+.ancient-screen--ai .detail-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--meeting .quick-icon,
+.ancient-screen--ai .quick-icon-wrap,
+.ancient-screen--ai .icon-wrapper {
+  border: 1rpx solid rgba(190, 160, 103, .52) !important;
+  background: rgba(232, 239, 223, .9) !important;
+}
+
+.ancient-screen--meeting .action-btn,
+.ancient-screen--meeting .quick-action,
+.ancient-screen--ai .hero-main-cta,
+.ancient-screen--ai .course-state-action,
+.ancient-screen--ai .tool-action,
+.ancient-screen--ai .primary-btn,
+.ancient-screen--ai .submit-btn {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+/* 旧物会话列表与会话详情也沿用首页的古风纸笺体系 */
+.ancient-screen--chat-list,
+.ancient-screen--chat-detail {
+  background-image: linear-gradient(rgba(247, 244, 231, .9), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') !important;
+  background-position: center;
+  background-size: cover;
+}
+
+.ancient-screen--chat-list .module-tabs,
+.ancient-screen--chat-list .chat-list,
+.ancient-screen--chat-detail .product-card,
+.ancient-screen--chat-detail .trade-event-card,
+.ancient-screen--chat-detail .contact-card,
+.ancient-screen--chat-detail .contact-dialog,
+.ancient-screen--chat-detail .template-panel,
+.ancient-screen--chat-detail .custom-panel {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 10rpx !important;
+  background: rgba(251, 248, 235, .92) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--chat-list .module-tab,
+.ancient-screen--chat-list .chat-item,
+.ancient-screen--chat-detail .chat-footer-new,
+.ancient-screen--chat-detail .chat-input-bar {
+  background: rgba(249, 246, 232, .9) !important;
+  color: #315e62 !important;
+}
+
+.ancient-screen--chat-list .module-tab.active,
+.ancient-screen--chat-list .chat-item:active,
+.ancient-screen--chat-detail .chat-send-btn,
+.ancient-screen--chat-detail .chat-image-btn,
+.ancient-screen--chat-detail .quick-pill {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.ancient-screen--chat-list .category-title,
+.ancient-screen--chat-list .section-title,
+.ancient-screen--chat-list .sender-name,
+.ancient-screen--chat-detail .product-title,
+.ancient-screen--chat-detail .trade-event-title,
+.ancient-screen--chat-detail .contact-title,
+.ancient-screen--chat-detail .dialog-title,
+.ancient-screen--chat-detail .template-name {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--chat-list .category-desc,
+.ancient-screen--chat-list .category-time,
+.ancient-screen--chat-list .chat-preview,
+.ancient-screen--chat-detail .trade-event-desc,
+.ancient-screen--chat-detail .contact-subtitle,
+.ancient-screen--chat-detail .product-meta,
+.ancient-screen--chat-detail .template-summary {
+  color: #78918a !important;
+}
+
+.ancient-screen--chat-detail .msg-bubble-group,
+.ancient-screen--chat-detail .contact-preview,
+.ancient-screen--chat-detail .template-item,
+.ancient-screen--chat-detail .more-panel {
+  border-color: rgba(190, 160, 103, .5) !important;
+  background: rgba(249, 246, 232, .92) !important;
+}
+
+.ancient-screen--chat-detail .msg-content-r,
+.ancient-screen--chat-detail .msg-content-s {
+  background: rgba(232, 239, 220, .96) !important;
+  color: #315e62 !important;
+}
+
+/* 未显式标记主题的历史页面也统一落入同一套纸笺底色 */
+.page-root,
+.page,
+.screen,
+.meeting-app-page,
+.history-page,
+.detail-page,
+.detail-container,
+.list-page,
+.message-container,
+.category-container,
+.message-detail-container,
+.followers-page,
+.following-page,
+.profile-page,
+.publish-page,
+.search-page,
+.login-page {
+  color: #315e62 !important;
+  background-color: #f3efe2 !important;
+  background-image: linear-gradient(rgba(247, 244, 231, .88), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') !important;
+  background-position: center top !important;
+  background-size: cover !important;
+}
+
+.ancient-screen--message-child .msg-list,
+.ancient-screen--message-child .msg-sections,
+.ancient-screen--message-child .detail-content,
+.ancient-screen--message-child .link-card,
+.ancient-screen--message-child .msg-item,
+.ancient-screen--message-child .msg-section {
+  border-color: rgba(190, 160, 103, .52) !important;
+  border-radius: 10rpx !important;
+  background: rgba(251, 248, 235, .92) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--message-child .msg-name,
+.ancient-screen--message-child .section-title,
+.ancient-screen--message-child .article-title,
+.ancient-screen--message-child .link-title,
+.ancient-screen--message-child .category-count {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--message-child .msg-action,
+.ancient-screen--message-child .msg-desc,
+.ancient-screen--message-child .section-desc,
+.ancient-screen--message-child .article-text,
+.ancient-screen--message-child .article-time {
+  color: #78918a !important;
+}
+
+.ancient-screen--mine-child .module-tabs,
+.ancient-screen--mine-child .category-list,
+.ancient-screen--mine-child .category-item {
+  border-color: rgba(190, 160, 103, .52) !important;
+  background: rgba(251, 248, 235, .92) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--mine-child .category-item {
+  color: #315e62 !important;
+}
+
+.ancient-screen--mine-child .category-title,
+.ancient-screen--mine-child .category-desc,
+.ancient-screen--mine-child .category-time {
+  font-family: serif !important;
+}
+
+.ancient-screen--mine-child .category-title {
+  color: #315e62 !important;
+}
+
+.ancient-screen--mine-child .category-desc,
+.ancient-screen--mine-child .category-time {
+  color: #78918a !important;
+}
+
+.ancient-screen--mine-child.page-root {
+  min-height: 100vh;
+  background-image: linear-gradient(rgba(247, 244, 231, .88), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') !important;
+  background-position: center top !important;
+  background-size: cover !important;
+}
+
+.ancient-screen--mine-child .filter-tabs,
+.ancient-screen--mine-child .page-body-inner,
+.ancient-screen--mine-child .card-cover,
+.ancient-screen--mine-child .card-body,
+.ancient-screen--mine-child .history-item,
+.ancient-screen--mine-child .empty-block,
+.ancient-screen--mine-child .empty-state,
+.ancient-screen--mine-child .product-card {
+  border-color: rgba(190, 160, 103, .52) !important;
+  border-radius: 10rpx !important;
+  background: rgba(251, 248, 235, .92) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--mine-child .empty-title,
+.ancient-screen--mine-child .card-title,
+.ancient-screen--mine-child .page-title,
+.ancient-screen--mine-child .history-title,
+.ancient-screen--mine-child .product-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--mine-child .empty-subtitle,
+.ancient-screen--mine-child .empty-desc,
+.ancient-screen--mine-child .card-subtitle,
+.ancient-screen--mine-child .history-meta,
+.ancient-screen--mine-child .product-meta {
+  color: #78918a !important;
+}
+
+.ancient-screen--mine-child .card-action-btn,
+.ancient-screen--mine-child .empty-link,
+.ancient-screen--mine-child .clear-action {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.page-root .card,
+.page-root .panel,
+.page-root .section-card,
+.page-root .content-card,
+.page-root .list-card,
+.page .card,
+.page .panel,
+.page .section-card,
+.page .content-card,
+.page .list-card {
+  border-color: rgba(190, 160, 103, .52) !important;
+  border-radius: 10rpx !important;
+  background: rgba(251, 248, 235, .9) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.page-root button,
+.page button,
+.meeting-app-page button,
+.message-container button,
+.category-container button {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+/* AI 创作工具链中未单独标记主题的子页，也统一使用同一套控件颜色 */
+.page .section-card,
+.page .card,
+.page .panel,
+.page .toolbar,
+.page .tabs,
+.page .list,
+.page .content,
+.detail-page .card,
+.detail-page .panel,
+.history-page .card,
+.generating-page .card,
+.architecture-page .card {
+  border-color: rgba(190, 160, 103, .52) !important;
+  border-radius: 12rpx !important;
+  background: rgba(248, 244, 229, .94) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.page button,
+.detail-page button,
+.history-page button,
+.generating-page button,
+.architecture-page button,
+.page .primary,
+.page .primary-btn,
+.page .submit-btn,
+.page .action-btn {
+  border-color: #b58a53 !important;
+  border-radius: 6rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.page .title,
+.page .name,
+.page .heading,
+.detail-page .title,
+.history-page .title,
+.generating-page .title,
+.architecture-page .title {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+/* 单行模板和历史工具页的通用控件收口 */
+.page .header,
+.page .toolbar,
+.page .search,
+.page .tabs,
+.page .summary,
+.page .content,
+.page .list,
+.page .state,
+.page .empty,
+.page .bottom,
+.page .actions,
+.detail-page .header,
+.detail-page .content,
+.detail-page .bottom,
+.history-page .toolbar,
+.history-page .list,
+.generating-page .content,
+.architecture-page .content {
+  border-color: rgba(190, 160, 103, .5) !important;
+  background: rgba(248, 244, 229, .94) !important;
+  color: #315e62 !important;
+}
+
+.page input,
+.page textarea,
+.detail-page input,
+.detail-page textarea,
+.history-page input,
+.architecture-page input {
+  border: 1rpx solid rgba(190, 160, 103, .56) !important;
+  border-radius: 8rpx !important;
+  background: rgba(252, 249, 237, .94) !important;
+  color: #315e62 !important;
+}
+
+.page .active,
+.page .tab.active,
+.page .tabs .active,
+.page .selected,
+.page .primary,
+.page .primary-btn,
+.page .action-primary,
+.detail-page .primary,
+.detail-page .primary-btn,
+.history-page .primary,
+.architecture-page .primary {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+.page .meta,
+.page .desc,
+.page .subtitle,
+.page .hint,
+.page .state,
+.detail-page .meta,
+.detail-page .desc,
+.history-page .meta,
+.architecture-page .desc {
+  color: #78918a !important;
+}
+
+.ancient-screen--ai .learning-page,
+.ancient-screen--ai .question-bank-page,
+.ancient-screen--ai .hero,
+.ancient-screen--ai .state-card,
+.ancient-screen--ai .state-box,
+.ancient-screen--ai .search-bar,
+.ancient-screen--ai .resource-card,
+.ancient-screen--ai .resource-section,
+.ancient-screen--ai .learning-card {
+  border-color: rgba(190, 160, 103, .52) !important;
+  background: rgba(248, 244, 229, .94) !important;
+  color: #315e62 !important;
+}
+
+.ancient-screen--ai .learning-page button,
+.ancient-screen--ai .question-bank-page button,
+.ancient-screen--ai .retry-btn,
+.ancient-screen--ai .resource-action,
+.ancient-screen--ai .learning-action {
+  border-color: #b58a53 !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+}
+
+/* 全局统一主题按键颜色 */
+.ancient-screen button,
+.page button,
+.detail-page button,
+.history-page button,
+.generating-page button,
+.architecture-page button,
+.ancient-screen [class$="-btn"],
+.page [class$="-btn"],
+.detail-page [class$="-btn"],
+.history-page [class$="-btn"],
+.generating-page [class$="-btn"],
+.architecture-page [class$="-btn"],
+.ancient-screen [class$="-button"],
+.page [class$="-button"],
+.detail-page [class$="-button"],
+.history-page [class$="-button"],
+.generating-page [class$="-button"],
+.architecture-page [class$="-button"],
+.ancient-screen .btn,
+.ancient-screen .action-btn,
+.ancient-screen .action-button,
+.ancient-screen .quick-action,
+.ancient-screen .continue-btn,
+.ancient-screen .detail-btn,
+.ancient-screen .enter-btn,
+.ancient-screen .send-btn,
+.ancient-screen .submit-btn {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 8rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+  box-shadow: 0 5rpx 12rpx rgba(76, 103, 91, .14) !important;
+}
+
+.ancient-screen button[disabled],
+.page button[disabled],
+.detail-page button[disabled],
+.history-page button[disabled],
+.generating-page button[disabled],
+.architecture-page button[disabled],
+.ancient-screen .disabled,
+.ancient-screen .btn-disabled,
+.ancient-screen .action-btn--disabled {
+  border-color: #c9d2c8 !important;
+  background: #c9d2c8 !important;
+  color: #f7f4e7 !important;
+  box-shadow: none !important;
+}
+
+.ancient-screen .secondary,
+.ancient-screen .secondary-btn,
+.ancient-screen .ghost,
+.ancient-screen .ghost-btn,
+.ancient-screen .cancel-btn,
+.ancient-screen .back-btn {
+  border-color: rgba(181, 138, 83, .62) !important;
+  background: rgba(248, 244, 229, .96) !important;
+  color: #496d6b !important;
+  box-shadow: none !important;
+}
+
+/* 小程序全局按键规范：不论页面是否已挂古风主题，都使用统一色板 */
+button,
+.btn,
+.button,
+.action-btn,
+.action-button,
+.primary-btn,
+.submit-btn,
+.confirm-btn,
+.save-btn,
+.send-btn,
+.enter-btn,
+.retry-btn,
+.continue-btn,
+.detail-btn,
+.finish-btn,
+.create-btn,
+.publish-btn,
+.login-btn,
+.logout-btn,
+[class$="-btn"],
+[class$="-button"] {
+  border: 1rpx solid #b58a53 !important;
+  border-radius: 8rpx !important;
+  background: #4d8e78 !important;
+  color: #fff6dc !important;
+  box-shadow: 0 5rpx 12rpx rgba(76, 103, 91, .14) !important;
+}
+
+button::after {
+  border: none !important;
+}
+
+button[disabled],
+.disabled,
+.btn-disabled,
+.action-btn--disabled,
+[class*="disabled"] {
+  border-color: #c9d2c8 !important;
+  background: #c9d2c8 !important;
+  color: #f7f4e7 !important;
+  box-shadow: none !important;
+}
+
+.secondary,
+.secondary-btn,
+.ghost,
+.ghost-btn,
+.cancel-btn,
+.outline-btn,
+.link-btn,
+.presentation-history-action {
+  border-color: rgba(181, 138, 83, .62) !important;
+  background: #f8f4e5 !important;
+  color: #496d6b !important;
+  box-shadow: none !important;
+}
+
+/* 全局清理纯白底板：内容容器统一使用米白纸笺，不改变按钮和图标的层次 */
+.ancient-screen [class$="-card"],
+.ancient-screen [class$="-panel"],
+.ancient-screen [class$="-list"],
+.ancient-screen [class$="-block"],
+.ancient-screen [class$="-sheet"],
+.ancient-screen [class$="-container"],
+.ancient-screen [class$="-content"],
+.ancient-screen .card,
+.ancient-screen .panel,
+.ancient-screen .list,
+.ancient-screen .block,
+.ancient-screen .sheet,
+.ancient-screen .header-block,
+.ancient-screen .menu-block,
+.ancient-screen .module-tabs,
+.ancient-screen .category-list,
+.ancient-screen .chat-list,
+.ancient-screen .section,
+.ancient-screen .toolbar,
+.ancient-screen .tabs,
+.ancient-screen .filter-bar,
+.ancient-screen .composer,
+.ancient-screen .conversation-actions,
+.ancient-screen .bottom-bar,
+.ancient-screen .category-bar,
+.ancient-screen .nearby-sheet-map,
+.ancient-screen .empty,
+.ancient-screen .empty-state {
+  background-color: rgba(248, 244, 229, .94) !important;
+}
+
+.ancient-screen [class$="-card"],
+.ancient-screen [class$="-panel"],
+.ancient-screen [class$="-list"],
+.ancient-screen [class$="-block"],
+.ancient-screen [class$="-sheet"],
+.ancient-screen .card,
+.ancient-screen .panel,
+.ancient-screen .list,
+.ancient-screen .block,
+.ancient-screen .sheet {
+  border-color: rgba(190, 160, 103, .46) !important;
+}
+
+.ancient-screen--market-list,
+.ancient-screen--market-message {
+  background-image: linear-gradient(rgba(247, 244, 231, .86), rgba(243, 239, 226, .97)), url('/static/ancient/willow-lake.png') !important;
+}
+
+.ancient-screen--market-list .market-hero,
+.ancient-screen--market-list .market-list-search-row,
+.ancient-screen--market-list .market-search-pill,
+.ancient-screen--market-list .sort-bar,
+.ancient-screen--market-list .product-card,
+.ancient-screen--market-list .empty-block,
+.ancient-screen--market-message .empty,
+.ancient-screen--market-message .session-card {
+  border-color: rgba(190, 160, 103, .52) !important;
+  background: rgba(251, 248, 235, .92) !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .08) !important;
+}
+
+.ancient-screen--market-list .market-search-pill {
+  border-radius: 999rpx !important;
+  color: #78918a !important;
+}
+
+.ancient-screen--market-list .sort-tab,
+.ancient-screen--market-message .sess-name,
+.ancient-screen--market-message .sess-product,
+.ancient-screen--market-list .empty-title {
+  color: #315e62 !important;
+  font-family: serif !important;
+}
+
+.ancient-screen--market-list .sort-tab.on {
+  color: #315e62 !important;
+  border-color: #b58a53 !important;
+}
+
+.ancient-screen--market-list .empty-sub,
+.ancient-screen--market-message .sess-time,
+.ancient-screen--market-message .sess-preview {
+  color: #78918a !important;
+}
+
+.ancient-screen--market-message .empty-icon,
+.ancient-screen--market-list .empty-icon {
+  border-color: #b58a53 !important;
+  background: rgba(232, 239, 223, .88) !important;
+}
+
+.bottom-bar {
+  border-top: 1rpx solid rgba(190, 160, 103, .56) !important;
+  background: rgba(247, 244, 231, .96) !important;
+  box-shadow: 0 -6rpx 18rpx rgba(76, 103, 91, .1) !important;
+}
+
+.bar-item {
+  color: #8b958e !important;
+}
+
+.bar-item.active {
+  color: #4d8e78 !important;
+}
+
+.bar-item.active::after {
+  background: #b58a53 !important;
+}
+
+.bar-post {
+  border-color: #b58a53 !important;
+  background: #c9e4d3 !important;
+  color: #4d8e78 !important;
+  box-shadow: 0 8rpx 18rpx rgba(76, 103, 91, .14) !important;
+}

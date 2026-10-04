@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="页面格式" :showBack="true" placeholder />
     <view class="steps"><view class="step done">1 试卷信息与选题</view><view class="step active">2 页面格式</view><view class="step">3 预览与确认</view></view>
     <scroll-view scroll-y class="content">

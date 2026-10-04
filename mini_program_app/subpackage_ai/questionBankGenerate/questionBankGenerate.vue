@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="题库生成" subtitle="从资料快速生成练习题" :showBack="true" />
 
     <view

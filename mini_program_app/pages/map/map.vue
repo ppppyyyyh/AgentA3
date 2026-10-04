@@ -1,6 +1,6 @@
 <template>
   <view
-    class="map-page"
+    class="map-page ancient-screen ancient-screen--map"
     :class="{
       'map-page--poi-open': !!selectedLocation,
       'map-page--poi-image': poiHasCoverImage
@@ -2763,6 +2763,23 @@ export default {
   font-weight: 700;
   text-align: center;
   white-space: nowrap;
+}
+
+/* 地图分类图标改为古风线描造型，不再使用原来的现代彩色图标 */
+.ancient-screen--map .category-bar__item--teaching .category-bar__glyph {
+  background-image: url('/static/icons/ancient-teaching.svg') !important;
+}
+
+.ancient-screen--map .category-bar__item--canteen .category-bar__glyph {
+  background-image: url('/static/icons/ancient-canteen.svg') !important;
+}
+
+.ancient-screen--map .category-bar__item--infra .category-bar__glyph {
+  background-image: url('/static/icons/ancient-infra.svg') !important;
+}
+
+.ancient-screen--map .category-bar__item--sport .category-bar__glyph {
+  background-image: url('/static/icons/ancient-sport.svg') !important;
 }
 
 .filter-row {

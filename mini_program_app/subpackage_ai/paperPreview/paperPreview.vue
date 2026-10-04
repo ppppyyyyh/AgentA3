@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page ancient-screen ancient-screen--ai">
     <nav-bar title="试卷预览" :showBack="true" placeholder :rightText="allExpanded ? '全部收起' : '全部展开'" @right-click="toggleAll" />
     <view class="steps"><view class="step"><text class="step-no">1</text><text>试卷信息与选题</text></view><view class="step"><text class="step-no">2</text><text>页面格式</text></view><view class="step active"><text class="step-no">3</text><text>预览与确认</text></view></view>
     <scroll-view scroll-y class="paper">

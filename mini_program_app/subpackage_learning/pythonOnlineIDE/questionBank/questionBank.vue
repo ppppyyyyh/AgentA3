@@ -1,5 +1,5 @@
 <template>
-  <view class="question-bank-page">
+  <view class="question-bank-page ancient-screen ancient-screen--ai">
     <nav-bar title="题库" :showBack="true" />
 
     <view class="search-bar">

@@ -1,5 +1,5 @@
 <template>
-  <view class="history-page">
+  <view class="history-page ancient-screen ancient-screen--ai">
     <nav-bar title="智能写作历史" :showBack="true" fixed placeholder />
 
     <view class="history-panel">

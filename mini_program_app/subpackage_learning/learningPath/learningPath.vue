@@ -1,5 +1,5 @@
 <template>
-  <view class="learning-page">
+  <view class="learning-page ancient-screen ancient-screen--ai">
     <nav-bar title="Python 学习路径" :showBack="true" fixed placeholder />
 
     <view v-if="pageState !== 'ready'" class="state-card">
