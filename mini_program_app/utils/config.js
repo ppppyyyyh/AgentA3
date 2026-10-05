@@ -7,9 +7,10 @@ function detectLocalDevApiBase() {
   try {
     if (typeof location === 'undefined') return ''
     const host = location.hostname || ''
-    // 用 127.0.0.1，避免 localhost 走到 IPv6 或命中其它占用 8080 的网页
+    // H5 开发环境统一走 Vite 同源代理，避免手机/模拟器把 127.0.0.1
+    // 解析成自身，也避免浏览器跨域直连后端。
     if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') {
-      return 'http://127.0.0.1:8080'
+      return '/__backend_api__'
     }
     // 局域网访问（手机/其它设备）：前端 192.168.x.x → 同主机 8080
     if (/^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host)) {
@@ -29,7 +30,7 @@ export function getApiBaseUrl() {
   if (localDev) return localDev
 
   // #ifdef H5
-  return 'http://127.0.0.1:8080'
+  return '/__backend_api__'
   // #endif
   // #ifndef H5
   // App/小程序真机：线上经 :3000 Nginx 反代 /api → Java。

@@ -15,7 +15,8 @@ export default defineConfig({
     proxy: {
       '/__backend_api__': {
         target: 'http://127.0.0.1:8080',
-        changeOrigin: true
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/__backend_api__/, '')
       },
       '/api': {
         target: 'http://127.0.0.1:8080',
