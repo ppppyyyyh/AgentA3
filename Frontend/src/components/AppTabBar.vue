@@ -62,7 +62,6 @@ const shortcutItems = [
         <RouterLink to="/marketplace">校园市集</RouterLink>
         <RouterLink to="/discount">校园优惠</RouterLink>
         <RouterLink to="/forum">校园论坛</RouterLink>
-        <RouterLink to="/ai">AI 助手</RouterLink>
         <RouterLink to="/ai-tools">AI 工具</RouterLink>
       </nav>
 

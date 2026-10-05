@@ -2,7 +2,6 @@
 import { computed, h, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import AppTabBar from '../components/AppTabBar.vue'
 import AssistantBusinessCards from '../components/assistant/AssistantBusinessCards.vue'
 import ChatImageAttachment from '../components/ChatImageAttachment.vue'
 import ChatMarkdown from '../components/ChatMarkdown.vue'
@@ -19,6 +18,7 @@ import excelIcon from '../assets/file-icons/excel.png'
 import wordIcon from '../assets/file-icons/word.png'
 import markdownIcon from '../assets/file-icons/markdown.png'
 import zipIcon from '../assets/file-icons/zip.png'
+import assistantMascot from '../assets/mascot-shanling-qianli.png'
 
 const IconLine = (props) => {
   const paths = {
@@ -73,6 +73,12 @@ const sidebarCollapsed = ref(false)
 const darkMode = ref(false)
 const userMenuOpen = ref(false)
 const noticeOpen = ref(false)
+const assistantOpen = ref(false)
+const assistantTrigger = ref(null)
+const assistantPosition = ref({ x: null, y: null })
+const assistantDragging = ref(false)
+let assistantDragState = null
+let suppressAssistantClick = false
 const toast = ref('')
 const searchText = ref('')
 const router = useRouter()
@@ -94,7 +100,79 @@ function selectModule(id) {
 }
 
 function returnHome() {
+  assistantOpen.value = false
   void router.push('/home')
+}
+
+const assistantPositionStyle = computed(() => {
+  const { x, y } = assistantPosition.value
+  return Number.isFinite(x) && Number.isFinite(y)
+    ? { left: `${x}px`, top: `${y}px`, right: 'auto', bottom: 'auto' }
+    : undefined
+})
+
+function clampAssistantPosition(x, y) {
+  const bounds = assistantTrigger.value?.getBoundingClientRect()
+  const width = bounds?.width || 112
+  const height = bounds?.height || 132
+  return {
+    x: Math.max(8, Math.min(x, window.innerWidth - width - 8)),
+    y: Math.max(8, Math.min(y, window.innerHeight - height - 8)),
+  }
+}
+
+function moveAssistantTrigger(event) {
+  if (!assistantDragState || event.pointerId !== assistantDragState.pointerId) return
+  const deltaX = event.clientX - assistantDragState.pointerX
+  const deltaY = event.clientY - assistantDragState.pointerY
+  if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) assistantDragState.moved = true
+  assistantPosition.value = clampAssistantPosition(
+    assistantDragState.originX + deltaX,
+    assistantDragState.originY + deltaY,
+  )
+}
+
+function endAssistantDrag(event) {
+  if (!assistantDragState || event.pointerId !== assistantDragState.pointerId) return
+  suppressAssistantClick = assistantDragState.moved
+  assistantDragState = null
+  assistantDragging.value = false
+  window.removeEventListener('pointermove', moveAssistantTrigger)
+  window.removeEventListener('pointerup', endAssistantDrag)
+  window.removeEventListener('pointercancel', endAssistantDrag)
+}
+
+function beginAssistantDrag(event) {
+  if (event.button !== undefined && event.button !== 0) return
+  const bounds = assistantTrigger.value?.getBoundingClientRect()
+  if (!bounds) return
+  assistantDragState = {
+    pointerId: event.pointerId,
+    pointerX: event.clientX,
+    pointerY: event.clientY,
+    originX: bounds.left,
+    originY: bounds.top,
+    moved: false,
+  }
+  assistantPosition.value = { x: bounds.left, y: bounds.top }
+  assistantDragging.value = true
+  window.addEventListener('pointermove', moveAssistantTrigger)
+  window.addEventListener('pointerup', endAssistantDrag)
+  window.addEventListener('pointercancel', endAssistantDrag)
+}
+
+function openAssistant() {
+  if (suppressAssistantClick) {
+    suppressAssistantClick = false
+    return
+  }
+  assistantOpen.value = true
+}
+
+function keepAssistantInViewport() {
+  const { x, y } = assistantPosition.value
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return
+  assistantPosition.value = clampAssistantPosition(x, y)
 }
 
 // 智能问答
@@ -657,7 +735,15 @@ async function removeConversation(item) {
   }
 }
 
-onMounted(() => { void loadConversationHistory() })
+function handleAssistantKeydown(event) {
+  if (event.key === 'Escape') assistantOpen.value = false
+}
+
+onMounted(() => {
+  void loadConversationHistory()
+  window.addEventListener('keydown', handleAssistantKeydown)
+  window.addEventListener('resize', keepAssistantInViewport)
+})
 
 function isCodeQuestion(question) {
   return /代码|编程|程序|开发|报错|bug|函数|算法|接口|api|python|javascript|typescript|\bjava\b|vue|react|css|html|sql|c\+\+|c#|shell|npm|vite/i.test(question)
@@ -773,6 +859,11 @@ function jumpToMessage(index) {
 onBeforeUnmount(() => {
   window.removeEventListener('pointermove', moveTimelineDrag)
   window.removeEventListener('pointerup', endTimelineDrag)
+  window.removeEventListener('keydown', handleAssistantKeydown)
+  window.removeEventListener('resize', keepAssistantInViewport)
+  window.removeEventListener('pointermove', moveAssistantTrigger)
+  window.removeEventListener('pointerup', endAssistantDrag)
+  window.removeEventListener('pointercancel', endAssistantDrag)
 })
 
 function createConversation() {
@@ -1877,8 +1968,28 @@ function handleUpload(event) {
 </script>
 
 <template>
-  <AppTabBar />
-  <div class="campus-ai" :data-theme="darkMode ? 'dark' : 'light'">
+  <button
+    ref="assistantTrigger"
+    class="assistant-floating-orb"
+    :class="{ dragging: assistantDragging }"
+    :style="assistantPositionStyle"
+    type="button"
+    aria-label="打开校园 AI 助手"
+    :aria-expanded="assistantOpen"
+    @pointerdown="beginAssistantDrag"
+    @click="openAssistant"
+  >
+    <img :src="assistantMascot" alt="" />
+    <span>问芽芽</span>
+  </button>
+
+  <Transition name="assistant-modal">
+    <div v-if="assistantOpen" class="assistant-modal-mask" @mousedown.self="assistantOpen = false">
+      <section class="assistant-modal-dialog" role="dialog" aria-modal="true" aria-label="校园 AI 智能助手">
+        <button class="assistant-modal-close" type="button" aria-label="关闭校园 AI 助手" @click="assistantOpen = false">
+          <IconLine name="x" :size="19" />
+        </button>
+        <div class="campus-ai" :data-theme="darkMode ? 'dark' : 'light'">
     <aside :class="['side-nav', { collapsed: sidebarCollapsed }]">
       <button
         class="sidebar-toggle"
@@ -2443,32 +2554,152 @@ function handleUpload(event) {
     <transition name="toast">
       <div v-if="toast" class="toast-message"><IconLine name="check" :size="17" />{{ toast }}</div>
     </transition>
-  </div>
+        </div>
+      </section>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
 .campus-ai {
-  --primary: #1e3a5f;
-  --primary-hover: #284d78;
-  --primary-soft: #edf3f8;
-  --accent: #356c9f;
-  --bg: #f4f7fa;
-  --surface: #ffffff;
-  --surface-soft: #f8fafc;
-  --text: #172033;
-  --muted: #6b788a;
-  --subtle: #94a0af;
-  --line: #dfe6ee;
-  --line-strong: #cbd5e1;
-  --shadow: 0 10px 28px rgba(30, 58, 95, 0.08);
+  --primary: #155b63;
+  --primary-hover: #1b7378;
+  --primary-soft: #e9f3ef;
+  --accent: #268a88;
+  --bg: #f3f5ed;
+  --surface: #fffdf7;
+  --surface-soft: #f6f5ed;
+  --text: #173b40;
+  --muted: #61797a;
+  --subtle: #8a9c99;
+  --line: #d8e4dc;
+  --line-strong: #b9d0c7;
+  --shadow: 0 10px 28px rgba(18, 76, 79, 0.1);
   min-width: 320px;
-  min-height: 100vh;
-  padding-top: 60px;
+  min-height: 0;
+  height: 100%;
+  padding-top: 0;
   color: var(--text);
   background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
   transition: color .25s ease, background .25s ease;
 }
+
+.assistant-floating-orb {
+  position: fixed;
+  right: 34px;
+  bottom: 32px;
+  z-index: 90;
+  display: flex;
+  width: 112px;
+  min-height: 132px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  filter: drop-shadow(0 12px 16px rgba(20, 92, 73, .2));
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: filter .2s ease;
+}
+
+.assistant-floating-orb:hover {
+  filter: drop-shadow(0 16px 20px rgba(20, 92, 73, .28));
+}
+
+.assistant-floating-orb.dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.assistant-floating-orb:focus-visible {
+  outline: 3px solid rgba(217, 182, 102, .45);
+  outline-offset: 4px;
+}
+
+.assistant-floating-orb img {
+  width: 106px;
+  height: 106px;
+  object-fit: contain;
+  filter:
+    drop-shadow(1px 0 0 #d8ad4f)
+    drop-shadow(-1px 0 0 #d8ad4f)
+    drop-shadow(0 1px 0 #d8ad4f)
+    drop-shadow(0 -1px 0 #d8ad4f)
+    drop-shadow(0 7px 10px rgba(8, 57, 61, .22));
+  pointer-events: none;
+}
+
+.assistant-floating-orb span {
+  position: relative;
+  z-index: 1;
+  min-width: 86px;
+  margin-top: -19px;
+  padding: 7px 13px 8px;
+  border-radius: 999px;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  background: #16856b;
+  box-shadow: 0 7px 14px rgba(10, 83, 66, .2);
+  pointer-events: none;
+}
+
+.assistant-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 39, 43, .5);
+  backdrop-filter: blur(6px);
+}
+
+.assistant-modal-dialog {
+  position: relative;
+  width: min(76vw, 1380px);
+  height: 76vh;
+  min-width: 820px;
+  min-height: 560px;
+  overflow: hidden;
+  border: 1px solid rgba(207, 172, 91, .72);
+  border-radius: 22px;
+  background: #f3f5ed;
+  box-shadow: 0 30px 90px rgba(7, 42, 47, .38);
+}
+
+.assistant-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 80;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(36, 132, 130, .26);
+  border-radius: 50%;
+  color: #315e61;
+  background: rgba(255, 253, 247, .94);
+  box-shadow: 0 6px 18px rgba(18, 76, 79, .12);
+  cursor: pointer;
+}
+
+.assistant-modal-close:hover { color: #fffdf3; background: #1d7777; }
+.assistant-modal-enter-active, .assistant-modal-leave-active { transition: opacity .2s ease; }
+.assistant-modal-enter-active .assistant-modal-dialog,
+.assistant-modal-leave-active .assistant-modal-dialog { transition: transform .22s ease, opacity .2s ease; }
+.assistant-modal-enter-from, .assistant-modal-leave-to { opacity: 0; }
+.assistant-modal-enter-from .assistant-modal-dialog,
+.assistant-modal-leave-to .assistant-modal-dialog { opacity: 0; transform: translateY(14px) scale(.985); }
 
 .campus-ai[data-theme="dark"] {
   --primary: #8eb9e3;
@@ -2493,8 +2724,8 @@ function handleUpload(event) {
 .campus-ai button { color: inherit; }
 
 .side-nav {
-  position: fixed;
-  inset: 60px auto 0 0;
+  position: absolute;
+  inset: 0 auto 0 0;
   z-index: 30;
   display: flex;
   width: 286px;
@@ -2535,7 +2766,7 @@ function handleUpload(event) {
   flex: none;
   border-radius: 11px;
   color: #fff;
-  background: #1e3a5f;
+  background: linear-gradient(145deg, #155b63, #268a88);
 }
 .brand > span:last-child { display: grid; gap: 2px; }
 .brand strong { font-size: 16px; letter-spacing: .02em; }
@@ -2664,7 +2895,7 @@ function handleUpload(event) {
 }
 .avatar { width: 34px; height: 34px; }
 
-.app-area { min-height: calc(100vh - 60px); margin-left: 286px; transition: margin-left .24s ease; }
+.app-area { min-height: 100%; height: 100%; margin-left: 286px; transition: margin-left .24s ease; }
 .app-area.sidebar-collapsed { margin-left: 76px; }
 .global-header {
   position: fixed;
@@ -2731,12 +2962,12 @@ function handleUpload(event) {
 .user-popover button { display: flex; width: 100%; align-items: center; gap: 9px; padding: 9px; border-radius: 7px; background: transparent; text-align: left; font-size: 13px; }
 .user-popover button:hover { background: var(--primary-soft); }
 
-.main-content { min-height: calc(100vh - 60px); padding-top: 0; }
-.module-page { min-height: calc(100vh - 60px); }
+.main-content { min-height: 100%; height: 100%; padding-top: 0; }
+.module-page { min-height: 100%; }
 .page-enter { animation: page-fade .28s ease both; }
 @keyframes page-fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-.chat-page { position: relative; height: calc(100vh - 60px); min-height: 600px; overflow: hidden; background: var(--surface); }
+.chat-page { position: relative; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); }
 .chat-scroll { height: 100%; overflow-y: auto; padding: 48px clamp(24px, 6vw, 88px) 220px; }
 .scroll-to-bottom {
   position: absolute;
@@ -2917,7 +3148,7 @@ function handleUpload(event) {
 .composer-tools > button.active { color: var(--primary); background: var(--primary-soft); }
 .mini-switch { width: 24px; height: 14px; padding: 2px; border-radius: 99px; background: var(--line-strong); transition: .2s ease; }
 .mini-switch i { display: block; width: 10px; height: 10px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
-.composer-tools button.active .mini-switch { background: #356c9f; }
+.composer-tools button.active .mini-switch { background: var(--accent); }
 .composer-tools button.active .mini-switch i { transform: translateX(10px); }
 .resource-input { display: none; }
 .upload-queue { display: flex; width: min(860px, 100%); gap: 8px; margin: 0 auto 8px; overflow-x: auto; }
@@ -2970,7 +3201,7 @@ function handleUpload(event) {
 .icon-button, .send-button { display: grid; width: 39px; height: 39px; place-items: center; border-radius: 10px; }
 .icon-button { color: var(--muted); background: transparent; }
 .icon-button:hover { background: var(--primary-soft); transform: scale(1.04); }
-.send-button { color: #fff !important; background: #1e3a5f; }
+.send-button { color: #fff !important; background: var(--primary); }
 .stop-button { background: #40546b; }
 .send-button:disabled { cursor: not-allowed; opacity: .4; }
 .composer-zone > small { display: block; margin-top: 7px; color: var(--subtle); font-size: 10px; text-align: center; }
@@ -2984,7 +3215,7 @@ function handleUpload(event) {
 .type-tabs { display: flex; gap: 7px; margin: 28px 0 18px; overflow-x: auto; padding-bottom: 3px; }
 .type-tabs button { min-width: max-content; min-height: 38px; padding: 0 15px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: var(--surface); }
 .type-tabs button:hover { transform: scale(1.025); }
-.type-tabs button.active { border-color: #1e3a5f; color: #fff; background: #1e3a5f; }
+.type-tabs button.active { border-color: var(--primary); color: #fff; background: var(--primary); }
 .surface { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
 .writing-workspace { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; }
 .parameter-panel { padding: 20px; }
@@ -3038,7 +3269,7 @@ function handleUpload(event) {
   padding: 0 18px;
   border-radius: 9px;
   color: #fff !important;
-  background: #1e3a5f;
+  background: var(--primary);
   font-weight: 700;
 }
 .writing-composer > button:hover, .primary-action:hover { transform: scale(1.025); background: #284d78; }
@@ -3209,7 +3440,7 @@ function handleUpload(event) {
 .meeting-empty-state > span { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 16px; color: var(--primary); background: var(--primary-soft); }
 .meeting-empty-state h2 { margin: 16px 0 7px; font-size: 20px; }
 .meeting-empty-state p { max-width: 420px; margin: 0; color: var(--muted); line-height: 1.65; }
-.meeting-empty-state button { display: flex; min-height: 38px; align-items: center; gap: 6px; margin-top: 18px; padding: 0 14px; border-radius: 9px; color: #fff; background: #1e3a5f; font-weight: 700; }
+.meeting-empty-state button { display: flex; min-height: 38px; align-items: center; gap: 6px; margin-top: 18px; padding: 0 14px; border-radius: 9px; color: #fff; background: var(--primary); font-weight: 700; }
 .mobile-meeting-actions { display: none; }
 
 .mobile-tabs { display: none; }
@@ -3244,6 +3475,11 @@ function handleUpload(event) {
 }
 
 @media (max-width: 760px) {
+  .assistant-floating-orb { right: 14px; bottom: 18px; width: 92px; min-height: 110px; }
+  .assistant-floating-orb img { width: 88px; height: 88px; }
+  .assistant-floating-orb span { min-width: 74px; margin-top: -16px; padding: 6px 11px 7px; font-size: 16px; }
+  .assistant-modal-mask { padding: 10px; }
+  .assistant-modal-dialog { width: calc(100vw - 20px); height: calc(100vh - 20px); min-width: 0; min-height: 0; border-radius: 16px; }
   .side-nav { display: none; }
   .app-area { margin-left: 0; }
   .global-header { left: 0; display: flex; height: 58px; justify-content: space-between; padding: 0 14px; }

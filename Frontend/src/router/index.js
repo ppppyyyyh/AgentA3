@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import AiAssistantView from '../views/AiAssistantView.vue'
 import AiToolsView from '../views/AiToolsView.vue'
 import CampusActivitiesView from '../views/CampusActivitiesView.vue'
 import HomeView from '../views/HomeView.vue'
@@ -69,7 +68,7 @@ const routes = [
   { path: '/activities', name: 'activities', component: CampusActivitiesView },
   { path: '/meetings', name: 'meetings', component: MeetingWorkspaceView },
   { path: '/meetings/room/:sessionId', name: 'meeting-room', component: MeetingRoomView },
-  { path: '/ai', name: 'ai', component: AiAssistantView },
+  { path: '/ai', redirect: '/home' },
   { path: '/ai-tools', name: 'ai-tools', component: AiToolsView },
   { path: '/jobs/hot', name: 'hot-jobs', component: HotJobsView },
   { path: '/ai-original', name: 'ai-original', component: AiOriginalView },

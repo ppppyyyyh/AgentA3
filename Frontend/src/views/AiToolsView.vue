@@ -105,7 +105,6 @@ const categories = [
 ]
 
 const baseTools = [
-  { name: '校园 AI 助手', desc: '多资源上传、识图与校园智能问答', category: ['hot', 'campus'], artSet: 'service', art: 0, route: '/ai', accent: '#1768e6' },
   { name: '智能写作', desc: '生成校园常用文稿并支持润色', category: ['hot', 'creation'], artSet: 'core', art: 0, route: '/ai-studio/writing', accent: '#4077de' },
   { name: 'AI 文生图', desc: '根据文字描述生成图片', category: ['hot', 'creation'], artSet: 'core', art: 1, route: '/ai-studio/image', accent: '#7546d9' },
   { name: 'AI伪原创', desc: '图片内容创作与水印处理', category: ['hot', 'creation'], artSet: 'core', art: 1, route: '/ai-original', accent: '#8b63e8' },
