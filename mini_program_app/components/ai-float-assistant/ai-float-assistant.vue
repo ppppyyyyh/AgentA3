@@ -238,7 +238,7 @@
 		>
 			<image
 				class="ai-assistant-fab__mascot"
-				src="/static/ai/mascot-yaya.png"
+				src="/static/ai/mascot-shanling-qianli.png"
 				mode="aspectFit"
 			/>
 			<text class="ai-assistant-fab__name">问芽芽</text>
