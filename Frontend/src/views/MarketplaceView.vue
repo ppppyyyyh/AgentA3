@@ -185,6 +185,7 @@ watch(() => route.query.itemId, (itemId) => {
   if (itemId) void openItem(itemId)
 })
 onMounted(async () => {
+  keyword.value = String(route.query.keyword || '')
   try {
     categories.value = content(await getSecondhandCategories())
   } catch {
