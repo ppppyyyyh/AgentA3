@@ -38,7 +38,7 @@ async function handleLogin() {
       major: user.major, className: user.className, personalNumber: user.personalNumber,
       studentId: user.personalNumber, avatar: user.avatar,
     })
-    router.replace(String(route.query.redirect || '/home'))
+    router.replace('/home')
   } catch (error) {
     errorMessage.value = error.message || '登录失败'
   } finally { loading.value = false }
