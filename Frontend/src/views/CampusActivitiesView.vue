@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppTabBar from '../components/AppTabBar.vue'
 import ActivityCard from '../components/campus/ActivityCard.vue'
 import { getActivityList, getCategoryList, getMyFavorites, getMyRegistrations, addFavorite, removeFavorite } from '../api/activity'
@@ -11,6 +11,7 @@ import {
 } from '../utils/activityCard'
 
 const router = useRouter()
+const route = useRoute()
 
 const loading = ref(true)
 const error = ref(null)
@@ -190,6 +191,7 @@ const TIME_FILTERS = [
 ]
 
 onMounted(() => {
+  searchText.value = String(route.query.keyword || '')
   loadFavoritesFromStorage()
   loadFavoritesFromBackend()
   loadCategories()

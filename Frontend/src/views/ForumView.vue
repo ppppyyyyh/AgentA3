@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppTabBar from '../components/AppTabBar.vue'
 import { getHotPosts, getPostList, getTopicList, publishPost, togglePostLike } from '../api/forum'
 
 const router = useRouter()
+const route = useRoute()
 const posts = ref([])
 const hotPosts = ref([])
 const topics = ref([])
@@ -45,6 +46,8 @@ async function publish() {
 }
 watch(topicId, load)
 onMounted(async () => {
+  keywordInput.value = String(route.query.keyword || '')
+  keyword.value = keywordInput.value
   try {
     const [topicData, hotData] = await Promise.all([getTopicList({ page: 0, size: 50 }), getHotPosts({ page: 0, size: 8 })])
     topics.value = rows(topicData)

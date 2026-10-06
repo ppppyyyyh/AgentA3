@@ -2,12 +2,128 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppTabBar from '../components/AppTabBar.vue'
+import { getHotPosts } from '../api/forum'
+import { getActivityList } from '../api/activity'
+import { getDiscountActivityList } from '../api/discount'
+import { getEnabledAnnouncements } from '../api/notice'
 import { getLatestJobRecommendations, JOB_BOSS_CTA, JOB_SALARY_HINT, resolveBossJobSearchLink, resolveBossJobSearchLinkFromJob } from '../api/jobRecommendations'
+import { getSecondhandItemList } from '../api/secondhand'
 
 const router = useRouter()
 const searchKeyword = ref('')
+const searchMode = ref('all')
 const hotJobsLoading = ref(true)
 const hotJobs = ref([])
+const overviewLoading = ref(true)
+const overview = ref({ announcements: [], marketplace: [], activities: [], discounts: [], posts: [] })
+
+const quickActions = [
+  { label: '校园市集', description: '发现闲置与好物', example: '例：羽毛球拍、Nike 鞋', to: '/marketplace', tone: 'market' },
+  { label: '校园活动', description: '查看近期活动', example: '例：社团活动与校园讲座', to: '/activities', tone: 'activity' },
+  { label: '校园地图', description: '查找校园地点', example: '例：食堂、教学楼与服务点', to: '/map', tone: 'map' },
+  { label: '校园优惠', description: '领取身边优惠', example: '例：校园商家折扣与优惠券', to: '/discount', tone: 'discount' },
+  { label: '校园论坛', description: '参与校园讨论', example: '例：香樟食堂用餐体验', to: '/forum', tone: 'forum' },
+  { label: 'AI 助手', description: '随时获得帮助', example: '例：整理资料与解答问题', to: '/ai', tone: 'ai' },
+]
+
+const searchModes = [
+  { key: 'all', label: '全站' },
+  { key: 'market', label: '二手商品' },
+  { key: 'activity', label: '校园活动' },
+  { key: 'discount', label: '校园优惠' },
+]
+
+const quickSearches = [
+  { label: '教材资料', path: '/marketplace', mode: 'market' },
+  { label: '校园活动', path: '/activities', mode: 'activity' },
+  { label: '校园优惠', path: '/discount', mode: 'discount' },
+  { label: '失物招领', path: '/marketplace', mode: 'market' },
+  { label: '学习资料', path: '/forum', mode: 'all' },
+]
+
+function recordsOf(value) {
+  if (Array.isArray(value)) return value
+  if (Array.isArray(value?.data)) return value.data
+  return value?.data?.records || value?.data?.content || value?.records || value?.content || value?.list || []
+}
+
+function parseOverviewImages(value) {
+  if (Array.isArray(value)) return value
+  try { return JSON.parse(value || '[]') } catch { return String(value || '').split(',').filter(Boolean) }
+}
+
+function overviewPrice(value) {
+  return Number.isFinite(Number(value)) ? `¥${Number(value).toFixed(2)}` : '价格待确认'
+}
+
+function activityDate(value) {
+  if (!value) return '时间待公布'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return String(value).slice(0, 16)
+  return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+}
+
+function announcementDate(value) {
+  if (!value) return ''
+  const date = new Date(String(value).replace(' ', 'T'))
+  if (Number.isNaN(date.getTime())) return String(value).slice(0, 10)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+function runUnifiedSearch() {
+  const keyword = searchKeyword.value.trim()
+  if (searchMode.value === 'job') {
+    openBossSearch(keyword)
+    return
+  }
+  if (searchMode.value === 'market') {
+    router.push({ path: '/marketplace', query: keyword ? { keyword } : {} })
+    return
+  }
+  if (searchMode.value === 'activity') {
+    router.push({ path: '/activities', query: keyword ? { keyword } : {} })
+    return
+  }
+  if (searchMode.value === 'discount') {
+    router.push({ path: '/discount', query: keyword ? { keyword } : {} })
+    return
+  }
+  router.push(keyword ? { path: '/forum', query: { keyword } } : '/forum')
+}
+
+function runQuickSearch(item) {
+  searchKeyword.value = item.label
+  searchMode.value = item.mode
+  router.push({ path: item.path, query: { keyword: item.label } })
+}
+
+function handleHotSearch(item) {
+  if (searchMode.value === 'job') {
+    searchKeyword.value = item.label
+    runUnifiedSearch()
+    return
+  }
+  runQuickSearch(item)
+}
+
+async function loadOverview() {
+  overviewLoading.value = true
+  const [marketplace, activities, discounts, posts] = await Promise.allSettled([
+    getSecondhandItemList({ page: 0, size: 4 }),
+    getActivityList({ page: 1, size: 4, timePhase: 'upcoming' }),
+    getDiscountActivityList({ current: 1, size: 4, status: 1 }),
+    getHotPosts({ page: 0, size: 4 }),
+  ])
+  const announcements = await Promise.resolve().then(() => getEnabledAnnouncements()).catch(() => [])
+  overview.value = {
+    announcements: recordsOf(announcements).slice(0, 5),
+    marketplace: marketplace.status === 'fulfilled' ? recordsOf(marketplace.value).slice(0, 4) : [],
+    activities: activities.status === 'fulfilled' ? recordsOf(activities.value).slice(0, 4) : [],
+    discounts: discounts.status === 'fulfilled' ? recordsOf(discounts.value).slice(0, 4) : [],
+    posts: posts.status === 'fulfilled' ? recordsOf(posts.value).slice(0, 4) : [],
+  }
+  overviewLoading.value = false
+}
 
 const hotSearches = ['AI算法', 'Java开发', '前端架构', '云原生', '产品经理', '数据分析']
 
@@ -376,7 +492,10 @@ async function loadHotJobs() {
   }
 }
 
-onMounted(loadHotJobs)
+onMounted(() => {
+  loadHotJobs()
+  loadOverview()
+})
 
 const currentPage = ref(0)
 const activeCategoryId = ref('')
@@ -424,194 +543,98 @@ function releasePreview() {
 
     <section class="search-area">
       <div class="container">
+        <div class="overview-intro">
+          <div>
+            <span class="overview-kicker">CAMPUS HUB</span>
+            <h1>校园生活，一站掌握</h1>
+            <p>从闲置交易、校园活动到学习与就业服务，找到你现在需要的内容。</p>
+          </div>
+          <button type="button" class="overview-primary" aria-label="进入校园市集" @click="router.push({ name: 'marketplace' })">逛校园市集</button>
+          </div>
+        <div class="search-mode-tabs" aria-label="搜索范围">
+          <button
+            v-for="mode in searchModes"
+            :key="mode.key"
+            type="button"
+            :class="{ active: searchMode === mode.key }"
+            @click="searchMode = mode.key"
+          >{{ mode.label }}</button>
+        </div>
         <div class="search-box-wrap">
           <input
             v-model="searchKeyword"
             type="text"
-            placeholder="搜索职位、公司，例如：AI 大模型工程师"
-            @keyup.enter="openBossSearch(searchKeyword)"
+            placeholder="搜索校园商品、活动或讨论内容"
+            @keyup.enter="runUnifiedSearch"
           />
-          <button type="button" @click="openBossSearch(searchKeyword)">搜索</button>
+          <button type="button" @click="runUnifiedSearch">搜索</button>
         </div>
         <div class="hot-searches">
-          <span>热门搜索：</span>
+          <span>快捷搜索：</span>
           <span
-            v-for="item in hotSearches"
-            :key="item"
+            v-for="item in quickSearches"
+            :key="item.label"
             class="hot-search-tag"
-            @click="openBossSearch(item)"
-          >{{ item }}</span>
+            @click="handleHotSearch(item)"
+          >{{ item.label }}</span>
+        </div>
+        <div class="announcement-section announcement-section--search" aria-labelledby="announcement-title">
+          <div class="announcement-mark" aria-hidden="true">公告</div>
+          <div class="announcement-main">
+            <div class="announcement-heading">
+              <div><span class="section-eyebrow">CAMPUS NOTICE</span><h2 id="announcement-title">校园公告</h2></div>
+              <span>重要通知与校园服务安排</span>
+            </div>
+            <div v-if="overviewLoading" class="announcement-empty">正在加载公告…</div>
+            <div v-else-if="!overview.announcements.length" class="announcement-empty">暂无校园公告</div>
+            <div v-else class="announcement-scroller" tabindex="0" aria-label="校园公告，可纵向滑动">
+              <article v-for="notice in overview.announcements" :key="notice.id || notice.title" class="announcement-item">
+                <div class="announcement-item__meta"><span v-if="notice.isTop" class="announcement-top">置顶</span><time>{{ announcementDate(notice.createTime) }}</time></div>
+                <h3>{{ notice.title }}</h3>
+                <p>{{ notice.content }}</p>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="container cat-diagnosis-area">
-      <div class="left-panel" @mouseleave="resetPreview">
-        <div class="cat-menu-page active">
-          <button
-            v-for="item in currentCategories"
-            :key="item.id"
-            type="button"
-            class="cat-menu-item"
-            :class="{ active: activeCategoryId === item.id }"
-            @mouseenter="showCategory(item.id)"
-          >
-            <div class="cat-row">
-              <span class="cat-main">{{ item.main }}</span>
-              <span class="cat-sub-list">{{ item.sub }}</span>
-            </div>
-            <span class="cat-arrow">></span>
+    <section class="container quick-actions-section">
+      <div class="service-heading"><div class="service-heading__title"><span aria-hidden="true"></span><h2>校园服务</h2></div><span>6 项常用服务 · 点击条目进入</span></div>
+      <div class="quick-actions-grid">
+        <button v-for="item in quickActions" :key="item.to" type="button" class="quick-action" :class="`quick-action--${item.tone}`" @click="router.push(item.to)">
+          <span class="quick-action__content"><strong>{{ item.label }}</strong><small>{{ item.description }}</small><em>{{ item.example }}</em></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="container overview-section">
+      <div class="section-heading-inline"><div><span class="section-eyebrow">CAMPUS SNAPSHOT</span><h2>校园动态</h2></div><span>实时汇总各个校园服务</span></div>
+      <div v-if="overviewLoading" class="overview-loading">正在加载校园动态…</div>
+      <div v-else class="overview-grid">
+        <article class="overview-panel overview-panel--market">
+          <header><div><span class="panel-label">MARKETPLACE</span><h3>最新闲置</h3></div><button type="button" @click="router.push('/marketplace')">查看全部 ›</button></header>
+          <div v-if="!overview.marketplace.length" class="panel-empty">暂无闲置商品</div>
+          <button v-for="item in overview.marketplace" :key="item.id" type="button" class="market-row" @click="router.push({ path: '/marketplace', query: { itemId: item.id } })">
+            <span class="market-row__image"><img v-if="parseOverviewImages(item.images)[0]" :src="parseOverviewImages(item.images)[0]" alt="" /><span v-else>闲置</span></span>
+            <span class="market-row__copy"><strong>{{ item.title }}</strong><small>{{ item.campusName || item.tradeLocation || item.location || '校内交易' }}</small></span><b>{{ overviewPrice(item.price) }}</b>
           </button>
-        </div>
-
-        <div class="cat-pagination">
-          <span class="page-num">{{ currentPage + 1 }} / {{ pageCount }}</span>
-          <div class="page-btns">
-            <button type="button" class="page-btn" :disabled="currentPage === 0" @click="changePage(-1)">
-              <
-            </button>
-            <button type="button" class="page-btn" :disabled="currentPage === pageCount - 1" @click="changePage(1)">
-              >
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="right-panel" @mouseenter="keepPreview" @mouseleave="releasePreview">
-        <div v-if="!activeCategory" class="diagnosis-banner">
-          <div class="text-box">
-            <h2>拒绝盲目内卷，先做岗位体检</h2>
-            <p>
-              上传简历，AI 深度解析你的能力短板。
-              <br />
-              一键生成专属学习路径与高薪岗位适配报告。
-            </p>
-            <button type="button" class="diagnosis-btn diagnosis-btn--ghost" @click="router.push('/jobs/hot')">
-              查看岗位雷达
-            </button>
-          </div>
-        </div>
-
-        <div v-else class="detail-panel active">
-          <div class="detail-title">{{ activeCategory.title }}</div>
-          <div v-for="group in activeCategory.groups" :key="group.name" class="detail-item">
-            <div class="detail-item-title">{{ group.name }}</div>
-            <div class="detail-tags">
-              <span v-for="tag in group.tags" :key="tag">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="container section-block">
-      <div class="section-header">
-        <h2>热门岗位</h2>
-        <p v-if="hotJobsWeekLabel" class="section-meta">{{ hotJobsWeekLabel }} · 岗位方向由 AI 整理，薪资以 BOSS 直聘为准</p>
-      </div>
-      <div v-if="hotJobsLoading" class="section-empty">正在加载热门岗位…</div>
-      <div v-else-if="!displayHotJobs.length" class="section-empty">
-        <p>暂无岗位推荐</p>
-        <button type="button" class="section-link-btn" @click="router.push('/jobs/hot')">前往岗位雷达</button>
-      </div>
-      <div v-else class="grid-3">
-        <article v-for="job in displayHotJobs" :key="job.id || job.jobTitle" class="info-card">
-          <div class="card-header-simple">
-            <div class="title">{{ job.jobTitle }}</div>
-            <a
-              :href="resolveJobSearchLink(job)"
-              target="_blank"
-              rel="noreferrer"
-              class="salary-hint salary-hint--link"
-            >{{ JOB_SALARY_HINT }}</a>
-          </div>
-          <div class="card-desc">技能方向：{{ job.skills || '详见 BOSS 直聘' }}</div>
-          <div class="card-tags">
-            <span v-for="item in parseJobSkills(job.skills)" :key="item">{{ item }}</span>
-          </div>
-          <div class="card-actions">
-            <a :href="resolveJobSearchLink(job)" target="_blank" rel="noreferrer" class="more-btn">{{ JOB_BOSS_CTA }}</a>
-          </div>
-          <div class="card-benefits">岗位名称与技能方向仅供参考，具体薪资与 JD 以 BOSS 直聘为准</div>
         </article>
-      </div>
-      <div class="view-more-wrap">
-        <button type="button" class="view-more-btn" @click="router.push('/jobs/hot')">查看更多</button>
-      </div>
-    </section>
-
-    <section class="container section-block">
-      <div class="section-header">
-        <h2>热门招聘方向</h2>
-        <p class="section-meta">由本周岗位雷达整理，点击可前往 BOSS 直聘查看真实公司与薪资</p>
-      </div>
-      <div v-if="hotJobsLoading" class="section-empty">正在加载招聘方向…</div>
-      <div v-else class="grid-3">
-        <article v-for="(direction, index) in hotDirections" :key="direction.query" class="info-card">
-          <div class="company-header">
-            <div class="company-logo" :style="{ background: logoColors[index % logoColors.length] }">
-              {{ direction.label.charAt(0) }}
-            </div>
-            <div class="company-info">
-              <div class="company-name">{{ direction.label }}</div>
-              <a
-                :href="resolveBossJobSearchLink(direction.query)"
-                target="_blank"
-                rel="noreferrer"
-                class="salary-hint salary-hint--link company-meta-link"
-              >{{ JOB_SALARY_HINT }}</a>
-            </div>
-          </div>
-          <div class="card-desc"><strong>相关技能方向：</strong></div>
-          <div class="card-tags">
-            <span v-for="item in direction.skills" :key="item">{{ item }}</span>
-          </div>
-          <div class="card-actions">
-            <a
-              :href="resolveBossJobSearchLink(direction.query)"
-              target="_blank"
-              rel="noreferrer"
-              class="more-btn"
-            >{{ JOB_BOSS_CTA }}</a>
-          </div>
-          <div class="card-benefits no-border">不含具体公司与薪资，请在 BOSS 直聘搜索结果中查看</div>
+        <article class="overview-panel overview-panel--activity">
+          <header><div><span class="panel-label">ACTIVITIES</span><h3>近期活动</h3></div><button type="button" @click="router.push('/activities')">查看全部 ›</button></header>
+          <div v-if="!overview.activities.length" class="panel-empty">暂无近期活动</div>
+          <button v-for="item in overview.activities" :key="item.id" type="button" class="activity-row" @click="router.push(`/activities/${item.id}`)"><span class="activity-row__date">{{ activityDate(item.startTime) }}</span><span><strong>{{ item.title || item.activityName }}</strong><small>{{ item.location || item.place || '校园活动' }}</small></span></button>
         </article>
-      </div>
-      <div class="view-more-wrap">
-        <button type="button" class="view-more-btn" @click="router.push('/jobs/hot')">前往岗位雷达</button>
-      </div>
-    </section>
-
-    <section class="container section-block">
-      <div class="section-header">
-        <h2>最新职位</h2>
-        <p v-if="hotJobsWeekLabel" class="section-meta">{{ hotJobsWeekLabel }} · 岗位来自本周雷达，不含公司与薪资</p>
-        <p v-else class="section-meta">岗位来自本周雷达，公司与薪资请前往 BOSS 直聘查看</p>
-      </div>
-      <div v-if="hotJobsLoading" class="section-empty">正在加载最新职位…</div>
-      <div v-else-if="!displayLatestJobs.length" class="section-empty">
-        <p>暂无职位推荐</p>
-        <button type="button" class="section-link-btn" @click="router.push('/jobs/hot')">前往岗位雷达</button>
-      </div>
-      <div v-else class="job-list">
-        <article v-for="(job, index) in displayLatestJobs" :key="job.id || `latest-${job.jobTitle}`" class="job-list-item">
-          <div class="job-list-main">
-            <div class="job-list-logo" :style="{ background: logoColors[index % logoColors.length] }">
-              {{ String(job.jobTitle || '岗').charAt(0) }}
-            </div>
-            <div class="job-list-info">
-              <div class="job-list-title">{{ job.jobTitle }}</div>
-              <div class="job-list-meta">{{ JOB_SALARY_HINT }}</div>
-              <div class="card-tags job-list-tags">
-                <span v-for="item in parseJobSkills(job.skills)" :key="item">{{ item }}</span>
-              </div>
-            </div>
-          </div>
-          <a :href="resolveJobSearchLink(job)" target="_blank" rel="noreferrer" class="job-list-btn">{{ JOB_BOSS_CTA }}</a>
+        <article class="overview-panel overview-panel--discount">
+          <header><div><span class="panel-label">CAMPUS OFFERS</span><h3>校园优惠</h3></div><button type="button" @click="router.push('/discount')">去看看 ›</button></header>
+          <div v-if="!overview.discounts.length" class="panel-empty">暂无可用优惠</div>
+          <button v-for="item in overview.discounts" :key="item.id" type="button" class="discount-row" @click="router.push('/discount')"><span class="discount-row__badge">券</span><span><strong>{{ item.title }}</strong><small>{{ item.merchantName || '校园商家' }}</small></span></button>
         </article>
-      </div>
-      <div class="view-more-wrap">
-        <button type="button" class="view-more-btn" @click="router.push('/jobs/hot')">查看更多</button>
+        <article class="overview-panel overview-panel--forum">
+          <header><div><span class="panel-label">CAMPUS FORUM</span><h3>热门讨论</h3></div><button type="button" @click="router.push('/forum')">去论坛 ›</button></header>
+          <div v-if="!overview.posts.length" class="panel-empty">暂无热门讨论</div>
+          <button v-for="(item, index) in overview.posts" :key="item.id" type="button" class="post-row" @click="router.push(`/forum/posts/${item.id}`)"><b>{{ String(index + 1).padStart(2, '0') }}</b><span><strong>{{ item.title || item.content }}</strong><small>{{ item.commentCount || 0 }} 评论 · {{ item.viewCount || 0 }} 浏览</small></span></button>
+        </article>
       </div>
     </section>
 
@@ -619,37 +642,21 @@ function releasePreview() {
       <div class="container footer-grid">
         <div>
           <h4>关于我们</h4>
-          <ul>
-            <li><a href="javascript:void(0)">公司简介</a></li>
-            <li><a href="javascript:void(0)">联系我们</a></li>
-            <li><a href="javascript:void(0)">加入我们</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)">公司简介</a></li><li><a href="javascript:void(0)">联系我们</a></li><li><a href="javascript:void(0)">加入我们</a></li></ul>
         </div>
         <div>
           <h4>产品与服务</h4>
-          <ul>
-            <li><a href="javascript:void(0)" @click="router.push('/jobs/hot')">岗位雷达</a></li>
-            <li><a href="javascript:void(0)">学习路径推荐</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)">学习路径推荐</a></li></ul>
         </div>
         <div>
           <h4>帮助与支持</h4>
-          <ul>
-            <li><a href="javascript:void(0)">帮助中心</a></li>
-            <li><a href="javascript:void(0)">常见问题</a></li>
-            <li><a href="javascript:void(0)">在线客服</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)">帮助中心</a></li><li><a href="javascript:void(0)">常见问题</a></li><li><a href="javascript:void(0)">在线客服</a></li></ul>
         </div>
         <div>
           <h4>法律合规</h4>
-          <ul>
-            <li><a href="javascript:void(0)">服务协议</a></li>
-            <li><a href="javascript:void(0)">隐私政策</a></li>
-            <li><a href="javascript:void(0)">免责声明</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)">服务协议</a></li><li><a href="javascript:void(0)">隐私政策</a></li><li><a href="javascript:void(0)">免责声明</a></li></ul>
         </div>
       </div>
-
       <div class="container footer-bottom">
         <p>© 2026 数智诊断港 | 本平台数据仅用于学术研究与个人职业发展规划</p>
         <p>ICP备案号：粤 ICP 备 XXXXXXX 号</p>
@@ -664,16 +671,71 @@ function releasePreview() {
   min-height: 100vh;
   background: transparent;
   color: #333;
+  font-family: 'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: .01em;
 }
 
 .home-view * {
   box-sizing: border-box;
 }
 
+.home-view button,
+.home-view input {
+  font-family: inherit;
+}
+
 .container {
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;
 }
+
+.overview-intro { display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin-bottom:24px;text-align:left; }
+.overview-kicker,.section-eyebrow,.panel-label { color:#b08032;font-size:11px;font-weight:800;letter-spacing:.18em; }
+.overview-intro h1 { margin:7px 0 9px;color:#123f49;font-family:'STXingkai','华文行楷','LXGW WenKai Screen','霞鹜文楷 屏幕阅读版','STKaiti','KaiTi',serif;font-size:clamp(36px,4vw,54px);font-weight:500;letter-spacing:.08em;line-height:1.3; }
+.overview-intro p { margin:0;color:#667f82;font-family:'Source Han Sans SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif;font-size:16px;font-weight:500;line-height:1.7; }
+.overview-primary { flex:0 0 auto;padding:12px 22px;border:1px solid rgba(180,132,44,.5);border-radius:10px;color:#fffdf6;background:#1d666b;font-weight:750;cursor:pointer;box-shadow:0 8px 18px rgba(28,93,98,.18); }
+.search-mode-tabs { display:flex;gap:8px;margin:28px auto 10px; }
+.search-mode-tabs button { padding:7px 15px;border:1px solid rgba(98,124,128,.18);border-radius:999px;color:#617477;background:rgba(255,255,255,.7);cursor:pointer; }
+.search-mode-tabs button.active { border-color:#27787a;color:#fff;background:#27787a; }
+.announcement-section { display:grid;grid-template-columns:104px minmax(0,1fr);margin-top:28px;overflow:hidden;border:1px solid rgba(180,145,74,.3);border-radius:15px;background:rgba(255,254,249,.97);box-shadow:0 10px 30px rgba(67,84,74,.065); }
+.announcement-section--search { margin-top:24px; }
+.announcement-mark { display:grid;place-items:center;min-height:100%;color:#fffaf0;background:linear-gradient(150deg,#1b5962,#2d7d7b);font-family:'STKaiti','KaiTi',serif;font-size:24px;letter-spacing:.14em;writing-mode:vertical-rl; }
+.announcement-main { min-width:0;padding:20px 24px; }
+.announcement-heading { display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:10px; }
+.announcement-heading h2 { margin:3px 0 0;color:#173f49;font-size:24px;font-weight:650;letter-spacing:.04em; }.announcement-heading>span{color:#829092;font-size:12px}
+.announcement-empty { padding:24px 0;color:#7d8d8f;text-align:center; }
+.announcement-scroller { display:grid;gap:10px;max-height:244px;overflow-y:auto;padding:2px 9px 2px 3px;scroll-snap-type:y proximity;scrollbar-color:#bd9857 #f3f1e9;scrollbar-width:thin; }
+.announcement-scroller:focus-visible{outline:2px solid #347e80;outline-offset:4px}
+.announcement-item { min-height:130px;padding:15px 17px;border:1px solid rgba(179,146,78,.2);border-radius:11px;background:#fffdf8;scroll-snap-align:start;box-shadow:0 5px 14px rgba(67,84,74,.045); }
+.announcement-item__meta { display:flex;align-items:center;justify-content:space-between;min-height:20px;gap:8px; }.announcement-item__meta time{color:#8b9899;font-size:11px}
+.announcement-item h3 { margin:12px 0 8px;color:#334f54;font-size:15px;line-height:1.45; }.announcement-item p { display:-webkit-box;margin:0;color:#64777a;font-size:13px;line-height:1.7;white-space:pre-wrap;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden; }
+.announcement-top { padding:3px 7px;border-radius:999px;color:#98611e;background:#f7e7c5;font-size:10px;font-weight:800; }
+.announcement-item p { margin:0 28px 14px 4px;padding:12px 14px;border-radius:9px;color:#64777a;background:#f7f7f1;font-size:13px;line-height:1.7;white-space:pre-wrap; }
+.quick-actions-section,.overview-section { padding:34px 0 6px; }
+.quick-actions-section { padding-top:42px; }
+.service-heading { display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid rgba(103,93,76,.2); }
+.service-heading__title { display:flex;align-items:center;gap:14px; }
+.service-heading__title>span { display:block;width:5px;height:27px;border-radius:2px;background:#51735f; }
+.service-heading h2 { margin:0;color:#3a403c;font-family:'STKaiti','KaiTi','Source Han Serif SC',serif;font-size:28px;font-weight:500;letter-spacing:.08em; }
+.service-heading>span { color:#8b8a82;font-size:12px; }
+.section-heading-inline { display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px; }
+.section-heading-inline h2 { margin:4px 0 0;color:#173f49;font-size:27px;font-weight:650;letter-spacing:.04em; }
+.section-heading-inline>span { color:#7a8b8d;font-size:13px; }
+.quick-actions-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px; }
+.quick-action { position:relative;display:flex;min-height:150px;padding:22px 24px 18px 27px;border:1px solid rgba(107,99,86,.25);border-radius:5px;color:#4b4c48;background:rgba(251,249,244,.76);text-align:left;cursor:pointer;box-shadow:0 2px 8px rgba(68,62,48,.025);transition:border-color .2s,background .2s,transform .2s; }
+.quick-action::before { position:absolute;top:-1px;bottom:-1px;left:-1px;width:4px;border-radius:4px 0 0 4px;background:#8a6a46;content:''; }
+.quick-action:hover { border-color:rgba(122,91,55,.55);background:#fcfaf5;transform:translateY(-1px); }
+.quick-action__content { display:flex;flex-direction:column;min-width:0; }
+.quick-action strong,.quick-action small,.quick-action em { display:block; }.quick-action strong{color:#3e403c;font-family:'STKaiti','KaiTi','Source Han Serif SC',serif;font-size:21px;font-weight:600;letter-spacing:.03em}.quick-action small{margin-top:10px;color:#8a715b;font-size:13px;line-height:1.5}.quick-action em{margin-top:12px;color:#62645e;font-size:13px;font-style:normal;line-height:1.7}.quick-action--activity::before{background:#8a6a46}.quick-action--map::before{background:#658174}.quick-action--discount::before{background:#9a7652}.quick-action--forum::before{background:#6b7d72}.quick-action--ai::before{background:#69745c}
+.overview-loading,.panel-empty { padding:28px;text-align:center;color:#7b8c8f; }
+.overview-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px; }
+.overview-panel { padding:20px;border:1px solid rgba(172,143,84,.23);border-radius:14px;background:rgba(255,254,250,.97);box-shadow:0 9px 28px rgba(67,84,74,.06); }
+.overview-panel>header { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px;padding-bottom:13px;border-bottom:1px solid rgba(185,151,82,.16); }
+.overview-panel h3 { margin:3px 0 0;color:#21474e;font-size:20px;font-weight:650;letter-spacing:.03em; }.overview-panel header button{border:0;color:#527578;background:transparent;font-size:12px;cursor:pointer}
+.market-row,.activity-row,.discount-row,.post-row { display:grid;align-items:center;width:100%;padding:10px 5px;border:0;border-bottom:1px solid rgba(83,109,105,.09);color:#334e53;background:transparent;text-align:left;cursor:pointer; }
+.market-row:last-child,.activity-row:last-child,.discount-row:last-child,.post-row:last-child{border-bottom:0}.market-row:hover,.activity-row:hover,.discount-row:hover,.post-row:hover{background:#f8f6ee}
+.market-row{grid-template-columns:48px minmax(0,1fr) auto;gap:11px}.market-row__image{display:grid;width:48px;height:48px;place-items:center;overflow:hidden;border-radius:9px;color:#819094;background:#edf2ef;font-size:11px}.market-row__image img{width:100%;height:100%;object-fit:cover}.market-row__copy strong,.market-row__copy small,.activity-row strong,.activity-row small,.discount-row strong,.discount-row small,.post-row strong,.post-row small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.market-row__copy small,.activity-row small,.discount-row small,.post-row small{margin-top:4px;color:#879597;font-size:11px}.market-row>b{color:#a26d29;font-size:15px}
+.activity-row{grid-template-columns:112px minmax(0,1fr);gap:12px}.activity-row__date{color:#9a6c28;font-size:12px}.discount-row{grid-template-columns:40px minmax(0,1fr);gap:11px}.discount-row__badge{display:grid;width:36px;height:36px;place-items:center;border-radius:9px;color:#9a642f;background:#f8ead8;font-weight:800}.post-row{grid-template-columns:30px minmax(0,1fr);gap:9px}.post-row>b{color:#b1843b;font-family:Georgia,serif;font-size:12px}
 
 .footer a {
   color: inherit;
@@ -709,14 +771,19 @@ function releasePreview() {
   outline: 0;
   padding: 12px 0;
   font-size: 16px;
+  letter-spacing: .02em;
   background: transparent;
+}
+
+.search-box-wrap:focus-within {
+  box-shadow: 0 0 0 2px rgba(39, 120, 122, 0.18), 0 8px 22px rgba(39, 95, 90, 0.1);
 }
 
 .search-box-wrap button {
   border: 0;
   padding: 12px 32px;
   border-radius: 6px;
-  background: #0066ff;
+  background: #27787a;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -736,6 +803,7 @@ function releasePreview() {
   border-radius: 20px;
   background: #fff;
   font-size: 14px;
+  letter-spacing: .02em;
   color: #444;
 }
 
@@ -744,7 +812,7 @@ function releasePreview() {
 }
 
 .hot-search-tag:hover {
-  color: #0066ff;
+  color: #27787a;
 }
 
 .section-meta {
@@ -1283,6 +1351,7 @@ function releasePreview() {
   .footer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .quick-actions-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 
 @media (max-width: 680px) {
@@ -1301,9 +1370,13 @@ function releasePreview() {
   }
 
   .grid-3,
-  .footer-grid {
+  .footer-grid,
+  .overview-grid,
+  .quick-actions-grid {
     grid-template-columns: 1fr;
   }
+  .overview-intro,.section-heading-inline{align-items:flex-start;flex-direction:column}.overview-primary{width:100%}.search-mode-tabs{overflow-x:auto;margin-top:22px}.activity-row{grid-template-columns:1fr}.activity-row__date{margin-bottom:-4px}
+  .announcement-section{grid-template-columns:1fr}.announcement-mark{min-height:48px;writing-mode:horizontal-tb}.announcement-main{padding:18px 16px}.announcement-heading{align-items:flex-start;flex-direction:column;gap:4px}.announcement-scroller{max-height:260px}.service-heading{align-items:flex-start;flex-direction:column;gap:8px}.quick-actions-grid{grid-template-columns:1fr}.quick-action{min-height:136px;padding:19px 18px 16px 22px}
 
   .job-list-item {
     flex-direction: column;

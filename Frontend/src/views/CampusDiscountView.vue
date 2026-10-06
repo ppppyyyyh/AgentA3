@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import AppTabBar from '../components/AppTabBar.vue'
 import {
   claimDiscountActivity,
@@ -13,6 +14,7 @@ import {
 } from '../api/discount'
 
 const loading = ref(true)
+const route = useRoute()
 const items = ref([])
 const keyword = ref('')
 const selected = ref(null)
@@ -156,6 +158,7 @@ function fmt(t) {
 }
 
 onMounted(async () => {
+  keyword.value = String(route.query.keyword || '')
   try {
     const response = await getDiscountCategories()
     const list = response?.data || response
